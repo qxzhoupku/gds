@@ -25,15 +25,10 @@ instances:
 placement:
   - place: { inst: X1, at: [0, 0], rot: 0, as: X1_1 }
   # - connect: { inst: T_E, port: W, to: X1.N, as: T_E_1 }
-  # - place: { inst: RING1, at: [120, -50], rot: 0 }
+  - place: { inst: RING1, at: [120, -50], rot: 20 }
   # - place: { inst: RING2, at: [150, 120], rot: 0 }
-  - place: { inst: RT1, at: [-100, 0], rot: 150 }
+  - place: { inst: RT1, at: [-100, -100], rot: 90 }
 
 routes:
   # - straight: { from: X1.E, to: T_E.W }
-  # - straight: { from: RING1.W, to: X1.E, r: 10.0 }
-  # - straight: { from: X1.W, to: RT1.E, r: 10.0 }
-  - straight: { from: RT1.E, to: X1_1.W }
-  # - manhattan: { from: RT1.E, to: X1_1.W, r: 10.0 }
-  # - manhattan: { from: X1_1.S, to: RT1.E, r: 10.0 }
-  # - euler: { from: RT1.E, to: RING1.W, Rmin: 10.0 }
+  - euler: { from: X1_1.S, to: RING1.W, Rmin: 10.0 }
