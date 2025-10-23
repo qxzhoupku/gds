@@ -91,14 +91,21 @@ def main(profile="designs/profiles/demo_small.yaml"):
         elif "connect" in step:
             spec = step["connect"]
             n = spec["inst"]; p = spec["port"]
+            alias = spec.get("as", None)  # <-- new
             t_name, t_port = spec["to"].split(".")
+
             if t_name not in placed_ports:
                 refT = gdstk.Reference(inst_cells[t_name], origin=(0, 0), rotation=0.0)
                 top.add(refT)
                 placed_ports[t_name] = transform_ports(inst_ports[t_name], origin=(0, 0), rotation=0.0)
+
             ref = place_by_ports(top, inst_cells[n], inst_ports[n][p], placed_ports[t_name][t_port])
             rot = float(ref.rotation or 0.0); ox, oy = ref.origin
-            placed_ports[n] = transform_ports(inst_ports[n], origin=(ox, oy), rotation=rot)
+            placed_dict = transform_ports(inst_ports[n], origin=(ox, oy), rotation=rot)
+
+            key = alias or n  # if alias provided, store under alias; else overwrite n
+            placed_ports[key] = placed_dict
+
 
     if cfg.get("routes") is None:
         cfg["routes"] = []

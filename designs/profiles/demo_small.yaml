@@ -24,16 +24,20 @@ instances:
 
 placement:
   - place: { inst: X1, at: [0, 0], rot: 0 }
-  - connect: { inst: T_E, port: W, to: X1.N }
+  - connect: { inst: T_E, port: W, to: X1.N, as: T_E_1 }
   - connect: { inst: T_E, port: W, to: X1.E }
   - connect: { inst: T_E, port: W, to: X1.S }
   - connect: { inst: T_E, port: W, to: X1.W }
-  - place: { inst: RING1, at: [120, 0], rot: 0 }
+  - place: { inst: RING1, at: [120, -50], rot: 0 }
   # - place: { inst: RING2, at: [150, 120], rot: 0 }
   - place: { inst: RT1, at: [-100, 0], rot: 0 }
+  - connect: { inst: T_E, port: W, to: RT1.E }
+  - connect: { inst: T_E, port: W, to: RING1.E }
+  - connect: { inst: T_E, port: W, to: RT1.W }
 
 routes:
   # - straight: { from: X1.E, to: T_E.W }
   # - straight: { from: RING1.W, to: X1.E, r: 10.0 }
   # - straight: { from: X1.W, to: RT1.E, r: 10.0 }
   # - straight: { from: RT1.E, to: X1.W }
+  - straight: { from: T_E_1.E, to: RING1.W, r: 10.0 }
