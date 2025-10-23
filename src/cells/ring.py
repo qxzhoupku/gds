@@ -7,7 +7,7 @@ def PCellRingCoupler(R=20.0, gap=0.25, w_ring=0.5, w_bus=0.5, L_bus=None, layers
     WG = layers["WG"]
     TEXT = layers.get("TEXT", 100)
     if L_bus is None:
-        L_bus = 2*R + 40.0
+        L_bus = 2*R + 00.0
 
     cell = gdstk.Cell(name)
     x0, x1 = -L_bus/2, L_bus/2

@@ -1,9 +1,7 @@
 import gdstk
 from ..ports import Port
-import uuid
 
-def PCellWx(WM=1.6, LM=8.0, LT=10.0, w_in=0.5, layers=None, name=None):
-    name = name or f"WX_{uuid.uuid4().hex[:6]}"
+def PCellWx(WM=1.6, LM=8.0, LT=10.0, w_in=0.5, layers=None, name="WX"):
     if layers is None:
         layers = {"WG": 1, "PORT": 99, "TEXT": 100}
     WG = layers["WG"]
@@ -11,8 +9,8 @@ def PCellWx(WM=1.6, LM=8.0, LT=10.0, w_in=0.5, layers=None, name=None):
 
     cell = gdstk.Cell(name)
 
-    left = - (LM/2 + LT + 100.0)
-    right =  (LM/2 + LT + 100.0)
+    left = - (LM/2 + LT + 1.0)
+    right =  (LM/2 + LT + 1.0)
     rp_h = gdstk.RobustPath((left, 0.0), w_in, layer=WG)
     rp_h.segment((-LM/2 - LT, 0.0), width=w_in)
     rp_h.segment((-LM/2,      0.0), width=WM)
@@ -21,8 +19,8 @@ def PCellWx(WM=1.6, LM=8.0, LT=10.0, w_in=0.5, layers=None, name=None):
     rp_h.segment(( right,     0.0), width=w_in)
     cell.add(rp_h)
 
-    bottom = - (LM/2 + LT + 100.0)
-    top    =   (LM/2 + LT + 100.0)
+    bottom = - (LM/2 + LT + 1.0)
+    top    =   (LM/2 + LT + 1.0)
     rp_v = gdstk.RobustPath((0.0, bottom), w_in, layer=WG)
     rp_v.segment((0.0, -LM/2 - LT), width=w_in)
     rp_v.segment((0.0, -LM/2),      width=WM)

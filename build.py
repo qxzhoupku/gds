@@ -79,6 +79,8 @@ def main(profile="designs/profiles/demo_small.yaml"):
         inst_ports[inst_name] = ports
 
     placed_ports = {}
+    if cfg.get("placement") is None:
+        cfg["placement"] = []
     for step in cfg.get("placement", []):
         if "place" in step:
             spec = step["place"]
@@ -98,6 +100,8 @@ def main(profile="designs/profiles/demo_small.yaml"):
             rot = float(ref.rotation or 0.0); ox, oy = ref.origin
             placed_ports[n] = transform_ports(inst_ports[n], origin=(ox, oy), rotation=rot)
 
+    if cfg.get("routes") is None:
+        cfg["routes"] = []
     for r in cfg.get("routes", []):
         if "straight" in r:
             f_inst, f_port = r["straight"]["from"].split(".")
