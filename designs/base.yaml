@@ -1,0 +1,8 @@
+# designs/base.yaml
+defaults:
+  layers: { WG: 1, PORT: 99, TEXT: 100 }
+  grid_um: 0.001
+
+chip:
+  name: DEMO_CHIP_1
+  out: out/chip_demo.gds
