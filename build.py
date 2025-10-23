@@ -5,7 +5,7 @@ import gdstk
 
 from src.ports import Port
 from src.place import place_by_ports, route_straight, route_manhattan, transform_ports
-from src.cells.wx import PCellCrossingUnits
+from src.cells.wx import PCellWx
 from src.cells.taper import PCellTaper
 from src.cells.ring import PCellRingCoupler
 from src.cells.racetrack import PCellRacetrack
@@ -30,7 +30,7 @@ def resolve_design(profile_path: str) -> dict:
     return cfg
 
 REGISTRY = {
-    "WX": lambda p, L: PCellCrossingUnits(
+    "WX": lambda p, L: PCellWx(
         p.get("WM", 1.6), p.get("LM", 8.0), p.get("LT", 10.0), p.get("w_in", 0.5), L, name=p.get("name", "WX")
     ),
     "TAPER": lambda p, L: PCellTaper(

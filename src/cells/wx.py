@@ -2,7 +2,7 @@ import gdstk
 from ..ports import Port
 import uuid
 
-def PCellCrossingUnits(WM=1.6, LM=8.0, LT=10.0, w_in=0.5, layers=None, name=None):
+def PCellWx(WM=1.6, LM=8.0, LT=10.0, w_in=0.5, layers=None, name=None):
     name = name or f"WX_{uuid.uuid4().hex[:6]}"
     if layers is None:
         layers = {"WG": 1, "PORT": 99, "TEXT": 100}
