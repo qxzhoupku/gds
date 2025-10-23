@@ -2,6 +2,7 @@ import os
 import uuid
 import yaml
 import gdstk
+import math
 
 from src.ports import Port
 from src.place import place_by_ports, route_straight, route_manhattan, route_euler_bend, transform_ports
@@ -84,10 +85,15 @@ def main(profile="designs/profiles/demo_small.yaml"):
     for step in cfg.get("placement", []):
         if "place" in step:
             spec = step["place"]
-            n = spec["inst"]; at = spec.get("at", [0, 0]); rot = float(spec.get("rot", 0.0))
+            n = spec["inst"]
+            alias = spec.get("as", None)  # optional alias for place
+            at = spec.get("at", [0, 0])
+            rot = float(spec.get("rot", 0.0)) / 180.0 * math.pi
             ref = gdstk.Reference(inst_cells[n], origin=(at[0], at[1]), rotation=rot)
             top.add(ref)
-            placed_ports[n] = transform_ports(inst_ports[n], origin=(at[0], at[1]), rotation=rot)
+
+            ports_world = transform_ports(inst_ports[n], origin=(at[0], at[1]), rotation=rot)
+            placed_ports[alias or n] = ports_world
         elif "connect" in step:
             spec = step["connect"]
             n = spec["inst"]; p = spec["port"]

@@ -2,7 +2,7 @@ import math, gdstk
 from .ports import Port
 
 def _R(theta_deg: float):
-    t = math.radians(theta_deg)
+    t = theta_deg
     return ((math.cos(t), -math.sin(t)), (math.sin(t), math.cos(t)))
 
 def _apply_R(p, R):
@@ -31,167 +31,188 @@ def route_straight(parent: gdstk.Cell, A: Port, B: Port, layer=1):
     rp.segment((B.x, B.y), width=w)
     parent.add(rp)
 
-def route_manhattan(parent: gdstk.Cell, A: Port, B: Port, r: float, layer=1):
-    """L-shaped route with a quarter-circle bend of radius r."""
-    import math
-    w = min(A.width, B.width)
-    rp = gdstk.RobustPath((A.x, A.y), w, layer=layer)
-
-    # Decide bend direction: up (90°) or down (-90°)
-    going_up = B.y >= A.y
-    sign = 1 if going_up else -1
-
-    # First horizontal segment
-    midx = B.x - r
-    rp.segment((midx, A.y), width=w)
-
-    # Add a 90° arc (initial angle = 0 rad = +x)
-    initial_angle = 0.0
-    final_angle = sign * math.pi / 2
-    center = (midx, A.y - sign * r)
-    rp.arc(r, initial_angle, final_angle, width=w)
-
-    # Vertical segment to the target
-    rp.segment((B.x, B.y), width=w)
-    parent.add(rp)
-
-# --- Euler bend router -------------------------------------------------
-def _euler_bend_points(theta, Rmin, n=200, turn_sign=+1):
+def route_manhattan(parent: gdstk.Cell, A: Port, B: Port, r: float, layer=1, samples=24):
     """
-    Sample a symmetric Euler bend (clothoid) of total turn 'theta' (rad),
-    with minimum radius Rmin at the mid-point (max curvature). Returns a list
-    of (x, y) points starting at (0,0) with initial heading +x, ending with
-    heading rotated by 'theta'. 'turn_sign' = +1 (CCW/up), -1 (CW/down).
-    """
-    import math
-
-    # Split into two halves with linear curvature ramp up then down.
-    # For a half-bend with angle phi = theta/2:
-    #   k(s) = a*s,   s in [0, Lh],   with a = 1 / (Rmin^2 * phi)
-    #   phi = ∫ k ds = a * Lh^2 / 2  and  k(Lh) = a*Lh = 1/Rmin
-    # => Lh = 2 * Rmin * phi  (total Euler length = 2 * Lh)
-    phi = abs(theta) * 0.5
-    Lh = 2.0 * Rmin * phi
-    a = 1.0 / (Rmin * Rmin * phi)  # curvature slope
-
-    # integrate first half (ramp up): k(s) = a*s
-    # integrate second half (ramp down): k(s) = k_max - a*s
-    def integrate_half(x0, y0, psi0, L, k0, k_slope, steps):
-        """Integrate one half with curvature k(s) = k0 + k_slope * s."""
-        import math
-        x, y, psi = x0, y0, psi0
-        ds = L / steps
-        pts = []
-        for i in range(steps):
-            s = (i + 0.5) * ds
-            k = k0 + k_slope * s
-            psi_i = psi0 + (k0 * s + 0.5 * k_slope * s * s)  # ∫k ds
-            x_i = x0 + ( (math.sin(psi_i) - math.sin(psi0)) / (k_slope*s if k_slope != 0 else 1e-18) ) if False else None  # not used
-            # simple forward Euler for position with small ds:
-            psi_step = psi + k * ds
-            x += math.cos(psi_step) * ds
-            y += math.sin(psi_step) * ds
-            psi = psi_step
-            pts.append((x, y, psi))
-        return pts
-
-    # First half
-    sign = 1.0 if turn_sign >= 0 else -1.0
-    pts1 = []
-    x = y = psi = 0.0
-    ds = Lh / (n // 2)
-    for i in range(n // 2):
-        s = (i + 0.5) * ds
-        k = sign * a * s
-        psi += k * ds
-        x += math.cos(psi) * ds
-        y += math.sin(psi) * ds
-        pts1.append((x, y, psi))
-
-    # Second half (ramp down): k(s') = k_max - a*s'
-    kmax = sign * (1.0 / Rmin)
-    pts2 = []
-    for i in range(n - n // 2):
-        s = (i + 0.5) * ds
-        k = kmax - sign * a * s
-        psi += k * ds
-        x += math.cos(psi) * ds
-        y += math.sin(psi) * ds
-        pts2.append((x, y, psi))
-
-    # collect XY only
-    xy = [(0.0, 0.0)] + [(px, py) for (px, py, _) in pts1 + pts2]
-    return xy
-
-def route_euler_bend(parent: gdstk.Cell, A: Port, B: Port, Rmin: float, layer=1, n=200):
-    """
-    L-shaped route A->B with a 90° Euler bend of minimum radius Rmin.
-    Automatically chooses up/down bend and horizontal-first vs vertical-first
-    based on available footprint.
+    Tangent-aligned L-route A->B with a circular 90° bend of radius r.
+    Local path (in A frame): straight (+x) → quarter-circle (±90°) → straight (±y).
+    If requested r won't fit, it is reduced to min(bx, |by|) - eps.
     """
     import math, gdstk
 
+    # --- local transforms aligned to A ---
+    def _to_local(A, x, y):
+        dx, dy = x - A.x, y - A.y
+        t = -math.radians(A.angle)
+        c, s = math.cos(t), math.sin(t)
+        return (c*dx - s*dy, s*dx + c*dy)
+
+    def _to_world(A, xl, yl):
+        t = math.radians(A.angle)
+        c, s = math.cos(t), math.sin(t)
+        return (A.x + c*xl - s*yl, A.y + s*xl + c*yl)
+
+    # B in A-local coords
+    bx, by = _to_local(A, B.x, B.y)
+
+    # If nearly colinear, just draw a straight
+    if abs(by) < 1e-12 or abs(bx) < 1e-12:
+        w = min(A.width, B.width)
+        rp = gdstk.RobustPath((A.x, A.y), w, layer=layer)
+        rp.segment((B.x, B.y), width=w)
+        parent.add(rp)
+        return
+
+    # We need at least bx >= r and |by| >= r for a single quarter-circle L-bend
+    # Auto-shrink r if needed
+    r_fit = max(1e-6, min(abs(bx), abs(by), r))
+
+    # bend direction (up if by>0, down if by<0)
+    sgn = 1.0 if by >= 0 else -1.0
+
+    # Pre-bend straight (local along +x)
+    s = bx - r_fit
+    if s < 0:
+        # If still negative due to numeric noise, clamp and slightly reduce radius
+        r_fit = max(1e-6, r_fit + s)  # r_fit := r_fit + (bx - r_fit) = bx
+        s = 0.0
+
+    # Geometry in local frame:
+    # 1) pre-straight to (s, 0)
+    # 2) quarter circle centered at (s, sgn*r_fit) from angle -sgn*pi/2 to 0
+    # 3) post-straight to (bx, by)
+
+    # Build in world coords
     w = min(A.width, B.width)
     rp = gdstk.RobustPath((A.x, A.y), w, layer=layer)
 
-    # Desired total turn magnitude (90°)
-    theta = math.pi / 2.0
-    turn_up = (B.y >= A.y)  # bend direction
-    sign = +1 if turn_up else -1
+    # 1) pre-straight
+    xw, yw = _to_world(A, s, 0.0)
+    if s > 1e-12:
+        rp.segment((xw, yw), width=w)
 
-    # Sample the Euler bend to know its XY footprint (in local coordinates)
-    bend_pts = _euler_bend_points(theta=theta, Rmin=Rmin, n=n, turn_sign=sign)
-    X_end = bend_pts[-1][0]  # local x-span of the bend
-    Y_end = sign * abs(bend_pts[-1][1])  # local y-span (signed)
+    # 2) arc: sample the quarter circle to guarantee correct footprint
+    cx, cy = s, sgn * r_fit
+    for k in range(1, samples + 1):
+        theta = (-sgn * math.pi / 2.0) + (sgn * (k / samples) * (math.pi / 2.0))
+        xl = cx + r_fit * math.cos(theta)
+        yl = cy + r_fit * math.sin(theta)
+        xw, yw = _to_world(A, xl, yl)
+        rp.segment((xw, yw), width=w)
 
-    dx = B.x - A.x
-    dy = B.y - A.y
+    # 3) post-straight
+    xw, yw = _to_world(A, bx, by)
+    rp.segment((xw, yw), width=w)
 
-    # Decide whether to go horizontal-first (then bend) or vertical-first
-    horizontal_first = dx >= X_end + 1e-3
-    if not horizontal_first:
-        # Try vertical-first by rotating the bend 90° the other way
-        # We'll route vertically to (A.x, B.y - Y_end), then bend into +x.
-        theta_v = math.pi / 2.0
-        turn_right = (B.x >= A.x)  # when coming from below/above
-        sign_v = +1 if (turn_right if dy >= 0 else not turn_right) else -1
-        bend_pts_v = _euler_bend_points(theta=theta_v, Rmin=Rmin, n=n, turn_sign=sign_v)
-        X_end_v = bend_pts_v[-1][0]
-        Y_end_v = sign_v * abs(bend_pts_v[-1][1])
-        vertical_first = abs(dy) >= abs(Y_end_v) + 1e-3
-        if vertical_first:
-            # 1) vertical to the bend start
-            rp.segment((A.x, B.y - Y_end_v), width=w)
-            # 2) add Euler points rotated +90° (swap axes) if needed
-            #    But here bend_pts_v already computed for the vertical-first case.
-            #    Stitch the bend polyline from the current point:
-            x0, y0 = A.x, B.y - Y_end_v
-            for (px, py) in bend_pts_v[1:]:
-                rp.segment((x0 + px, y0 + py), width=w)
-            # 3) horizontal to B
-            rp.segment((B.x, B.y), width=w)
-            parent.add(rp)
-            return
-        else:
-            # Not enough room either way: reduce Rmin automatically to fit
-            scale = max(0.1, dx / max(X_end, 1e-9), abs(dy) / max(abs(Y_end), 1e-9))
-            Rmin *= scale
-            bend_pts = _euler_bend_points(theta=theta, Rmin=Rmin, n=n, turn_sign=sign)
-            X_end = bend_pts[-1][0]
-            Y_end = sign * abs(bend_pts[-1][1])
-            horizontal_first = True  # force
+    parent.add(rp)
 
-    # Horizontal-first case:
-    # 1) straight along +x to the bend start
-    bend_start_x = B.x - X_end
-    rp.segment((bend_start_x, A.y), width=w)
 
-    # 2) stitch the Euler bend polyline
-    x0, y0 = bend_start_x, A.y
-    for (px, py) in bend_pts[1:]:
-        rp.segment((x0 + px, y0 + py), width=w)
+# ---------- Local transforms (for port-aligned routing) ----------
+def _rotmat(theta_rad: float):
+    import math
+    c, s = math.cos(theta_rad), math.sin(theta_rad)
+    return ((c, -s), (s, c))
 
-    # 3) final vertical to target B
-    rp.segment((B.x, B.y), width=w)
+def _to_local(A, x, y):
+    """Translate by -A then rotate by -A.angle so A is at (0,0) with heading +x."""
+    import math
+    dx, dy = x - A.x, y - A.y
+    t = -math.radians(A.angle)
+    c, s = math.cos(t), math.sin(t)
+    return (c*dx - s*dy, s*dx + c*dy)
+
+def _to_world(A, xl, yl):
+    """Inverse of _to_local: rotate by +A.angle then translate by A."""
+    import math
+    t = math.radians(A.angle)
+    c, s = math.cos(t), math.sin(t)
+    return (A.x + c*xl - s*yl, A.y + s*xl + c*yl)
+
+# ---------- Euler bend sampler (symmetric 90° clothoid) ----------
+def _euler_bend_90(Rmin, n=200, turn_sign=+1):
+    """
+    Returns points (x,y) of a symmetric 90° Euler bend starting at (0,0) with
+    heading +x and ending with heading ±y. 'turn_sign' = +1 (bend up/CCW),
+    -1 (bend down/CW). Minimum radius occurs at mid-bend (Rmin).
+    """
+    import math
+    theta = math.pi / 2.0   # total turn
+    phi = theta * 0.5
+    Lh = 2.0 * Rmin * phi               # half-length of the Euler bend
+    a  = 1.0 / (Rmin * Rmin * phi)      # curvature slope
+    sign = 1.0 if turn_sign >= 0 else -1.0
+
+    pts = [(0.0, 0.0)]
+    x = y = psi = 0.0
+    # First half: k(s) = a*s
+    m1 = max(2, n // 2)
+    ds1 = Lh / m1
+    for i in range(m1):
+        s = (i + 0.5) * ds1
+        k = sign * a * s
+        psi += k * ds1
+        x += math.cos(psi) * ds1
+        y += math.sin(psi) * ds1
+        pts.append((x, y))
+    # Second half: k(s') = k_max - a*s'
+    kmax = sign * (1.0 / Rmin)
+    m2 = n - m1
+    ds2 = Lh / max(2, m2)
+    for i in range(max(2, m2)):
+        s = (i + 0.5) * ds2
+        k = kmax - sign * a * s
+        psi += k * ds2
+        x += math.cos(psi) * ds2
+        y += math.sin(psi) * ds2
+        pts.append((x, y))
+    return pts  # start at (0,0), end near (X_end, ±Y_end)
+
+# ---------- Public API: Euler L-bend aligned to A ----------
+def route_euler_bend(parent: gdstk.Cell, A: Port, B: Port, Rmin: float, layer=1, n=200):
+    """
+    L-shaped route A->B with a 90° Euler bend that STARTS aligned to A's tangent.
+    Path in A-local frame: straight (+x) → Euler(±90°) → straight (±y).
+    If not enough room for requested Rmin, it auto-scales Rmin to fit.
+    """
+    import math, gdstk
+
+    # Transform B into A-local coordinates
+    bx, by = _to_local(A, B.x, B.y)
+
+    # Bend direction: up if B is above A in local frame
+    sign = +1 if by >= 0 else -1
+
+    # Sample the Euler bend in local coords (starts at (0,0), heading +x)
+    pts = _euler_bend_90(Rmin, n=max(40, n), turn_sign=sign)
+    X_end = pts[-1][0]
+    Y_end = pts[-1][1]     # signed already by 'sign'
+
+    # Ensure there is enough local +x distance to fit the bend footprint
+    if bx < X_end:
+        scale = max(0.1, bx / max(X_end, 1e-9))
+        Rmin *= scale
+        pts = _euler_bend_90(Rmin, n=max(40, n), turn_sign=sign)
+        X_end = pts[-1][0]
+        Y_end = pts[-1][1]
+
+    # Pre-bend straight length (along +x in local)
+    s = bx - X_end
+
+    # Build the path in WORLD coords
+    w = min(A.width, B.width)
+    rp = gdstk.RobustPath((A.x, A.y), w, layer=layer)
+
+    # 1) Straight to bend start (local (s, 0))
+    x1w, y1w = _to_world(A, s, 0.0)
+    if abs(s) > 1e-12:
+        rp.segment((x1w, y1w), width=w)
+
+    # 2) Euler bend polyline (offset by (s,0) in local; map each point to world)
+    for (px, py) in pts[1:]:
+        xw, yw = _to_world(A, s + px, py)
+        rp.segment((xw, yw), width=w)
+
+    # 3) Final straight along ±y to exactly hit B
+    x2w, y2w = _to_world(A, bx, by)
+    rp.segment((x2w, y2w), width=w)
 
     parent.add(rp)
