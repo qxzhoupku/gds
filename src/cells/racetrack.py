@@ -4,83 +4,79 @@ import gdstk
 from ..ports import Port
 
 def PCellRacetrack(
-    R=50.0,                 # bend radius (um) for the two semicircles
-    L_straight=30.0,        # straight length between bends (um) measured between bend tangency points
-    gap=0.2,                # bus-to-resonator edge gap (um)
-    w_ring=0.5,             # ring waveguide width (um)
-    w_bus=0.5,              # bus waveguide width (um)
-    L_bus=None,             # bus length (um); default auto to span racetrack
+    R=50.0,
+    L_straight=30.0,
+    gap=0.2,
+    w_ring=0.5,
+    w_bus=0.5,
+    L_bus=None,
     layers=None,
     name="RACETRACK",
-    bend="circular"         # "circular" (default). Reserved for future: "euler"
 ):
-    """True racetrack resonator + straight bus coupler.
+    """
+    True racetrack resonator above a horizontal bus at y=0.
 
-    Geometry (centerline of ring path):
-      - Start at (-L_straight/2, yc + R) → straight to (L_straight/2, yc + R)
-      - 180° bend (radius R) to (L_straight/2, yc - R)
-      - Straight to (-L_straight/2, yc - R)
-      - 180° bend (radius R) back to start
+    Geometry:
+      - Bus: horizontal RobustPath at y=0, width = w_bus, length = L_bus.
+      - Racetrack loop (width = w_ring):
+          * Two vertical straight sections of length L_straight,
+          * Two semicircular turns of radius R.
+        The lower semicircle sits above the bus, providing point coupling.
 
-    The path is drawn as a RobustPath with constant width = w_ring, yielding the ring body.
+    Coupling placement:
+      Let y_bottom be the bottom-most point of the racetrack boundary near the bus.
+      We enforce:
+         (y_bottom) - (w_bus/2) = gap + (w_ring/2)
+      For the centerline, bottom-most point is y_c - R, so:
+         y_c = gap + 0.5*(w_bus + w_ring) + R
+
+    NOTE:
+      RobustPath.turn(angle, radius)  # angle FIRST, THEN radius.
+      Using angle = -pi produces a clockwise (right) 180° bend.
     """
     if layers is None:
         layers = {"WG": 1, "PORT": 99, "TEXT": 100}
     WG = layers["WG"]
     TEXT = layers.get("TEXT", 100)
 
+    if L_bus is None:
+        # Make bus comfortably longer than racetrack width
+        L_bus = 2 * R
     cell = gdstk.Cell(name)
 
-    # ---------- Bus waveguide (horizontal) ----------
-    # Auto bus length to comfortably span the racetrack extent
-    if L_bus is None:
-        L_bus = (2 * R + L_straight) + 40.0
+    # ---------------- Bus (horizontal at y=0) ----------------
     x0, x1 = -L_bus / 2.0, L_bus / 2.0
     bus = gdstk.RobustPath((x0, 0.0), w_bus, layer=WG)
     bus.segment((x1, 0.0), width=w_bus)
     cell.add(bus)
 
-    # ---------- Racetrack ring (above the bus) ----------
-    # Place ring centerline so the BOTTOM of the ring is 'gap' above the top edge of the bus:
-    # bus top edge is at +w_bus/2, ring bottom edge is at yc - R - w_ring/2.
-    # Enforce: (yc - R - w_ring/2) - (w_bus/2) = gap  => yc = R + (w_ring + w_bus)/2 + gap
-    yc = R + 0.5 * (w_ring + w_bus) + gap
+    # ---------------- Racetrack (above bus) ----------------
+    y_c = gap + 0.5 * (w_bus + w_ring)   # centerline y of lower semicircle
 
-    # Start point on the TOP straight (heading +x)
-    start = (-L_straight / 2.0, yc + R)
+    x_left = -L_straight / 2.0
+    x_right = L_straight / 2.0
 
-    rp = gdstk.RobustPath(start, w_ring, layer=WG)
+    rp = gdstk.RobustPath((x_left, y_c + R), w_ring, layer=WG)
 
-    # 1) Top straight: to the right
-    rp.segment((L_straight / 2.0, yc + R), width=w_ring)
+    # 1) Left vertical straight (upwards)
+    rp.segment((x_left, y_c + R + L_straight), width=w_ring)
 
-    # 2) Right 180° bend (circular): from +x heading to -x heading, moving downward by 2R
-    if bend == "circular":
-        rp.turn(R, -math.pi)  # negative sign: bend clockwise going down
-    else:
-        # Placeholder: Euler bends could be implemented with parametric control points
-        rp.turn(R, -math.pi)
+    # 2) Top semicircle: 180° clockwise (to the right)
+    rp.turn(R, -math.pi)   # angle first, then radius
 
-    # 3) Bottom straight: to the left
-    rp.segment((-L_straight / 2.0, yc - R), width=w_ring)
+    # 3) Right vertical straight (downwards)
+    rp.segment((x_right, y_c + R), width=w_ring)
 
-    # 4) Left 180° bend: from -x heading back to +x, moving upward by 2R to the start y
-    if bend == "circular":
-        rp.turn(R, -math.pi)
-    else:
-        rp.turn(R, -math.pi)
-
-    # Close by returning to the start x,y (a short zero-length segment is fine)
-    rp.segment(start, width=w_ring)
+    # 4) Bottom semicircle: 180° clockwise (to the right), closing the loop
+    rp.turn(R, -math.pi)
 
     cell.add(rp)
 
-    # ---------- Annotation ----------
-    cell.add(gdstk.Label(f"RACETRACK R={R} Ls={L_straight} gap={gap}", (0, yc - R - 10), layer=TEXT))
+    # Label
+    cell.add(gdstk.Label(f"RACETRACK R={R} Ls={L_straight} gap={gap}", (0, y_c - R - 10), layer=TEXT))
 
-    # ---------- Ports on the bus ----------
     ports = {
-        "W": Port("W", x0, 0.0, 180.0, w_bus, WG),
+        "W": Port("W", x0, 0.0, math.pi, w_bus, WG),
         "E": Port("E", x1, 0.0,   0.0, w_bus, WG),
     }
     return cell, ports

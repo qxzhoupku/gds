@@ -6,9 +6,9 @@ instances:
     type: WX
     params: { WM: 1.6, LM: 8.0, LT: 10.0, w_in: 0.5 }
 
-  # T_E:
-  #   type: TAPER
-  #   params: { w0: 0.5, w1: 3.0, L: 150.0 }
+  T_E:
+    type: TAPER
+    params: { w0: 0.5, w1: 3.0, L: 30.0 }
 
   RING1:
     type: RING
@@ -20,16 +20,20 @@ instances:
 
   RT1:
     type: RACETRACK
-    params: { R: 50.0, L_straight: 30.0, gap: 0.2, w_ring: 0.5, w_bus: 0.5 }
+    params: { R: 20.0, L_straight: 40.0, gap: 0.2, w_ring: 0.5, w_bus: 0.5 }
 
 placement:
   - place: { inst: X1, at: [0, 0], rot: 0 }
-  # - connect: { inst: T_E, port: W, to: X1.E }
-  - place: { inst: RING1, at: [0, 120], rot: 0 }
-  - place: { inst: RING2, at: [150, 120], rot: 0 }
-  - place: { inst: RT1, at: [-200, 0], rot: 0 }
+  - connect: { inst: T_E, port: W, to: X1.N }
+  - connect: { inst: T_E, port: W, to: X1.E }
+  - connect: { inst: T_E, port: W, to: X1.S }
+  - connect: { inst: T_E, port: W, to: X1.W }
+  - place: { inst: RING1, at: [120, 0], rot: 0 }
+  # - place: { inst: RING2, at: [150, 120], rot: 0 }
+  - place: { inst: RT1, at: [-100, 0], rot: 0 }
 
 routes:
   # - straight: { from: X1.E, to: T_E.W }
-  - manhattan: { from: RING1.W, to: X1.N, r: 10.0 }
+  # - straight: { from: RING1.W, to: X1.E, r: 10.0 }
+  # - straight: { from: X1.W, to: RT1.E, r: 10.0 }
   # - straight: { from: RT1.E, to: X1.W }

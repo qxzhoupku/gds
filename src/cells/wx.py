@@ -1,5 +1,6 @@
 import gdstk
 from ..ports import Port
+import math
 
 def PCellWx(WM=1.6, LM=8.0, LT=10.0, w_in=0.5, layers=None, name="WX"):
     if layers is None:
@@ -32,9 +33,9 @@ def PCellWx(WM=1.6, LM=8.0, LT=10.0, w_in=0.5, layers=None, name="WX"):
     cell.add(gdstk.Label(f"WX WM={WM} LM={LM} LT={LT} w_in={w_in}", (0, -LM/2 - 6), layer=TEXT))
 
     ports = {
-        "W": Port("W", left, 0.0, 180.0, w_in, WG),
+        "W": Port("W", left, 0.0, math.pi, w_in, WG),
         "E": Port("E", right, 0.0, 0.0,  w_in, WG),
-        "S": Port("S", 0.0, bottom, -90.0, w_in, WG),
-        "N": Port("N", 0.0, top,    90.0,  w_in, WG),
+        "S": Port("S", 0.0, bottom, 3*math.pi/2, w_in, WG),
+        "N": Port("N", 0.0, top, math.pi/2, w_in, WG),
     }
     return cell, ports

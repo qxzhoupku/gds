@@ -17,7 +17,7 @@ def transform_ports(ports: dict, origin=(0.0,0.0), rotation=0.0):
     return out
 
 def place_by_ports(parent: gdstk.Cell, child_cell: gdstk.Cell, child_port: Port, target_port: Port):
-    rot = target_port.angle - (child_port.angle + 180.0)
+    rot = target_port.angle - (child_port.angle + math.pi)
     R = _R(rot)
     pf_rot = _apply_R((child_port.x, child_port.y), R)
     tx, ty = target_port.x - pf_rot[0], target_port.y - pf_rot[1]

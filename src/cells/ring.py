@@ -1,5 +1,6 @@
 import gdstk
 from ..ports import Port
+import math
 
 def PCellRingCoupler(R=20.0, gap=0.25, w_ring=0.5, w_bus=0.5, L_bus=None, layers=None, name="RING"):
     if layers is None:
@@ -21,5 +22,5 @@ def PCellRingCoupler(R=20.0, gap=0.25, w_ring=0.5, w_bus=0.5, L_bus=None, layers
 
     cell.add(gdstk.Label(f"RING R={R} gap={gap}", (0, -R - 10), layer=TEXT))
 
-    ports = {"W": Port("W", x0, 0.0, 180.0, w_bus, WG), "E": Port("E", x1, 0.0, 0.0, w_bus, WG)}
+    ports = {"W": Port("W", x0, 0.0, math.pi, w_bus, WG), "E": Port("E", x1, 0.0, 0.0, w_bus, WG)}
     return cell, ports

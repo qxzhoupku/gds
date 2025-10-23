@@ -1,5 +1,6 @@
 import gdstk
 from ..ports import Port
+import math
 
 def PCellTaper(w0=0.5, w1=3.0, L=150.0, layers=None, name="TAPER"):
     if layers is None:
@@ -14,5 +15,5 @@ def PCellTaper(w0=0.5, w1=3.0, L=150.0, layers=None, name="TAPER"):
 
     cell.add(gdstk.Label(f"TAPER {w0}->{w1} L={L}", (L/2, -5), layer=TEXT))
 
-    ports = {"W": Port("W", 0.0, 0.0, 180.0, w0, WG), "E": Port("E", L, 0.0, 0.0, w1, WG)}
+    ports = {"W": Port("W", 0.0, 0.0, math.pi, w0, WG), "E": Port("E", L, 0.0, 0.0, w1, WG)}
     return cell, ports
