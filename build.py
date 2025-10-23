@@ -4,7 +4,7 @@ import yaml
 import gdstk
 
 from src.ports import Port
-from src.place import place_by_ports, route_straight, route_manhattan, transform_ports
+from src.place import place_by_ports, route_straight, route_manhattan, route_euler_bend, transform_ports
 from src.cells.wx import PCellWx
 from src.cells.taper import PCellTaper
 from src.cells.ring import PCellRingCoupler
@@ -121,6 +121,14 @@ def main(profile="designs/profiles/demo_small.yaml"):
             radius = float(r["manhattan"]["r"])
             A = placed_ports[f_inst][f_port]; B = placed_ports[t_inst][t_port]
             route_manhattan(top, A, B, radius, layer=layers["WG"])
+        elif "euler" in r:
+            f_inst, f_port = r["euler"]["from"].split(".")
+            t_inst, t_port = r["euler"]["to"].split(".")
+            Rmin = float(r["euler"]["Rmin"])
+            A = placed_ports[f_inst][f_port]
+            B = placed_ports[t_inst][t_port]
+            route_euler_bend(top, A, B, Rmin, layer=layers["WG"])
+
 
     lib.write_gds(out_path)
     print(f"Wrote {out_path}")

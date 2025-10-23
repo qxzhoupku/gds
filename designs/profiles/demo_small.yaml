@@ -40,4 +40,4 @@ routes:
   # - straight: { from: RING1.W, to: X1.E, r: 10.0 }
   # - straight: { from: X1.W, to: RT1.E, r: 10.0 }
   # - straight: { from: RT1.E, to: X1.W }
-  - straight: { from: T_E_1.E, to: RING1.W, r: 10.0 }
+  - euler: { from: T_E_1.E, to: RING1.W, Rmin: 10.0 }
