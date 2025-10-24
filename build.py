@@ -38,7 +38,7 @@ def place_instance(top, spec, inst_cells, inst_ports, placed_ports):
     rot = float(spec.get("rot", 0.0))
     ref = gdstk.Reference(inst_cells[n], origin=(at[0], at[1]), rotation=math.radians(rot))
     top.add(ref)
-    ports = transform_ports(inst_ports[n], origin=(at[0], at[1]), rotation=rot)
+    ports = transform_ports(inst_ports[n], origin=(at[0], at[1]), rotation=math.radians(rot))
     placed_ports[alias] = ports
 
 def connect_instance(top, spec, inst_cells, inst_ports, placed_ports):
@@ -59,21 +59,27 @@ def connect_instance(top, spec, inst_cells, inst_ports, placed_ports):
 
 def apply_routes(cfg, top, placed_ports, layers):
     for r in cfg.get("routes", []):
-        def resolve(key):
-            inst, port = r[key].split(".")
-            return placed_ports[inst][port]
-
         if "straight" in r:
-            A, B = resolve("straight.from"), resolve("straight.to")
+            f_inst, f_port = r["straight"]["from"].split(".")
+            t_inst, t_port = r["straight"]["to"].split(".")
+            A = placed_ports[f_inst][f_port]
+            B = placed_ports[t_inst][t_port]
             route_straight(top, A, B, layer=layers["WG"])
         elif "manhattan" in r:
-            A, B = resolve("manhattan.from"), resolve("manhattan.to")
-            R = float(r["manhattan"]["r"])
-            route_manhattan(top, A, B, R, layer=layers["WG"])
+            f_inst, f_port = r["manhattan"]["from"].split(".")
+            t_inst, t_port = r["manhattan"]["to"].split(".")
+            radius = float(r["manhattan"]["r"])
+            A = placed_ports[f_inst][f_port]
+            B = placed_ports[t_inst][t_port]
+            route_manhattan(top, A, B, radius, layer=layers["WG"])
         elif "euler" in r:
-            A, B = resolve("euler.from"), resolve("euler.to")
+            f_inst, f_port = r["euler"]["from"].split(".")
+            t_inst, t_port = r["euler"]["to"].split(".")
             Rmin = float(r["euler"]["Rmin"])
+            A = placed_ports[f_inst][f_port]
+            B = placed_ports[t_inst][t_port]
             route_euler_bend(top, A, B, Rmin, layer=layers["WG"])
+
 
 
 
@@ -152,57 +158,12 @@ def main(profile="designs/profiles/demo_small.yaml"):
         cfg["placement"] = []
     for step in cfg.get("placement", []):
         if "place" in step:
-            spec = step["place"]
-            n = spec["inst"]
-            alias = spec.get("as", None)  # optional alias for place
-            at = spec.get("at", [0, 0])
-            rot = math.radians(float(spec.get("rot", 0.0)))
-            ref = gdstk.Reference(inst_cells[n], origin=(at[0], at[1]), rotation=rot)
-            top.add(ref)
-
-            ports_world = transform_ports(inst_ports[n], origin=(at[0], at[1]), rotation=rot)
-            placed_ports[alias or n] = ports_world
+            place_instance(top, step["place"], inst_cells, inst_ports, placed_ports)
         elif "connect" in step:
-            spec = step["connect"]
-            n = spec["inst"]; p = spec["port"]
-            alias = spec.get("as", None)  # <-- new
-            t_name, t_port = spec["to"].split(".")
-
-            if t_name not in placed_ports:
-                refT = gdstk.Reference(inst_cells[t_name], origin=(0, 0), rotation=0.0)
-                top.add(refT)
-                placed_ports[t_name] = transform_ports(inst_ports[t_name], origin=(0, 0), rotation=0.0)
-
-            ref = place_by_ports(top, inst_cells[n], inst_ports[n][p], placed_ports[t_name][t_port])
-            rot = float(ref.rotation or 0.0); ox, oy = ref.origin
-            placed_dict = transform_ports(inst_ports[n], origin=(ox, oy), rotation=rot)
-
-            key = alias or n  # if alias provided, store under alias; else overwrite n
-            placed_ports[key] = placed_dict
-
-
+            connect_instance(top, step["connect"], inst_cells, inst_ports, placed_ports)
     if cfg.get("routes") is None:
         cfg["routes"] = []
-    for r in cfg.get("routes", []):
-        if "straight" in r:
-            f_inst, f_port = r["straight"]["from"].split(".")
-            t_inst, t_port = r["straight"]["to"].split(".")
-            A = placed_ports[f_inst][f_port]; B = placed_ports[t_inst][t_port]
-            route_straight(top, A, B, layer=layers["WG"])
-        elif "manhattan" in r:
-            f_inst, f_port = r["manhattan"]["from"].split(".")
-            t_inst, t_port = r["manhattan"]["to"].split(".")
-            radius = float(r["manhattan"]["r"])
-            A = placed_ports[f_inst][f_port]; B = placed_ports[t_inst][t_port]
-            route_manhattan(top, A, B, radius, layer=layers["WG"])
-        elif "euler" in r:
-            f_inst, f_port = r["euler"]["from"].split(".")
-            t_inst, t_port = r["euler"]["to"].split(".")
-            Rmin = float(r["euler"]["Rmin"])
-            A = placed_ports[f_inst][f_port]
-            B = placed_ports[t_inst][t_port]
-            route_euler_bend(top, A, B, Rmin, layer=layers["WG"])
-
+    apply_routes(cfg, top, placed_ports, layers)
 
     lib.write_gds(out_path)
     print(f"Wrote {out_path}")
