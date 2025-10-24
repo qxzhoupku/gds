@@ -1,0 +1,39 @@
+# designs/profiles/chip_01.yaml
+extends: designs/base.yaml
+
+instances:
+  X_1800:
+    type: WX
+    params: { WM: 3.6, LM: 28.4, LT: 3.0, w_in: 1.8 }
+
+  T_E:
+    type: TAPER
+    params: { w0: 0.5, w1: 3.0, L: 30.0 }
+
+  ARC1:
+    type: ARC
+    params: { radius: 100.0, width: 1.8, angle_deg: 90.0 }
+
+placement:
+  - place: { inst: X_1800, at: [0, 0], as: X_1800_1 }
+  - place: { inst: X_1800, at: [200, 0], as: X_1800_2 }
+  - place: { inst: X_1800, at: [0, 200], as: X_1800_3 }
+  - place: { inst: X_1800, at: [200, 200], as: X_1800_4 }
+  - connect: { inst: ARC1, port: W, to: X_1800_1.S, as: ARC1_1 }
+  - connect: { inst: ARC1, port: E, to: X_1800_2.S, as: ARC1_2 }
+  - connect: { inst: ARC1, port: E, to: X_1800_3.N, as: ARC1_3 }
+  - connect: { inst: ARC1, port: W, to: X_1800_4.N, as: ARC1_4 }
+  - connect: { inst: ARC1, port: E, to: X_1800_1.W, as: ARC1_5 }
+  - connect: { inst: ARC1, port: W, to: X_1800_2.E, as: ARC1_6 }
+  - connect: { inst: ARC1, port: W, to: X_1800_3.W, as: ARC1_7 }
+  - connect: { inst: ARC1, port: E, to: X_1800_4.E, as: ARC1_8 }
+
+routes:
+  - straight: { from: X_1800_1.E, to: X_1800_2.W }
+  - straight: { from: X_1800_1.N, to: X_1800_3.S }
+  - straight: { from: X_1800_2.N, to: X_1800_4.S }
+  - straight: { from: ARC1_1.E, to: ARC1_2.W }
+  - straight: { from: X_1800_3.E, to: X_1800_4.W }
+  - straight: { from: ARC1_7.E, to: ARC1_5.W }
+  - straight: { from: ARC1_6.E, to: ARC1_8.W }
+  - straight: { from: ARC1_3.W, to: ARC1_4.E }

@@ -53,6 +53,7 @@ def main(profile="designs/profiles/demo_small.yaml"):
     cfg = resolve_design(profile)
     layers = cfg.get("defaults", {}).get("layers", {"WG": 1, "PORT": 99, "TEXT": 100})
     out_path = cfg.get("chip", {}).get("out", "out/chip_demo.gds")
+
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
     requested_top_name = cfg.get("chip", {}).get("name", "TOP")
@@ -71,6 +72,17 @@ def main(profile="designs/profiles/demo_small.yaml"):
             if cand not in used_names:
                 used_names.add(cand); return cand
             i += 1
+
+    die_size = cfg.get("chip", {}).get("die", {}).get("size_um", None)
+    die_margin = cfg.get("chip", {}).get("die", {}).get("margin_um", 0)
+    if die_size is not None:
+        w, h = die_size
+        rect = gdstk.rectangle(
+            ( -die_margin,       -die_margin),
+            ( w + die_margin,  h + die_margin),
+            layer=layers.get("DIE", 10)
+        )
+        top.add(rect)
 
     inst_cells, inst_ports = {}, {}
     for inst_name, node in cfg.get("instances", {}).items():

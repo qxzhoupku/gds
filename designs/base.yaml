@@ -6,3 +6,4 @@ defaults:
 chip:
   name: CHIP_1
   out: out/chip_1.gds
+  # die: { size_um: [6000, 6000], margin_um: 100 }
