@@ -92,7 +92,7 @@ def main(profile="designs/profiles/demo_small.yaml"):
             n = spec["inst"]
             alias = spec.get("as", None)  # optional alias for place
             at = spec.get("at", [0, 0])
-            rot = float(spec.get("rot", 0.0)) / 180.0 * math.pi
+            rot = math.radians(float(spec.get("rot", 0.0)))
             ref = gdstk.Reference(inst_cells[n], origin=(at[0], at[1]), rotation=rot)
             top.add(ref)
 

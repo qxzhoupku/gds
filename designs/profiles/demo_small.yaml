@@ -22,13 +22,24 @@ instances:
     type: RACETRACK
     params: { R: 20.0, L_straight: 40.0, gap: 0.2, w_ring: 0.5, w_bus: 0.5 }
 
+  ARC1:
+    type: ARC
+    params: { radius: 25.0, width: 0.5, angle_deg: 90.0 }
+
 placement:
   - place: { inst: X1, at: [0, 0], rot: 0, as: X1_1 }
   # - connect: { inst: T_E, port: W, to: X1.N, as: T_E_1 }
   - place: { inst: RING1, at: [120, -50], rot: 20 }
   # - place: { inst: RING2, at: [150, 120], rot: 0 }
-  - place: { inst: RT1, at: [-100, -100], rot: 90 }
+  - place: { inst: RT1, at: [-100, -100], rot: 0 }
+  # - place: { inst: ARC1, at: [50, 100], rot: 0, as: ARC1_1 }
+  # - connect: { inst: ARC1, port: W, to: RING1.E }
+  # - connect: { inst: ARC1, port: W, to: X1_1.N }
+  # - connect: { inst: ARC1, port: W, to: X1_1.E }
+  - connect: { inst: ARC1, port: W, to: X1_1.S }
+  - connect: { inst: ARC1, port: E, to: X1_1.E }
+  # - place: { inst: ARC1, at: [0, 0], rot: 0, as: ARC1_2 }
 
 routes:
   # - straight: { from: X1.E, to: T_E.W }
-  - euler: { from: X1_1.S, to: RING1.W, Rmin: 10.0 }
+  # - euler: { from: X1_1.S, to: RING1.W, Rmin: 10.0 }
