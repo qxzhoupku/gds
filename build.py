@@ -80,6 +80,51 @@ def apply_routes(cfg, top, placed_ports, layers):
             B = placed_ports[t_inst][t_port]
             route_euler_bend(top, A, B, Rmin, layer=layers["WG"])
 
+def apply_macro_placement(top, macro, inst_cells, inst_ports, placed_ports, alias_prefix, base_offset, substitutions={}, individual_offsets={}):
+    substitutions = substitutions or {}
+    individual_offsets = individual_offsets or {}
+    for step in macro.get("placement", []):
+        if "place" in step:
+            spec = dict(step["place"])  # shallow copy
+            raw_inst = spec["inst"]
+            inst = substitutions.get(raw_inst, raw_inst)
+
+            inner_alias = spec.get("as", inst)
+            full_alias = f"{alias_prefix}.{inner_alias}" if alias_prefix else inner_alias
+
+            at = spec.get("at", [0, 0])
+            rot = float(spec.get("rot", 0.0))
+
+            offset = individual_offsets.get(inner_alias, [0, 0])
+            origin = [
+                at[0] + base_offset[0] + offset[0],
+                at[1] + base_offset[1] + offset[1]
+            ]
+
+            ref = gdstk.Reference(inst_cells[inst], origin=origin, rotation=math.radians(rot))
+            top.add(ref)
+
+            ports = transform_ports(inst_ports[inst], origin=origin, rotation=math.radians(rot))
+            placed_ports[full_alias] = ports
+
+def apply_macro_routes(top, macro, placed_ports, layers, alias_prefix):
+    for r in macro.get("routes", []):
+        def resolve(port_ref):
+            inst, port = port_ref.split(".")
+            full_inst = f"{alias_prefix}.{inst}" if alias_prefix else inst
+            return placed_ports[full_inst][port]
+
+        if "straight" in r:
+            A, B = resolve(r["straight"]["from"]), resolve(r["straight"]["to"])
+            route_straight(top, A, B, layer=layers["WG"])
+        elif "manhattan" in r:
+            A, B = resolve(r["manhattan"]["from"]), resolve(r["manhattan"]["to"])
+            radius = float(r["manhattan"]["r"])
+            route_manhattan(top, A, B, radius, layer=layers["WG"])
+        elif "euler" in r:
+            A, B = resolve(r["euler"]["from"]), resolve(r["euler"]["to"])
+            Rmin = float(r["euler"]["Rmin"])
+            route_euler_bend(top, A, B, Rmin, layer=layers["WG"])
 
 
 
@@ -164,6 +209,18 @@ def main(profile="designs/profiles/demo_small.yaml"):
     if cfg.get("routes") is None:
         cfg["routes"] = []
     apply_routes(cfg, top, placed_ports, layers)
+
+    macro_defs = {m["name"]: m for m in cfg.get("macros", [])}
+
+    for block in cfg.get("blocks", []):
+        macro = macro_defs[block["use"]]
+        alias = block.get("as")
+        offset = block.get("at", [0, 0])
+        substitutions = block.get("substitutions", {})
+        individual_offsets = block.get("offsets", {})
+        apply_macro_placement(top, macro, inst_cells, inst_ports, placed_ports, alias, offset, substitutions, individual_offsets)
+        apply_macro_routes(top, macro, placed_ports, layers, alias)
+
 
     lib.write_gds(out_path)
     print(f"Wrote {out_path}")
