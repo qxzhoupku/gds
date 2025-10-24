@@ -10,6 +10,7 @@ from src.cells.wx import PCellWx
 from src.cells.taper import PCellTaper
 from src.cells.ring import PCellRingCoupler
 from src.cells.racetrack import PCellRacetrack
+from src.cells.any_arc import PCellAnyArc
 
 def load_yaml(path: str):
     with open(path, "r", encoding="utf-8") as f:
@@ -42,6 +43,9 @@ REGISTRY = {
     ),
     "RACETRACK": lambda p, L: PCellRacetrack(
         p.get("R", 50.0), p.get("L_straight", 30.0), p.get("gap", 0.2), p.get("w_ring", 0.5), p.get("w_bus", 0.5), p.get("L_bus", None), L, name=p.get("name", "RT")
+    ),
+    "ARC": lambda p, L: PCellAnyArc(
+        p.get("radius", 10.0), p.get("width", 0.5), p.get("angle_deg", 90.0), L.get("WG", 1), name=p.get("name", "ARC")
     ),
 }
 
