@@ -4,5 +4,5 @@ defaults:
   grid_um: 0.001
 
 chip:
-  name: DEMO_CHIP_1
-  out: out/chip_demo.gds
+  name: CHIP_1
+  out: out/chip_1.gds

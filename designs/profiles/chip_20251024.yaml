@@ -1,0 +1,22 @@
+# designs/profiles/chip_20251024.yaml
+extends: designs/base.yaml
+
+instances:
+  X_1800:
+    type: WX
+    params: { WM: 1.6, LM: 8.0, LT: 10.0, w_in: 1.8 }
+
+  T_E:
+    type: TAPER
+    params: { w0: 0.5, w1: 3.0, L: 30.0 }
+
+  ARC1:
+    type: ARC
+    params: { radius: 25.0, width: 0.5, angle_deg: 90.0 }
+
+placement:
+  - place: { inst: X_1800, at: [0, 50], rot: 0, as: X_1800_1 }
+  - place: { inst: X_1800, at: [50, -50], rot: 0, as: X_1800_2 }
+
+routes:
+
