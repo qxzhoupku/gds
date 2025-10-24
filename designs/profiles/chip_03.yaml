@@ -33,6 +33,14 @@ instances:
   Cornor:
     type: ARC
     params: { radius: 100.0, width: 1.0, angle_deg: 90.0 }
+  
+  Cornor_1800:
+    type: ARC
+    params: { radius: 100.0, width: 1.8, angle_deg: 90.0 }
+  
+  Taper_01:
+    type: TAPER
+    params: { w0: 1.0, w1: 1.8, L: 300.0 }
 
 # placement:
 #   - place: { inst: SemiArc02, at: [0, 1260], rot: 90, as: SemiArc02_1 }
@@ -103,6 +111,145 @@ macros:
       - straight: { from: Cornor_3.W, to: Cornor_4.W }
       - straight: { from: Cornor_4.E, to: T_E_4.E }
 
+  - name: TWO_CROSS_RT
+    placement:
+      - place: { inst: SemiArc01, at: [0, 0], rot: 90, as: SemiArc01_1 }
+      - place: { inst: SemiArc01, at: [440, 0], rot: -90, as: SemiArc01_2 }
+      - place: { inst: SemiArc01, at: [220, -40], rot: 0, as: SemiArc01_3 }
+      - place: { inst: SemiArc01, at: [220, -480], rot: 180, as: SemiArc01_4 }
+      - place: { inst: __CROSS_CELL__, at: [120, -100], as: X_3 }
+      - place: { inst: __CROSS_CELL__, at: [320, -100], as: X_4 }
+      - place: { inst: T_E, at: [-1000, 100], rot: 0, as: T_E_1 }
+      - place: { inst: T_E, at: [ 5000, -581.9], rot: 180, as: T_E_2 }
+      - place: { inst: T_E, at: [-1000, 150], rot: 0, as: T_E_3 }
+      - place: { inst: T_E, at: [ 5000, -531.9], rot: 180, as: T_E_4 }
+      - place: { inst: Cornor, at: [-50, -481.9], rot: 180, as: Cornor_1 }
+      - place: { inst: Cornor, at: [-250, 0], rot: 0, as: Cornor_2 }
+      - place: { inst: Cornor, at: [441.9, 50], rot: 0, as: Cornor_3 }
+      - place: { inst: Cornor, at: [641.9, -431.9], rot: 180, as: Cornor_4 }
+    routes:
+      - straight: { from: SemiArc01_1.E, to: X_3.W }
+      - straight: { from: SemiArc01_2.W, to: X_4.E }
+      - straight: { from: SemiArc01_4.W, to: X_3.S }
+      - straight: { from: SemiArc01_4.E, to: X_4.S }
+      - straight: { from: X_3.E, to: X_4.W }
+      - straight: { from: Cornor_1.E, to: T_E_2.E }
+      - straight: { from: Cornor_1.W, to: Cornor_2.W }
+      - straight: { from: Cornor_2.E, to: T_E_1.E }
+      - straight: { from: Cornor_3.E, to: T_E_3.E }
+      - straight: { from: Cornor_3.W, to: Cornor_4.W }
+      - straight: { from: Cornor_4.E, to: T_E_4.E }
+      - straight: { from: SemiArc01_3.E, to: X_3.N }
+      - straight: { from: SemiArc01_3.W, to: X_4.N }
+      - straight: { from: SemiArc01_1.W, to: SemiArc01_2.E }
+
+  - name: WX_CHAIN
+    placement:
+      - place: { inst: T_E, at: [-1000, 0], rot: 0, as: T_E_1 }
+      - place: { inst: Taper_01, at: [-680, 0], rot: 0, as: Taper_01_1 }
+      - place: { inst: __CROSS_CELL__, at: [0, 0], as: X_1 }
+      - place: { inst: __CROSS_CELL__, at: [80, 0], as: X_2 }
+      - place: { inst: __CROSS_CELL__, at: [160, 0], as: X_3 }
+      - place: { inst: __CROSS_CELL__, at: [240, 0], as: X_4 }
+      - place: { inst: __CROSS_CELL__, at: [320, 0], as: X_5 }
+      - place: { inst: __CROSS_CELL__, at: [400, 0], as: X_6 }
+      - place: { inst: __CROSS_CELL__, at: [480, 0], as: X_7 }
+      - place: { inst: __CROSS_CELL__, at: [560, 0], as: X_8 }
+      - place: { inst: __CROSS_CELL__, at: [640, 0], as: X_9 }
+      - place: { inst: __CROSS_CELL__, at: [720, 0], as: X_10 }
+      - place: { inst: __CROSS_CELL__, at: [800, 0], as: X_11 }
+      - place: { inst: __CROSS_CELL__, at: [880, 0], as: X_12 }
+      - place: { inst: __CROSS_CELL__, at: [960, 0], as: X_13 }
+      - place: { inst: __CROSS_CELL__, at: [1040, 0], as: X_14 }
+      - place: { inst: __CROSS_CELL__, at: [1120, 0], as: X_15 }
+      - place: { inst: __CROSS_CELL__, at: [1200, 0], as: X_16 }
+      - place: { inst: __CROSS_CELL__, at: [1280, 0], as: X_17 }
+      - place: { inst: __CROSS_CELL__, at: [1360, 0], as: X_18 }
+      - place: { inst: __CROSS_CELL__, at: [1440, 0], as: X_19 }
+      - place: { inst: __CROSS_CELL__, at: [1520, 0], as: X_20 }
+      - place: { inst: __CROSS_CELL__, at: [1600, 0], as: X_21 }
+      - place: { inst: __CROSS_CELL__, at: [1680, 0], as: X_22 }
+      - place: { inst: __CROSS_CELL__, at: [1760, 0], as: X_23 }
+      - place: { inst: __CROSS_CELL__, at: [1840, 0], as: X_24 }
+      - place: { inst: __CROSS_CELL__, at: [1920, 0], as: X_25 }
+      - place: { inst: __CROSS_CELL__, at: [2000, 0], as: X_26 }
+      - place: { inst: __CROSS_CELL__, at: [2080, 0], as: X_27 }
+      - place: { inst: __CROSS_CELL__, at: [2160, 0], as: X_28 }
+      - place: { inst: __CROSS_CELL__, at: [2240, 0], as: X_29 }
+      - place: { inst: __CROSS_CELL__, at: [2320, 0], as: X_30 }
+      - place: { inst: __CROSS_CELL__, at: [2400, 0], as: X_31 }
+      - place: { inst: __CROSS_CELL__, at: [2480, 0], as: X_32 }
+      - place: { inst: __CROSS_CELL__, at: [2560, 0], as: X_33 }
+      - place: { inst: __CROSS_CELL__, at: [2640, 0], as: X_34 }
+      - place: { inst: __CROSS_CELL__, at: [2720, 0], as: X_35 }
+      - place: { inst: __CROSS_CELL__, at: [2800, 0], as: X_36 }
+      - place: { inst: __CROSS_CELL__, at: [2880, 0], as: X_37 }
+      - place: { inst: __CROSS_CELL__, at: [2960, 0], as: X_38 }
+      - place: { inst: __CROSS_CELL__, at: [3040, 0], as: X_39 }
+      - place: { inst: __CROSS_CELL__, at: [3120, 0], as: X_40 }
+      - place: { inst: Taper_01, at: [ 4680, 0], rot: 180, as: Taper_01_2 }
+      - place: { inst: T_E, at: [ 5000, 0], rot: 180, as: T_E_2 }
+      - place: { inst: Cornor_1800, at: [100, 90], rot: 90, as: Cornor_1 }
+      - place: { inst: Cornor_1800, at: [100, -90], rot: 180, as: Cornor_2 }
+      - place: { inst: T_E, at: [5000, 190], rot: 180, as: T_E_3 }
+      - place: { inst: T_E, at: [5000, -190], rot: 180, as: T_E_4 }
+      - place: { inst: Taper_01, at: [4680, 190], rot: 180, as: Taper_01_3 }
+      - place: { inst: Taper_01, at: [4680, -190], rot: 180, as: Taper_01_4 }
+
+    routes:
+      - straight: { from: T_E_1.E, to: Taper_01_1.W }
+      - straight: { from: Taper_01_1.E, to: X_1.W }
+      - straight: { from: X_1.E, to: X_2.W }
+      - straight: { from: X_2.E, to: X_3.W }
+      - straight: { from: X_3.E, to: X_4.W }
+      - straight: { from: X_4.E, to: X_5.W }
+      - straight: { from: X_5.E, to: X_6.W }
+      - straight: { from: X_6.E, to: X_7.W }
+      - straight: { from: X_7.E, to: X_8.W }
+      - straight: { from: X_8.E, to: X_9.W }
+      - straight: { from: X_9.E, to: X_10.W }
+      - straight: { from: X_10.E, to: X_11.W }
+      - straight: { from: X_11.E, to: X_12.W }
+      - straight: { from: X_12.E, to: X_13.W }
+      - straight: { from: X_13.E, to: X_14.W }
+      - straight: { from: X_14.E, to: X_15.W }
+      - straight: { from: X_15.E, to: X_16.W }
+      - straight: { from: X_16.E, to: X_17.W }
+      - straight: { from: X_17.E, to: X_18.W }
+      - straight: { from: X_18.E, to: X_19.W }
+      - straight: { from: X_19.E, to: X_20.W }
+      - straight: { from: X_20.E, to: X_21.W }
+      - straight: { from: X_21.E, to: X_22.W }
+      - straight: { from: X_22.E, to: X_23.W }
+      - straight: { from: X_23.E, to: X_24.W }
+      - straight: { from: X_24.E, to: X_25.W }
+      - straight: { from: X_25.E, to: X_26.W }
+      - straight: { from: X_26.E, to: X_27.W }
+      - straight: { from: X_27.E, to: X_28.W }
+      - straight: { from: X_28.E, to: X_29.W }
+      - straight: { from: X_29.E, to: X_30.W }
+      - straight: { from: X_30.E, to: X_31.W }
+      - straight: { from: X_31.E, to: X_32.W }
+      - straight: { from: X_32.E, to: X_33.W }
+      - straight: { from: X_33.E, to: X_34.W }
+      - straight: { from: X_34.E, to: X_35.W }
+      - straight: { from: X_35.E, to: X_36.W }
+      - straight: { from: X_36.E, to: X_37.W }
+      - straight: { from: X_37.E, to: X_38.W }
+      - straight: { from: X_38.E, to: X_39.W }
+      - straight: { from: X_39.E, to: X_40.W }
+      - straight: { from: X_40.E, to: Taper_01_2.E }
+      - straight: { from: Taper_01_2.W, to: T_E_2.E }
+      - straight: { from: X_1.N, to: Cornor_1.E}
+      - straight: { from: X_1.S, to: Cornor_2.W}
+      - straight: { from: Cornor_1.W, to: Taper_01_3.E}
+      - straight: { from: Cornor_2.E, to: Taper_01_4.E}
+      - straight: { from: Taper_01_3.W, to: T_E_3.E }
+      - straight: { from: Taper_01_4.W, to: T_E_4.E }
+
+
+
+
 blocks:
   - use: FOUR_CROSS_RT
     as: BLOCK_1
@@ -137,4 +284,86 @@ blocks:
       T_E_3: [-1700, 0]
       T_E_4: [-1700, 0]
   
+  - use: FOUR_CROSS_RT
+    as: BLOCK_4
+    at: [2550, 450]
+    substitutions:
+      __CROSS_CELL__: X_1800_02
+    offsets:
+      T_E_1: [-2550, 0]
+      T_E_2: [-2550, 0]
+      T_E_3: [-2550, 0]
+      T_E_4: [-2550, 0]
 
+  - use: FOUR_CROSS_RT
+    as: BLOCK_5
+    at: [3400, 600]
+    substitutions:
+      __CROSS_CELL__: X_1800_01
+    offsets:
+      T_E_1: [-3400, 0]
+      T_E_2: [-3400, 0]
+      T_E_3: [-3400, 0]
+      T_E_4: [-3400, 0]
+  
+  - use: TWO_CROSS_RT
+    as: BLOCK_6
+    at: [0, 1700]
+    substitutions:
+      __CROSS_CELL__: X_1800_02
+    offsets:
+      T_E_1: [0, 0]
+      T_E_2: [0, 0]
+      T_E_3: [0, 0]
+      T_E_4: [0, 0]
+  
+  - use: TWO_CROSS_RT
+    as: BLOCK_7
+    at: [850, 1850]
+    substitutions:
+      __CROSS_CELL__: X_1800_01
+    offsets:
+      T_E_1: [-850, 0]
+      T_E_2: [-850, 0]
+      T_E_3: [-850, 0]
+      T_E_4: [-850, 0]
+  
+  - use: TWO_CROSS_RT
+    as: BLOCK_8
+    at: [1700, 2000]
+    substitutions:
+      __CROSS_CELL__: X_1800_02
+    offsets:
+      T_E_1: [-1700, 0]
+      T_E_2: [-1700, 0]
+      T_E_3: [-1700, 0]
+      T_E_4: [-1700, 0]
+  
+  - use: TWO_CROSS_RT
+    as: BLOCK_9
+    at: [2550, 2150]
+    substitutions:
+      __CROSS_CELL__: X_1800_01
+    offsets:
+      T_E_1: [-2550, 0]
+      T_E_2: [-2550, 0]
+      T_E_3: [-2550, 0]
+      T_E_4: [-2550, 0]
+  
+  - use: TWO_CROSS_RT
+    as: BLOCK_10
+    at: [3400, 2300]
+    substitutions:
+      __CROSS_CELL__: X_1800_02
+    offsets:
+      T_E_1: [-3400, 0]
+      T_E_2: [-3400, 0]
+      T_E_3: [-3400, 0]
+      T_E_4: [-3400, 0]
+  
+  - use: WX_CHAIN
+    as: CHAIN_1
+    at: [0, 2800]
+    substitutions:
+      __CROSS_CELL__: X_1800_01
+    # offsets:
