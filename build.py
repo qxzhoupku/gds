@@ -75,6 +75,7 @@ def main(profile="designs/profiles/demo_small.yaml"):
 
     die_size = cfg.get("chip", {}).get("die", {}).get("size_um", None)
     die_margin = cfg.get("chip", {}).get("die", {}).get("margin_um", 0)
+    die_disp = cfg.get("chip", {}).get("die", {}).get("at", [0, 0])
     if die_size is not None:
         w, h = die_size
         rect = gdstk.rectangle(
@@ -82,6 +83,8 @@ def main(profile="designs/profiles/demo_small.yaml"):
             ( w + die_margin,  h + die_margin),
             layer=layers.get("DIE", 10)
         )
+        # offset by die_disp
+        rect.translate(die_disp[0], die_disp[1])
         top.add(rect)
 
     inst_cells, inst_ports = {}, {}
