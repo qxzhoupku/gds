@@ -31,6 +31,52 @@ def resolve_design(profile_path: str) -> dict:
         cfg = deep_update(base, {k: v for k, v in cfg.items() if k != "extends"})
     return cfg
 
+def place_instance(top, spec, inst_cells, inst_ports, placed_ports):
+    n = spec["inst"]
+    alias = spec.get("as", n)
+    at = spec.get("at", [0, 0])
+    rot = float(spec.get("rot", 0.0))
+    ref = gdstk.Reference(inst_cells[n], origin=(at[0], at[1]), rotation=math.radians(rot))
+    top.add(ref)
+    ports = transform_ports(inst_ports[n], origin=(at[0], at[1]), rotation=rot)
+    placed_ports[alias] = ports
+
+def connect_instance(top, spec, inst_cells, inst_ports, placed_ports):
+    inst = spec["inst"]
+    port = spec["port"]
+    alias = spec.get("as", inst)
+    target_inst, target_port = spec["to"].split(".")
+
+    if target_inst not in placed_ports:
+        ref = gdstk.Reference(inst_cells[target_inst], origin=(0, 0), rotation=0.0)
+        top.add(ref)
+        placed_ports[target_inst] = transform_ports(inst_ports[target_inst], origin=(0, 0), rotation=0.0)
+
+    ref = place_by_ports(top, inst_cells[inst], inst_ports[inst][port], placed_ports[target_inst][target_port])
+    rot = float(ref.rotation or 0.0)
+    ox, oy = ref.origin
+    placed_ports[alias] = transform_ports(inst_ports[inst], origin=(ox, oy), rotation=rot)
+
+def apply_routes(cfg, top, placed_ports, layers):
+    for r in cfg.get("routes", []):
+        def resolve(key):
+            inst, port = r[key].split(".")
+            return placed_ports[inst][port]
+
+        if "straight" in r:
+            A, B = resolve("straight.from"), resolve("straight.to")
+            route_straight(top, A, B, layer=layers["WG"])
+        elif "manhattan" in r:
+            A, B = resolve("manhattan.from"), resolve("manhattan.to")
+            R = float(r["manhattan"]["r"])
+            route_manhattan(top, A, B, R, layer=layers["WG"])
+        elif "euler" in r:
+            A, B = resolve("euler.from"), resolve("euler.to")
+            Rmin = float(r["euler"]["Rmin"])
+            route_euler_bend(top, A, B, Rmin, layer=layers["WG"])
+
+
+
 REGISTRY = {
     "WX": lambda p, L: PCellWx(
         p.get("WM", 1.6), p.get("LM", 8.0), p.get("LT", 10.0), p.get("w_in", 0.5), L, name=p.get("name", "WX")
@@ -48,6 +94,9 @@ REGISTRY = {
         p.get("radius", 10.0), p.get("width", 0.5), p.get("angle_deg", 90.0), L.get("WG", 1), name=p.get("name", "ARC")
     ),
 }
+
+
+
 
 def main(profile="designs/profiles/demo_small.yaml"):
     cfg = resolve_design(profile)

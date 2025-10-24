@@ -1,0 +1,103 @@
+# designs/profiles/chip_02.yaml
+extends: designs/base.yaml
+
+chip:
+  out: out/chip_03.gds
+  die: { size_um: [6000, 6000], margin_um: 0, at: [-1000, -600] }
+
+instances:
+  X_1800:
+    type: WX
+    params: { WM: 3.6, LM: 28.4, LT: 3.0, w_in: 1.8 }
+
+  T_E:
+    type: TAPER
+    params: { w0: 0.15, w1: 1.0, L: 300.0 }
+
+  SemiArc01:
+    type: ARC
+    params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
+  
+  SemiArc02:
+    type: ARC
+    params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
+
+  SemiArc03:
+    type: ARC
+    params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
+  
+  Cornor:
+    type: ARC
+    params: { radius: 100.0, width: 1.0, angle_deg: 90.0 }
+
+# placement:
+#   - place: { inst: SemiArc02, at: [0, 1260], rot: 90, as: SemiArc02_1 }
+#   - place: { inst: SemiArc02, at: [440, 1260], rot: -90, as: SemiArc02_2 }
+#   - place: { inst: SemiArc02, at: [220, 1220], rot: 0, as: SemiArc02_3 }
+#   - place: { inst: SemiArc02, at: [220, 780], rot: 180, as: SemiArc02_4 }
+#   - place: { inst: X_1800, at: [120, 1160], as: X_1800_5 }
+#   - place: { inst: X_1800, at: [320, 1160], as: X_1800_6 }
+
+#   - place: { inst: SemiArc03, at: [220, 2400], as: SemiArc03_3 }
+#   - place: { inst: SemiArc03, at: [220, 1960], rot: 180, as: SemiArc03_4 }
+
+#   - place: { inst: T_E, at: [-1000, 320], rot: 0, as: T_E_1 }
+#   - place: { inst: T_E, at: [ 5000, -321.9], rot: 180, as: T_E_2 }
+#   - place: { inst: T_E, at: [-1000, 370], rot: 0, as: T_E_3 }
+#   - place: { inst: T_E, at: [ 5000, -271.9], rot: 180, as: T_E_4 }
+
+#   - place: { inst: Cornor, at: [-50, -221.9], rot: 180, as: Cornor_1 }
+#   - place: { inst: Cornor, at: [-250, 220], rot: 0, as: Cornor_2 }
+#   - place: { inst: Cornor, at: [441.9, 270], rot: 0, as: Cornor_3 }
+#   - place: { inst: Cornor, at: [641.9, -171.9], rot: 180, as: Cornor_4 }
+
+# routes:
+#   - straight: { from: SemiArc02_1.E, to: X_1800_5.W }
+#   - straight: { from: SemiArc02_1.W, to: SemiArc02_2.E }
+#   - straight: { from: SemiArc02_2.W, to: X_1800_6.E }
+#   - straight: { from: SemiArc02_3.E, to: X_1800_5.N }
+#   - straight: { from: SemiArc02_3.W, to: X_1800_6.N }
+#   - straight: { from: SemiArc02_4.W, to: X_1800_5.S }
+#   - straight: { from: SemiArc02_4.E, to: X_1800_6.S }
+#   - straight: { from: X_1800_5.E, to: X_1800_6.W }
+
+#   - straight: { from: SemiArc03_3.E, to: SemiArc03_4.W }
+#   - straight: { from: SemiArc03_4.E, to: SemiArc03_3.W }
+
+#   - straight: { from: Cornor_1.E, to: T_E_2.E }
+#   - straight: { from: Cornor_1.W, to: Cornor_2.W }
+#   - straight: { from: Cornor_2.E, to: T_E_1.E }
+#   - straight: { from: Cornor_3.E, to: T_E_3.E }
+#   - straight: { from: Cornor_3.W, to: Cornor_4.W }
+#   - straight: { from: Cornor_4.E, to: T_E_4.E }
+
+macros:
+  - name: FOUR_CROSS_RT
+    placement:
+      - place: { inst: SemiArc01, at: [0, 0], rot: 90, as: SemiArc01_1 }
+      - place: { inst: SemiArc01, at: [440, 0], rot: -90, as: SemiArc01_2 }
+      - place: { inst: SemiArc01, at: [220, 220], rot: 0, as: SemiArc01_3 }
+      - place: { inst: SemiArc01, at: [220, -220], rot: 180, as: SemiArc01_4 }
+      - place: { inst: X_1800, at: [120, 100], as: X_1800_1 }
+      - place: { inst: X_1800, at: [320, 100], as: X_1800_2 }
+      - place: { inst: X_1800, at: [120, -100], as: X_1800_3 }
+      - place: { inst: X_1800, at: [320, -100], as: X_1800_4 }
+    routes:
+      - straight: { from: SemiArc01_1.W, to: X_1800_1.W }
+      - straight: { from: SemiArc01_1.E, to: X_1800_3.W }
+      - straight: { from: SemiArc01_2.W, to: X_1800_4.E }
+      - straight: { from: SemiArc01_2.E, to: X_1800_2.E }
+      - straight: { from: SemiArc01_3.E, to: X_1800_1.N }
+      - straight: { from: SemiArc01_3.W, to: X_1800_2.N }
+      - straight: { from: SemiArc01_4.W, to: X_1800_3.S }
+      - straight: { from: SemiArc01_4.E, to: X_1800_4.S }
+      - straight: { from: X_1800_1.E, to: X_1800_2.W }
+      - straight: { from: X_1800_3.E, to: X_1800_4.W }
+      - straight: { from: X_1800_1.S, to: X_1800_3.N }
+      - straight: { from: X_1800_2.S, to: X_1800_4.N }
+
+blocks:
+  - use: FOUR_CROSS_RT
+    as: BLOCK_1
+    at: [0, 0]
+
