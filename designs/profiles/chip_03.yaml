@@ -143,6 +143,7 @@ macros:
       - straight: { from: SemiArc01_3.W, to: X_4.N }
       - straight: { from: SemiArc01_1.W, to: SemiArc01_2.E }
 
+<<<<<<< HEAD
   - name: WX_CHAIN
     placement:
       - place: { inst: T_E, at: [-1000, 0], rot: 0, as: T_E_1 }
@@ -250,6 +251,8 @@ macros:
 
 
 
+=======
+>>>>>>> cb79d901278b107bed97aac562b3c7ef990da80d
 blocks:
   - use: FOUR_CROSS_RT
     as: BLOCK_1
@@ -359,6 +362,7 @@ blocks:
       T_E_1: [-3400, 0]
       T_E_2: [-3400, 0]
       T_E_3: [-3400, 0]
+<<<<<<< HEAD
       T_E_4: [-3400, 0]
   
   - use: WX_CHAIN
@@ -367,3 +371,6 @@ blocks:
     substitutions:
       __CROSS_CELL__: X_1800_01
     # offsets:
+=======
+      T_E_4: [-3400, 0]
+>>>>>>> cb79d901278b107bed97aac562b3c7ef990da80d
