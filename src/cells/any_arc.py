@@ -48,8 +48,8 @@ def PCellAnyArc(radius=10.0, width=0.5, angle_deg=90, layer=1, name="QUARTER_ARC
     end_y = radius * math.sin(theta)
 
     ports = {
-        "W": Port("W", x=radius, y=0, angle=0-math.pi/2, width=width, layer=layer),
-        "E": Port("E", x=end_x, y=end_y, angle=theta+math.pi/2, width=width, layer=layer)
+        "W": Port("W", x=radius, y=0, angle=-math.radians(90), width=width, layer=layer),
+        "E": Port("E", x=end_x, y=end_y, angle=theta+math.radians(90), width=width, layer=layer)
     }
 
     return cell, ports
