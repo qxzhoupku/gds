@@ -8,11 +8,25 @@ chip:
 instances:
   X_1800_01:
     type: WX
-    params: { WM: 3.6, LM: 28.4, LT: 3.0, w_in: 1.8 }
+    params: { WM: 3.6, LM: 28.0, LT: 3.0, w_in: 1.8 }
   
   X_1800_02:
     type: WX
-    params: { WM: 13.6, LM: 28.4, LT: 3.0, w_in: 1.8 }
+    params: { WM: 3.6, LM: 28.2, LT: 3.0, w_in: 1.8 }
+  
+  X_1800_03:
+    type: WX
+    params: { WM: 3.6, LM: 28.4, LT: 3.0, w_in: 1.8 }
+  
+  X_1800_04:
+    type: WX
+    params: { WM: 3.6, LM: 28.6, LT: 3.0, w_in: 1.8 }
+  
+  X_1800_05:
+    type: WX
+    params: { WM: 3.6, LM: 28.8, LT: 3.0, w_in: 1.8 }
+
+
 
   T_E:
     type: TAPER
@@ -41,34 +55,6 @@ instances:
   Taper_01:
     type: TAPER
     params: { w0: 1.0, w1: 1.8, L: 300.0 }
-
-# placement:
-#   - place: { inst: SemiArc02, at: [0, 1260], rot: 90, as: SemiArc02_1 }
-#   - place: { inst: SemiArc02, at: [440, 1260], rot: -90, as: SemiArc02_2 }
-#   - place: { inst: SemiArc02, at: [220, 1220], rot: 0, as: SemiArc02_3 }
-#   - place: { inst: SemiArc02, at: [220, 780], rot: 180, as: SemiArc02_4 }
-#   - place: { inst: __CROSS_CELL__, at: [120, 1160], as: X_1800_5 }
-#   - place: { inst: __CROSS_CELL__, at: [320, 1160], as: X_1800_6 }
-
-#   - place: { inst: SemiArc03, at: [220, 2400], as: SemiArc03_3 }
-#   - place: { inst: SemiArc03, at: [220, 1960], rot: 180, as: SemiArc03_4 }
-
-
-
-
-
-# routes:
-#   - straight: { from: SemiArc02_1.E, to: X_1800_5.W }
-#   - straight: { from: SemiArc02_1.W, to: SemiArc02_2.E }
-#   - straight: { from: SemiArc02_2.W, to: X_1800_6.E }
-#   - straight: { from: SemiArc02_3.E, to: X_1800_5.N }
-#   - straight: { from: SemiArc02_3.W, to: X_1800_6.N }
-#   - straight: { from: SemiArc02_4.W, to: X_1800_5.S }
-#   - straight: { from: SemiArc02_4.E, to: X_1800_6.S }
-#   - straight: { from: X_1800_5.E, to: X_1800_6.W }
-
-#   - straight: { from: SemiArc03_3.E, to: SemiArc03_4.W }
-#   - straight: { from: SemiArc03_4.E, to: SemiArc03_3.W }
 
 
 
@@ -189,12 +175,12 @@ macros:
       - place: { inst: __CROSS_CELL__, at: [3120, 0], as: X_40 }
       - place: { inst: Taper_01, at: [ 4680, 0], rot: 180, as: Taper_01_2 }
       - place: { inst: T_E, at: [ 5000, 0], rot: 180, as: T_E_2 }
-      - place: { inst: Cornor_1800, at: [100, 90], rot: 90, as: Cornor_1 }
-      - place: { inst: Cornor_1800, at: [100, -90], rot: 180, as: Cornor_2 }
-      - place: { inst: T_E, at: [5000, 190], rot: 180, as: T_E_3 }
-      - place: { inst: T_E, at: [5000, -190], rot: 180, as: T_E_4 }
-      - place: { inst: Taper_01, at: [4680, 190], rot: 180, as: Taper_01_3 }
-      - place: { inst: Taper_01, at: [4680, -190], rot: 180, as: Taper_01_4 }
+      - place: { inst: Cornor_1800, at: [100, 50], rot: 90, as: Cornor_1 }
+      - place: { inst: Cornor_1800, at: [100, -50], rot: 180, as: Cornor_2 }
+      - place: { inst: T_E, at: [5000, 150], rot: 180, as: T_E_3 }
+      - place: { inst: T_E, at: [5000, -150], rot: 180, as: T_E_4 }
+      - place: { inst: Taper_01, at: [4680, 150], rot: 180, as: Taper_01_3 }
+      - place: { inst: Taper_01, at: [4680, -150], rot: 180, as: Taper_01_4 }
 
     routes:
       - straight: { from: T_E_1.E, to: Taper_01_1.W }
@@ -247,6 +233,20 @@ macros:
       - straight: { from: Taper_01_3.W, to: T_E_3.E }
       - straight: { from: Taper_01_4.W, to: T_E_4.E }
 
+  - name: SINGLE_RT
+    placement:
+      - place: { inst: SemiArc01, at: [220, -40], rot: 0, as: SemiArc01_3 }
+      - place: { inst: SemiArc01, at: [220, -480], rot: 180, as: SemiArc01_4 }
+      - place: { inst: T_E, at: [-1000, 100], rot: 0, as: T_E_1 }
+      - place: { inst: T_E, at: [ 5000, -581.9], rot: 180, as: T_E_2 }
+      - place: { inst: Cornor, at: [-50, -481.9], rot: 180, as: Cornor_1 }
+      - place: { inst: Cornor, at: [-250, 0], rot: 0, as: Cornor_2 }
+    routes:
+      - straight: { from: Cornor_1.E, to: T_E_2.E }
+      - straight: { from: Cornor_1.W, to: Cornor_2.W }
+      - straight: { from: Cornor_2.E, to: T_E_1.E }
+      - straight: { from: SemiArc01_3.E, to: SemiArc01_4.W }
+      - straight: { from: SemiArc01_3.W, to: SemiArc01_4.E }
 
 
 
@@ -277,7 +277,7 @@ blocks:
     as: BLOCK_3
     at: [1700, 300]
     substitutions:
-      __CROSS_CELL__: X_1800_01
+      __CROSS_CELL__: X_1800_03
     offsets:
       T_E_1: [-1700, 0]
       T_E_2: [-1700, 0]
@@ -288,7 +288,7 @@ blocks:
     as: BLOCK_4
     at: [2550, 450]
     substitutions:
-      __CROSS_CELL__: X_1800_02
+      __CROSS_CELL__: X_1800_04
     offsets:
       T_E_1: [-2550, 0]
       T_E_2: [-2550, 0]
@@ -299,7 +299,7 @@ blocks:
     as: BLOCK_5
     at: [3400, 600]
     substitutions:
-      __CROSS_CELL__: X_1800_01
+      __CROSS_CELL__: X_1800_05
     offsets:
       T_E_1: [-3400, 0]
       T_E_2: [-3400, 0]
@@ -310,7 +310,7 @@ blocks:
     as: BLOCK_6
     at: [0, 1700]
     substitutions:
-      __CROSS_CELL__: X_1800_02
+      __CROSS_CELL__: X_1800_01
     offsets:
       T_E_1: [0, 0]
       T_E_2: [0, 0]
@@ -321,7 +321,7 @@ blocks:
     as: BLOCK_7
     at: [850, 1850]
     substitutions:
-      __CROSS_CELL__: X_1800_01
+      __CROSS_CELL__: X_1800_02
     offsets:
       T_E_1: [-850, 0]
       T_E_2: [-850, 0]
@@ -332,7 +332,7 @@ blocks:
     as: BLOCK_8
     at: [1700, 2000]
     substitutions:
-      __CROSS_CELL__: X_1800_02
+      __CROSS_CELL__: X_1800_03
     offsets:
       T_E_1: [-1700, 0]
       T_E_2: [-1700, 0]
@@ -343,7 +343,7 @@ blocks:
     as: BLOCK_9
     at: [2550, 2150]
     substitutions:
-      __CROSS_CELL__: X_1800_01
+      __CROSS_CELL__: X_1800_04
     offsets:
       T_E_1: [-2550, 0]
       T_E_2: [-2550, 0]
@@ -354,7 +354,7 @@ blocks:
     as: BLOCK_10
     at: [3400, 2300]
     substitutions:
-      __CROSS_CELL__: X_1800_02
+      __CROSS_CELL__: X_1800_05
     offsets:
       T_E_1: [-3400, 0]
       T_E_2: [-3400, 0]
@@ -363,7 +363,49 @@ blocks:
   
   - use: WX_CHAIN
     as: CHAIN_1
-    at: [0, 2800]
+    at: [0, 2750]
     substitutions:
-      __CROSS_CELL__: X_1800_01
-    # offsets:
+      __CROSS_CELL__: X_1800_02
+  
+  - use: WX_CHAIN
+    as: CHAIN_2
+    at: [0, 3150]
+    substitutions:
+      __CROSS_CELL__: X_1800_03
+  
+  - use: WX_CHAIN
+    as: CHAIN_3
+    at: [0, 3550]
+    substitutions:
+      __CROSS_CELL__: X_1800_03
+  
+  - use: WX_CHAIN
+    as: CHAIN_4
+    at: [0, 3950]
+    substitutions:
+      __CROSS_CELL__: X_1800_04
+
+  - use: SINGLE_RT
+    as: SINGLE_1
+    at: [0, 4850]
+  
+  - use: SINGLE_RT
+    as: SINGLE_2
+    at: [800, 4950]
+    offsets:
+      T_E_1: [-800, 0]
+      T_E_2: [-800, 0]
+  
+  - use: SINGLE_RT
+    as: SINGLE_3
+    at: [1600, 5050]
+    offsets:
+      T_E_1: [-1600, 0]
+      T_E_2: [-1600, 0]
+  
+  - use: SINGLE_RT
+    as: SINGLE_4
+    at: [2400, 5150]
+    offsets:
+      T_E_1: [-2400, 0]
+      T_E_2: [-2400, 0]
