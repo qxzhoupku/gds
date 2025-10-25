@@ -3,7 +3,7 @@ extends: designs/base.yaml
 
 chip:
   out: out/chip_03.gds
-  # die: { size_um: [6000, 6000], margin_um: 0, at: [-1000, -600] }
+  die: { size_um: [6000, 6000], margin_um: 0, at: [-1000, -600] }
 
 instances:
   X_1800_01:
