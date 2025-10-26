@@ -8,23 +8,23 @@ chip:
 instances:
   X_1800_01:
     type: WX
-    params: { WM: 3.6, LM: 28.0, LT: 3.0, w_in: 1.8 }
+    params: { WM: 3.6, LM: 27.8, LT: 3.0, w_in: 1.8 }
   
   X_1800_02:
     type: WX
-    params: { WM: 3.6, LM: 28.2, LT: 3.0, w_in: 1.8 }
+    params: { WM: 3.6, LM: 28.0, LT: 3.0, w_in: 1.8 }
   
   X_1800_03:
     type: WX
-    params: { WM: 3.6, LM: 28.4, LT: 3.0, w_in: 1.8 }
+    params: { WM: 3.6, LM: 28.2, LT: 3.0, w_in: 1.8 }
   
   X_1800_04:
     type: WX
-    params: { WM: 3.6, LM: 28.6, LT: 3.0, w_in: 1.8 }
+    params: { WM: 3.6, LM: 28.4, LT: 3.0, w_in: 1.8 }
   
   X_1800_05:
     type: WX
-    params: { WM: 3.6, LM: 28.8, LT: 3.0, w_in: 1.8 }
+    params: { WM: 3.6, LM: 28.6, LT: 3.0, w_in: 1.8 }
 
   T_E:
     type: TAPER
