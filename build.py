@@ -106,6 +106,33 @@ def apply_macro_placement(top, macro, inst_cells, inst_ports, placed_ports, alia
 
             ports = transform_ports(inst_ports[inst], origin=origin, rotation=math.radians(rot))
             placed_ports[full_alias] = ports
+        elif "connect" in step:
+            spec = dict(step["connect"])  # shallow copy
+            inst_raw = spec["inst"]
+            inst = substitutions.get(inst_raw, inst_raw)
+
+            inner_alias = spec.get("as", inst)
+            full_alias = f"{alias_prefix}.{inner_alias}" if alias_prefix else inner_alias
+
+            target_full = spec["to"]
+            target_inst_raw, target_port = target_full.split(".")
+            target_inst = substitutions.get(target_inst_raw, target_inst_raw)
+            target_full_alias = f"{alias_prefix}.{target_inst}" if alias_prefix else target_inst
+
+            if target_full_alias not in placed_ports:
+                ref = gdstk.Reference(inst_cells[target_inst], origin=(0, 0), rotation=0.0)
+                top.add(ref)
+                placed_ports[target_full_alias] = transform_ports(inst_ports[target_inst], origin=(0, 0), rotation=0.0)
+
+            ref = place_by_ports(
+                top,
+                inst_cells[inst],
+                inst_ports[inst][spec["port"]],
+                placed_ports[target_full_alias][target_port]
+            )
+            rot = float(ref.rotation or 0.0)
+            ox, oy = ref.origin
+            placed_ports[full_alias] = transform_ports(inst_ports[inst], origin=(ox, oy), rotation=math.radians(rot))
 
 def apply_macro_routes(top, macro, placed_ports, layers, alias_prefix):
     for r in macro.get("routes", []):
