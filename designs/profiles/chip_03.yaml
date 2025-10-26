@@ -427,37 +427,37 @@ blocks:
     as: WX_SINGLE_1
     at: [0, 2800]
     substitutions:
-      __CROSS_CELL__: X_1800_01
+      __CROSS_CELL__: X_1800_02
   
   - use: WX_SINGE_RV
     as: WX_SINGLE_RV_1
     at: [0, 3100]
     substitutions:
-      __CROSS_CELL__: X_1800_01
+      __CROSS_CELL__: X_1800_02
   
   - use: WX_SINGLE
     as: WX_SINGLE_2
     at: [0, 3400]
     substitutions:
-      __CROSS_CELL__: X_1800_02
+      __CROSS_CELL__: X_1800_03
   
   - use: WX_SINGE_RV
     as: WX_SINGLE_RV_2
     at: [0, 3700]
     substitutions:
-      __CROSS_CELL__: X_1800_02
+      __CROSS_CELL__: X_1800_03
 
   - use: WX_SINGLE
     as: WX_SINGLE_3
     at: [0, 4000]
     substitutions:
-      __CROSS_CELL__: X_1800_03
+      __CROSS_CELL__: X_1800_04
   
   - use: WX_SINGE_RV
     as: WX_SINGLE_RV_3
     at: [0, 4300]
     substitutions:
-      __CROSS_CELL__: X_1800_03
+      __CROSS_CELL__: X_1800_04
 
   - use: WX_CHAIN
     as: CHAIN_1
