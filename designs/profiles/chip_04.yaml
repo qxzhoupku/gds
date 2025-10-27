@@ -2,7 +2,7 @@
 extends: designs/base.yaml
 
 chip:
-  out: out/chip_20251026.gds
+  out: out/chip_taper_500.gds
   die: { size_um: [6000, 6000], margin_um: 0, at: [-1000, -600] }
 
 instances:
@@ -28,7 +28,7 @@ instances:
 
   T_E:
     type: TAPER
-    params: { w0: 0.15, w1: 1.0, L: 300.0 }
+    params: { w0: 0.15, w1: 1.0, L: 500.0 }
 
   SemiArc01:
     type: ARC
@@ -130,7 +130,7 @@ macros:
   - name: WX_CHAIN
     placement:
       - place: { inst: T_E, at: [-1000, 0], rot: 0, as: T_E_1 }
-      - place: { inst: Taper_01, at: [-680, 0], rot: 0, as: Taper_01_1 }
+      - place: { inst: Taper_01, at: [-480, 0], rot: 0, as: Taper_01_1 }
       - place: { inst: __CROSS_CELL__, at: [0, 0], as: X_1 }
       - place: { inst: __CROSS_CELL__, at: [80, 0], as: X_2 }
       - place: { inst: __CROSS_CELL__, at: [160, 0], as: X_3 }
@@ -171,14 +171,14 @@ macros:
       - place: { inst: __CROSS_CELL__, at: [2960, 0], as: X_38 }
       - place: { inst: __CROSS_CELL__, at: [3040, 0], as: X_39 }
       - place: { inst: __CROSS_CELL__, at: [3120, 0], as: X_40 }
-      - place: { inst: Taper_01, at: [ 4680, 0], rot: 180, as: Taper_01_2 }
+      - place: { inst: Taper_01, at: [ 4480, 0], rot: 180, as: Taper_01_2 }
       - place: { inst: T_E, at: [ 5000, 0], rot: 180, as: T_E_2 }
       - place: { inst: Cornor_1800, at: [100, 50], rot: 90, as: Cornor_1 }
       - place: { inst: Cornor_1800, at: [100, -50], rot: 180, as: Cornor_2 }
       - place: { inst: T_E, at: [5000, 150], rot: 180, as: T_E_3 }
       - place: { inst: T_E, at: [5000, -150], rot: 180, as: T_E_4 }
-      - place: { inst: Taper_01, at: [4680, 150], rot: 180, as: Taper_01_3 }
-      - place: { inst: Taper_01, at: [4680, -150], rot: 180, as: Taper_01_4 }
+      - place: { inst: Taper_01, at: [4480, 150], rot: 180, as: Taper_01_3 }
+      - place: { inst: Taper_01, at: [4480, -150], rot: 180, as: Taper_01_4 }
 
     routes:
       - straight: { from: T_E_1.E, to: Taper_01_1.W }
@@ -249,16 +249,16 @@ macros:
   - name: WX_SINGLE
     placement:
       - place: { inst: T_E, at: [-1000, 0], rot: 0, as: T_E_1 }
-      - place: { inst: Taper_01, at: [-680, 0], rot: 0, as: Taper_01_1 }
+      - place: { inst: Taper_01, at: [-480, 0], rot: 0, as: Taper_01_1 }
       - place: { inst: __CROSS_CELL__, at: [2000, 0], as: X_1 }
-      - place: { inst: Taper_01, at: [ 4680, 0], rot: 180, as: Taper_01_2 }
+      - place: { inst: Taper_01, at: [ 4480, 0], rot: 180, as: Taper_01_2 }
       - place: { inst: T_E, at: [ 5000, 0], rot: 180, as: T_E_2 }
       - place: { inst: Cornor_1800, at: [2100, 30], rot: 90, as: Cornor_1 }
       - place: { inst: Cornor_1800, at: [2100, -30], rot: 180, as: Cornor_2 }
       - place: { inst: T_E, at: [5000, 130], rot: 180, as: T_E_3 }
       - place: { inst: T_E, at: [5000, -130], rot: 180, as: T_E_4 }
-      - place: { inst: Taper_01, at: [4680, 130], rot: 180, as: Taper_01_3 }
-      - place: { inst: Taper_01, at: [4680, -130], rot: 180, as: Taper_01_4 }
+      - place: { inst: Taper_01, at: [4480, 130], rot: 180, as: Taper_01_3 }
+      - place: { inst: Taper_01, at: [4480, -130], rot: 180, as: Taper_01_4 }
     routes:
       - straight: { from: T_E_1.E, to: Taper_01_1.W }
       - straight: { from: Taper_01_1.E, to: X_1.W }
@@ -274,16 +274,16 @@ macros:
   - name: WX_SINGE_RV
     placement:
       - place: { inst: T_E, at: [-1000, 0], rot: 0, as: T_E_1 }
-      - place: { inst: Taper_01, at: [-680, 0], rot: 0, as: Taper_01_1 }
+      - place: { inst: Taper_01, at: [-480, 0], rot: 0, as: Taper_01_1 }
       - place: { inst: __CROSS_CELL__, at: [1800, 0], as: X_1 }
-      - place: { inst: Taper_01, at: [ 4680, 0], rot: 180, as: Taper_01_2 }
+      - place: { inst: Taper_01, at: [ 4480, 0], rot: 180, as: Taper_01_2 }
       - place: { inst: T_E, at: [ 5000, 0], rot: 180, as: T_E_2 }
       - place: { inst: Cornor_1800, at: [1700, 30], rot: 0, as: Cornor_1 }
       - place: { inst: Cornor_1800, at: [1700, -30], rot: -90, as: Cornor_2 }
       - place: { inst: T_E, at: [-1000, 130], rot: 0, as: T_E_3 }
       - place: { inst: T_E, at: [-1000, -130], rot: 0, as: T_E_4 }
-      - place: { inst: Taper_01, at: [-680, 130], rot: 0, as: Taper_01_3 }
-      - place: { inst: Taper_01, at: [-680, -130], rot: 0, as: Taper_01_4 }
+      - place: { inst: Taper_01, at: [-480, 130], rot: 0, as: Taper_01_3 }
+      - place: { inst: Taper_01, at: [-480, -130], rot: 0, as: Taper_01_4 }
     routes:
       - straight: { from: T_E_1.E, to: Taper_01_1.W }
       - straight: { from: Taper_01_1.E, to: X_1.W }
@@ -301,25 +301,25 @@ macros:
 blocks:
   - use: FOUR_CROSS_RT
     as: BLOCK_1
-    at: [-300, -100]
+    at: [-200, -100]
     substitutions:
       __CROSS_CELL__: X_1800_01
     offsets:
-      T_E_1: [300, 0]
-      T_E_2: [300, 0]
-      T_E_3: [300, 0]
-      T_E_4: [300, 0]
+      T_E_1: [200, 0]
+      T_E_2: [200, 0]
+      T_E_3: [200, 0]
+      T_E_4: [200, 0]
   
   - use: FOUR_CROSS_RT
     as: BLOCK_2
-    at: [550, 50]
+    at: [600, 50]
     substitutions:
       __CROSS_CELL__: X_1800_02
     offsets:
-      T_E_1: [-550, 0]
-      T_E_2: [-550, 0]
-      T_E_3: [-550, 0]
-      T_E_4: [-550, 0]
+      T_E_1: [-600, 0]
+      T_E_2: [-600, 0]
+      T_E_3: [-600, 0]
+      T_E_4: [-600, 0]
   
   - use: FOUR_CROSS_RT
     as: BLOCK_3
@@ -363,25 +363,25 @@ blocks:
   
   - use: TWO_CROSS_RT
     as: BLOCK_6
-    at: [-300, 1700]
+    at: [-200, 1700]
     substitutions:
       __CROSS_CELL__: X_1800_01
     offsets:
-      T_E_1: [300, 0]
-      T_E_2: [300, 0]
-      T_E_3: [300, 0]
-      T_E_4: [300, 0]
+      T_E_1: [200, 0]
+      T_E_2: [200, 0]
+      T_E_3: [200, 0]
+      T_E_4: [200, 0]
   
   - use: TWO_CROSS_RT
     as: BLOCK_7
-    at: [550, 1850]
+    at: [600, 1850]
     substitutions:
       __CROSS_CELL__: X_1800_02
     offsets:
-      T_E_1: [-550, 0]
-      T_E_2: [-550, 0]
-      T_E_3: [-550, 0]
-      T_E_4: [-550, 0]
+      T_E_1: [-600, 0]
+      T_E_2: [-600, 0]
+      T_E_3: [-600, 0]
+      T_E_4: [-600, 0]
   
   - use: TWO_CROSS_RT
     as: BLOCK_8
