@@ -185,9 +185,7 @@ def main(profile="designs/profiles/demo_small.yaml"):
 
     requested_top_name = cfg.get("chip", {}).get("name", "TOP")
     top_name = str(requested_top_name) if requested_top_name else "TOP"
-
-    lib = gdstk.Library(unit=1e-6, precision=1e-9)
-    top = lib.new_cell(top_name)
+    top = gdstk.Cell(top_name)
 
     used_names = {top_name}
     def unique_name(base: str) -> str:
@@ -214,6 +212,7 @@ def main(profile="designs/profiles/demo_small.yaml"):
         rect.translate(die_disp[0], die_disp[1])
         top.add(rect)
 
+    lib = gdstk.Library(unit=1e-6, precision=1e-9)
     inst_cells, inst_ports = {}, {}
     for inst_name, node in cfg.get("instances", {}).items():
         maker = REGISTRY[node["type"]]
@@ -249,6 +248,7 @@ def main(profile="designs/profiles/demo_small.yaml"):
         apply_macro_routes(top, macro, placed_ports, layers, alias)
 
 
+    lib.add(top)
     lib.write_gds(out_path)
     print(f"Wrote {out_path}")
 
