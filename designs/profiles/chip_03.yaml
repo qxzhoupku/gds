@@ -2,7 +2,7 @@
 extends: designs/base.yaml
 
 chip:
-  out: out/chip_20251026.gds
+  out: out/chip_taper_300.gds
   die: { size_um: [6000, 6000], margin_um: 0, at: [-1000, -600] }
 
 instances:
@@ -31,14 +31,6 @@ instances:
     params: { w0: 0.15, w1: 1.0, L: 300.0 }
 
   SemiArc01:
-    type: ARC
-    params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
-  
-  SemiArc02:
-    type: ARC
-    params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
-
-  SemiArc03:
     type: ARC
     params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
   

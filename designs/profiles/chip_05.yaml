@@ -34,14 +34,6 @@ instances:
     type: ARC
     params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
   
-  SemiArc02:
-    type: ARC
-    params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
-
-  SemiArc03:
-    type: ARC
-    params: { radius: 100.0, width: 1.8, angle_deg: 180.0 }
-  
   Cornor:
     type: ARC
     params: { radius: 100.0, width: 1.0, angle_deg: 90.0 }
