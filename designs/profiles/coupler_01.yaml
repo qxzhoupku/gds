@@ -1,0 +1,25 @@
+# designs/profiles/coupler_01.yaml
+extends: designs/base.yaml
+
+chip:
+  out: out/coupler_01.gds
+
+defaults:
+  grid_um: 0.0001
+
+instances:
+
+  Arc1:
+    type: ARC
+    params: { angle_deg: 30, radius: 100.0, width: 1.8 }
+
+  ST_WG:
+    type: TAPER
+    params: { w0: 1.0, w1: 1.0, L: 60.0 }
+
+placement:
+  - place: { inst: Arc1, at: [0, 100], as: Arc1_1, rot: -105 }
+  - place: { inst: ST_WG, at: [-30, -1.9], as: ST_WG_1 }
+
+routes:
+
