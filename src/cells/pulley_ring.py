@@ -88,4 +88,13 @@ def PCellPulleyRing(params, layers):
         "E": Port("E", Pout[0], Pout[1], 0.0, wc, layer_bus),
     }
 
+    dx, dy = -P0[0] + bus_ext, -P0[1]  # vector from origin to first bend start
+
+    ring.translate(dx, dy)
+    bus.translate(dx, dy)
+
+    for port in ports.values():
+        port.x += dx
+        port.y += dy
+
     return cell, ports
