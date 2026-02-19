@@ -11,7 +11,7 @@ from src.cells.taper import PCellTaper
 from src.cells.ring import PCellRingCoupler
 from src.cells.racetrack import PCellRacetrack
 from src.cells.any_arc import PCellAnyArc
-from src.cells.pulley_ring import PCellPulleyRing
+from src.cells.pulley_ring import PCellPulleyRing, PCellADDDROPPulleyRing
 
 def load_yaml(path: str):
     with open(path, "r", encoding="utf-8") as f:
@@ -173,6 +173,9 @@ REGISTRY = {
         p.get("radius", 10.0), p.get("width", 0.5), p.get("angle_deg", 90.0), L.get("WG", 1), name=p.get("name", "ARC")
     ),
     "PULLEY_RING": lambda p, L: PCellPulleyRing(
+        p, L
+    ),
+    "PULLEY_ADD_DROP_RING": lambda p, L: PCellADDDROPPulleyRing(
         p, L
     ),
 }
