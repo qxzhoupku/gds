@@ -12,11 +12,20 @@ instances:
       ring_radius: 235.0
       ring_width: 1.8
       coupler_width: 1.0
-      coupler_drop_width: 0.4
+      coupler_drop_width: 0.395
       gap: 0.5
       gap_drop: 0.2
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 5.0
+  
+  PRR_1:
+    type: PULLEY_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      gap: 0.5
+      pulley_angle_deg: 0.0000001
 
   PR2_1:
     type: PULLEY_ADD_DROP_RING
@@ -24,11 +33,20 @@ instances:
       ring_radius: 235.0
       ring_width: 1.8
       coupler_width: 1.0
-      coupler_drop_width: 0.4
+      coupler_drop_width: 0.395
       gap: 0.5
       gap_drop: 0.2
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 10.0
+  
+  PRR_2:
+    type: PULLEY_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      gap: 0.5
+      pulley_angle_deg: 0.0000001
 
   PR3_1:
     type: PULLEY_ADD_DROP_RING
@@ -36,11 +54,20 @@ instances:
       ring_radius: 235.0
       ring_width: 1.8
       coupler_width: 1.0
-      coupler_drop_width: 0.4
+      coupler_drop_width: 0.395
       gap: 0.5
       gap_drop: 0.2
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 20.0
+  
+  PRR_3:
+    type: PULLEY_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      gap: 0.5
+      pulley_angle_deg: 0.0000001
 
   PR4_1:
     type: PULLEY_ADD_DROP_RING
@@ -48,11 +75,20 @@ instances:
       ring_radius: 235.0
       ring_width: 1.8
       coupler_width: 1.0
-      coupler_drop_width: 0.4
+      coupler_drop_width: 0.395
       gap: 0.5
       gap_drop: 0.2
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 30.0
+  
+  PRR_4:
+    type: PULLEY_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      gap: 0.5
+      pulley_angle_deg: 0.0000001
 
   PR5_1:
     type: PULLEY_ADD_DROP_RING
@@ -60,11 +96,20 @@ instances:
       ring_radius: 235.0
       ring_width: 1.8
       coupler_width: 1.0
-      coupler_drop_width: 0.4
+      coupler_drop_width: 0.395
       gap: 0.5
       gap_drop: 0.2
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 30.0
+  
+  PRR_5:
+    type: PULLEY_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      gap: 0.5
+      pulley_angle_deg: 0.0000001
 
   T_E:
     type: TAPER
@@ -258,6 +303,36 @@ placement:
   - place: { inst: T_E, at: [8000, 5800], rot: 180, as: TAPER_OUT_25 }
   - place: { inst: T_E_DROP, at: [8000, 5850], rot: 180, as: TAPER_OUT_25_DROP }
 
+  - place: { inst: T_E, at: [0, 1700], rot: 0, as: TAPER_IN_26 }
+  - place: { inst: Cornor, at: [4800, 1600], rot: 0, as: CORNOR_26_1 }
+  - place: { inst: Cornor, at: [5000, 1200], rot: 180, as: CORNOR_26_2 }
+  - place: { inst: PRR_1, at: [5200, 1100], rot: 0, as: PULLEY_RING_26 }
+  - place: { inst: T_E, at: [8000, 1100], rot: 180, as: TAPER_OUT_26 }
+
+  - place: { inst: T_E, at: [0, 2900], rot: 0, as: TAPER_IN_27 }
+  - place: { inst: Cornor, at: [4800, 2800], rot: 0, as: CORNOR_27_1 }
+  - place: { inst: Cornor, at: [5000, 2400], rot: 180, as: CORNOR_27_2 }
+  - place: { inst: PRR_2, at: [5200, 2300], rot: 0, as: PULLEY_RING_27 }
+  - place: { inst: T_E, at: [8000, 2300], rot: 180, as: TAPER_OUT_27 }
+
+  - place: { inst: T_E, at: [0, 4100], rot: 0, as: TAPER_IN_28 }
+  - place: { inst: Cornor, at: [4800, 4000], rot: 0, as: CORNOR_28_1 }
+  - place: { inst: Cornor, at: [5000, 3600], rot: 180, as: CORNOR_28_2 }
+  - place: { inst: PRR_3, at: [5200, 3500], rot: 0, as: PULLEY_RING_28 }
+  - place: { inst: T_E, at: [8000, 3500], rot: 180, as: TAPER_OUT_28 }
+
+  - place: { inst: T_E, at: [0, 5300], rot: 0, as: TAPER_IN_29 }
+  - place: { inst: Cornor, at: [4800, 5200], rot: 0, as: CORNOR_29_1 }
+  - place: { inst: Cornor, at: [5000, 4800], rot: 180, as: CORNOR_29_2 }
+  - place: { inst: PRR_4, at: [5200, 4700], rot: 0, as: PULLEY_RING_29 }
+  - place: { inst: T_E, at: [8000, 4700], rot: 180, as: TAPER_OUT_29 }
+
+  - place: { inst: T_E, at: [0, 6500], rot: 0, as: TAPER_IN_30 }
+  - place: { inst: Cornor, at: [4800, 6400], rot: 0, as: CORNOR_30_1 }
+  - place: { inst: Cornor, at: [5000, 6000], rot: 180, as: CORNOR_30_2 }
+  - place: { inst: PRR_5, at: [5200, 5900], rot: 0, as: PULLEY_RING_30 }
+  - place: { inst: T_E, at: [8000, 5900], rot: 180, as: TAPER_OUT_30 }
+
 
 routes:
   - straight: { from: TAPER_IN_01.E, to: CORNOR_01_1.E }
@@ -409,3 +484,28 @@ routes:
   - straight: { from: CORNOR_25_2.E, to: PULLEY_RING_25.W }
   - straight: { from: PULLEY_RING_25.E, to: TAPER_OUT_25.E }
   - straight: { from: PULLEY_RING_25.E_DROP, to: TAPER_OUT_25_DROP.E }
+
+  - straight: { from: TAPER_IN_26.E, to: CORNOR_26_1.E }
+  - straight: { from: CORNOR_26_1.W, to: CORNOR_26_2.W }
+  - straight: { from: CORNOR_26_2.E, to: PULLEY_RING_26.W }
+  - straight: { from: PULLEY_RING_26.E, to: TAPER_OUT_26.E }
+
+  - straight: { from: TAPER_IN_27.E, to: CORNOR_27_1.E }
+  - straight: { from: CORNOR_27_1.W, to: CORNOR_27_2.W }
+  - straight: { from: CORNOR_27_2.E, to: PULLEY_RING_27.W }
+  - straight: { from: PULLEY_RING_27.E, to: TAPER_OUT_27.E }
+
+  - straight: { from: TAPER_IN_28.E, to: CORNOR_28_1.E }
+  - straight: { from: CORNOR_28_1.W, to: CORNOR_28_2.W }
+  - straight: { from: CORNOR_28_2.E, to: PULLEY_RING_28.W }
+  - straight: { from: PULLEY_RING_28.E, to: TAPER_OUT_28.E }
+
+  - straight: { from: TAPER_IN_29.E, to: CORNOR_29_1.E }
+  - straight: { from: CORNOR_29_1.W, to: CORNOR_29_2.W }
+  - straight: { from: CORNOR_29_2.E, to: PULLEY_RING_29.W }
+  - straight: { from: PULLEY_RING_29.E, to: TAPER_OUT_29.E }
+
+  - straight: { from: TAPER_IN_30.E, to: CORNOR_30_1.E }
+  - straight: { from: CORNOR_30_1.W, to: CORNOR_30_2.W }
+  - straight: { from: CORNOR_30_2.E, to: PULLEY_RING_30.W }
+  - straight: { from: PULLEY_RING_30.E, to: TAPER_OUT_30.E }
