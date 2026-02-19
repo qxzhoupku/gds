@@ -1,0 +1,411 @@
+# designs/profiles/pulley_400nm.yaml
+extends: designs/base.yaml
+
+chip:
+  out: out/chip_pulley_400nm.gds
+  die: { size_um: [8000, 8000], margin_um: 0, at: [0, 0] }
+
+instances:
+  PR1_1:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.4
+      gap: 0.5
+      gap_drop: 0.2
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 5.0
+
+  PR2_1:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.4
+      gap: 0.5
+      gap_drop: 0.2
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 10.0
+
+  PR3_1:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.4
+      gap: 0.5
+      gap_drop: 0.2
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 20.0
+
+  PR4_1:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.4
+      gap: 0.5
+      gap_drop: 0.2
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 30.0
+
+  PR5_1:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.4
+      gap: 0.5
+      gap_drop: 0.2
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 30.0
+
+  T_E:
+    type: TAPER
+    params: { w0: 0.15, w1: 1.0, L: 400.0 }
+  
+  T_E_DROP:
+    type: TAPER
+    params: { w0: 0.15, w1: 0.4, L: 400.0 }
+  
+  Cornor:
+    type: ARC
+    params: { radius: 100.0, width: 1.0, angle_deg: 90.0 }
+  
+  Cornor_w400nm:
+    type: ARC
+    params: { radius: 100.0, width: 0.4, angle_deg: 90.0 }
+
+placement:
+  - place: { inst: T_E, at: [0, 1200], rot: 0, as: TAPER_IN_01 }
+  - place: { inst: Cornor, at: [800, 1100], rot: 0, as: CORNOR_01_1 }
+  - place: { inst: Cornor, at: [1000, 700], rot: 180, as: CORNOR_01_2 }
+  - place: { inst: PR1_1, at: [1200, 600], rot: 0, as: PULLEY_RING_01 }
+  - place: { inst: T_E, at: [8000, 600], rot: 180, as: TAPER_OUT_01 }
+  - place: { inst: T_E_DROP, at: [8000, 650], rot: 180, as: TAPER_OUT_01_DROP }
+
+  - place: { inst: T_E, at: [0, 1300], rot: 0, as: TAPER_IN_02 }
+  - place: { inst: Cornor, at: [1600, 1200], rot: 0, as: CORNOR_02_1 }
+  - place: { inst: Cornor, at: [1800, 800], rot: 180, as: CORNOR_02_2 }
+  - place: { inst: PR1_1, at: [2000, 700], rot: 0, as: PULLEY_RING_02 }
+  - place: { inst: T_E, at: [8000, 700], rot: 180, as: TAPER_OUT_02 }
+  - place: { inst: T_E_DROP, at: [8000, 750], rot: 180, as: TAPER_OUT_02_DROP }
+
+  - place: { inst: T_E, at: [0, 1400], rot: 0, as: TAPER_IN_03 }
+  - place: { inst: Cornor, at: [2400, 1300], rot: 0, as: CORNOR_03_1 }
+  - place: { inst: Cornor, at: [2600, 900], rot: 180, as: CORNOR_03_2 }
+  - place: { inst: PR1_1, at: [2800, 800], rot: 0, as: PULLEY_RING_03 }
+  - place: { inst: T_E, at: [8000, 800], rot: 180, as: TAPER_OUT_03 }
+  - place: { inst: T_E_DROP, at: [8000, 850], rot: 180, as: TAPER_OUT_03_DROP }
+
+  - place: { inst: T_E, at: [0, 1500], rot: 0, as: TAPER_IN_04 }
+  - place: { inst: Cornor, at: [3200, 1400], rot: 0, as: CORNOR_04_1 }
+  - place: { inst: Cornor, at: [3400, 1000], rot: 180, as: CORNOR_04_2 }
+  - place: { inst: PR1_1, at: [3600, 900], rot: 0, as: PULLEY_RING_04 }
+  - place: { inst: T_E, at: [8000, 900], rot: 180, as: TAPER_OUT_04 }
+  - place: { inst: T_E_DROP, at: [8000, 950], rot: 180, as: TAPER_OUT_04_DROP }
+
+  - place: { inst: T_E, at: [0, 1600], rot: 0, as: TAPER_IN_05 }
+  - place: { inst: Cornor, at: [4000, 1500], rot: 0, as: CORNOR_05_1 }
+  - place: { inst: Cornor, at: [4200, 1100], rot: 180, as: CORNOR_05_2 }
+  - place: { inst: PR1_1, at: [4400, 1000], rot: 0, as: PULLEY_RING_05 }
+  - place: { inst: T_E, at: [8000, 1000], rot: 180, as: TAPER_OUT_05 }
+  - place: { inst: T_E_DROP, at: [8000, 1050], rot: 180, as: TAPER_OUT_05_DROP }
+
+  - place: { inst: T_E, at: [0, 2400], rot: 0, as: TAPER_IN_06 }
+  - place: { inst: Cornor, at: [800, 2300], rot: 0, as: CORNOR_06_1 }
+  - place: { inst: Cornor, at: [1000, 1900], rot: 180, as: CORNOR_06_2 }
+  - place: { inst: PR2_1, at: [1200, 1800], rot: 0, as: PULLEY_RING_06 }
+  - place: { inst: T_E, at: [8000, 1800], rot: 180, as: TAPER_OUT_06 }
+  - place: { inst: T_E_DROP, at: [8000, 1850], rot: 180, as: TAPER_OUT_06_DROP }
+
+  - place: { inst: T_E, at: [0, 2500], rot: 0, as: TAPER_IN_07 }
+  - place: { inst: Cornor, at: [1600, 2400], rot: 0, as: CORNOR_07_1 }
+  - place: { inst: Cornor, at: [1800, 2000], rot: 180, as: CORNOR_07_2 }
+  - place: { inst: PR2_1, at: [2000, 1900], rot: 0, as: PULLEY_RING_07 }
+  - place: { inst: T_E, at: [8000, 1900], rot: 180, as: TAPER_OUT_07 }
+  - place: { inst: T_E_DROP, at: [8000, 1950], rot: 180, as: TAPER_OUT_07_DROP }
+
+  - place: { inst: T_E, at: [0, 2600], rot: 0, as: TAPER_IN_08 }
+  - place: { inst: Cornor, at: [2400, 2500], rot: 0, as: CORNOR_08_1 }
+  - place: { inst: Cornor, at: [2600, 2100], rot: 180, as: CORNOR_08_2 }
+  - place: { inst: PR2_1, at: [2800, 2000], rot: 0, as: PULLEY_RING_08 }
+  - place: { inst: T_E, at: [8000, 2000], rot: 180, as: TAPER_OUT_08 }
+  - place: { inst: T_E_DROP, at: [8000, 2050], rot: 180, as: TAPER_OUT_08_DROP }
+  
+  - place: { inst: T_E, at: [0, 2700], rot: 0, as: TAPER_IN_09 }
+  - place: { inst: Cornor, at: [3200, 2600], rot: 0, as: CORNOR_09_1 }
+  - place: { inst: Cornor, at: [3400, 2200], rot: 180, as: CORNOR_09_2 }
+  - place: { inst: PR2_1, at: [3600, 2100], rot: 0, as: PULLEY_RING_09 }
+  - place: { inst: T_E, at: [8000, 2100], rot: 180, as: TAPER_OUT_09 }
+  - place: { inst: T_E_DROP, at: [8000, 2150], rot: 180, as: TAPER_OUT_09_DROP }
+
+  - place: { inst: T_E, at: [0, 2800], rot: 0, as: TAPER_IN_10 }
+  - place: { inst: Cornor, at: [4000, 2700], rot: 0, as: CORNOR_10_1 }
+  - place: { inst: Cornor, at: [4200, 2300], rot: 180, as: CORNOR_10_2 }
+  - place: { inst: PR2_1, at: [4400, 2200], rot: 0, as: PULLEY_RING_10 }
+  - place: { inst: T_E, at: [8000, 2200], rot: 180, as: TAPER_OUT_10 }
+  - place: { inst: T_E_DROP, at: [8000, 2250], rot: 180, as: TAPER_OUT_10_DROP }
+
+  - place: { inst: T_E, at: [0, 3600], rot: 0, as: TAPER_IN_11 }
+  - place: { inst: Cornor, at: [800, 3500], rot: 0, as: CORNOR_11_1 }
+  - place: { inst: Cornor, at: [1000, 3100], rot: 180, as: CORNOR_11_2 }
+  - place: { inst: PR3_1, at: [1200, 3000], rot: 0, as: PULLEY_RING_11 }
+  - place: { inst: T_E, at: [8000, 3000], rot: 180, as: TAPER_OUT_11 }
+  - place: { inst: T_E_DROP, at: [8000, 3050], rot: 180, as: TAPER_OUT_11_DROP }
+
+  - place: { inst: T_E, at: [0, 3700], rot: 0, as: TAPER_IN_12 }
+  - place: { inst: Cornor, at: [1600, 3600], rot: 0, as: CORNOR_12_1 }
+  - place: { inst: Cornor, at: [1800, 3200], rot: 180, as: CORNOR_12_2 }
+  - place: { inst: PR3_1, at: [2000, 3100], rot: 0, as: PULLEY_RING_12 }
+  - place: { inst: T_E, at: [8000, 3100], rot: 180, as: TAPER_OUT_12 }
+  - place: { inst: T_E_DROP, at: [8000, 3150], rot: 180, as: TAPER_OUT_12_DROP }
+
+  - place: { inst: T_E, at: [0, 3800], rot: 0, as: TAPER_IN_13 }
+  - place: { inst: Cornor, at: [2400, 3700], rot: 0, as: CORNOR_13_1 }
+  - place: { inst: Cornor, at: [2600, 3300], rot: 180, as: CORNOR_13_2 }
+  - place: { inst: PR3_1, at: [2800, 3200], rot: 0, as: PULLEY_RING_13 }
+  - place: { inst: T_E, at: [8000, 3200], rot: 180, as: TAPER_OUT_13 }
+  - place: { inst: T_E_DROP, at: [8000, 3250], rot: 180, as: TAPER_OUT_13_DROP }
+
+  - place: { inst: T_E, at: [0, 3900], rot: 0, as: TAPER_IN_14 }
+  - place: { inst: Cornor, at: [3200, 3800], rot: 0, as: CORNOR_14_1 }
+  - place: { inst: Cornor, at: [3400, 3400], rot: 180, as: CORNOR_14_2 }
+  - place: { inst: PR3_1, at: [3600, 3300], rot: 0, as: PULLEY_RING_14 }
+  - place: { inst: T_E, at: [8000, 3300], rot: 180, as: TAPER_OUT_14 }
+  - place: { inst: T_E_DROP, at: [8000, 3350], rot: 180, as: TAPER_OUT_14_DROP }
+
+  - place: { inst: T_E, at: [0, 4000], rot: 0, as: TAPER_IN_15 }
+  - place: { inst: Cornor, at: [4000, 3900], rot: 0, as: CORNOR_15_1 }
+  - place: { inst: Cornor, at: [4200, 3500], rot: 180, as: CORNOR_15_2 }
+  - place: { inst: PR3_1, at: [4400, 3400], rot: 0, as: PULLEY_RING_15 }
+  - place: { inst: T_E, at: [8000, 3400], rot: 180, as: TAPER_OUT_15 }
+  - place: { inst: T_E_DROP, at: [8000, 3450], rot: 180, as: TAPER_OUT_15_DROP }
+
+  - place: { inst: T_E, at: [0, 4800], rot: 0, as: TAPER_IN_16 }
+  - place: { inst: Cornor, at: [800, 4700], rot: 0, as: CORNOR_16_1 }
+  - place: { inst: Cornor, at: [1000, 4300], rot: 180, as: CORNOR_16_2 }
+  - place: { inst: PR4_1, at: [1200, 4200], rot: 0, as: PULLEY_RING_16 }
+  - place: { inst: T_E, at: [8000, 4200], rot: 180, as: TAPER_OUT_16 }
+  - place: { inst: T_E_DROP, at: [8000, 4250], rot: 180, as: TAPER_OUT_16_DROP }
+
+  - place: { inst: T_E, at: [0, 4900], rot: 0, as: TAPER_IN_17 }
+  - place: { inst: Cornor, at: [1600, 4800], rot: 0, as: CORNOR_17_1 }
+  - place: { inst: Cornor, at: [1800, 4400], rot: 180, as: CORNOR_17_2 }
+  - place: { inst: PR4_1, at: [2000, 4300], rot: 0, as: PULLEY_RING_17 }
+  - place: { inst: T_E, at: [8000, 4300], rot: 180, as: TAPER_OUT_17 }
+  - place: { inst: T_E_DROP, at: [8000, 4350], rot: 180, as: TAPER_OUT_17_DROP }
+
+  - place: { inst: T_E, at: [0, 5000], rot: 0, as: TAPER_IN_18 }
+  - place: { inst: Cornor, at: [2400, 4900], rot: 0, as: CORNOR_18_1 }
+  - place: { inst: Cornor, at: [2600, 4500], rot: 180, as: CORNOR_18_2 }
+  - place: { inst: PR4_1, at: [2800, 4400], rot: 0, as: PULLEY_RING_18 }
+  - place: { inst: T_E, at: [8000, 4400], rot: 180, as: TAPER_OUT_18 }
+  - place: { inst: T_E_DROP, at: [8000, 4450], rot: 180, as: TAPER_OUT_18_DROP }
+
+  - place: { inst: T_E, at: [0, 5100], rot: 0, as: TAPER_IN_19 }
+  - place: { inst: Cornor, at: [3200, 5000], rot: 0, as: CORNOR_19_1 }
+  - place: { inst: Cornor, at: [3400, 4600], rot: 180, as: CORNOR_19_2 }
+  - place: { inst: PR4_1, at: [3600, 4500], rot: 0, as: PULLEY_RING_19 }
+  - place: { inst: T_E, at: [8000, 4500], rot: 180, as: TAPER_OUT_19 }
+  - place: { inst: T_E_DROP, at: [8000, 4550], rot: 180, as: TAPER_OUT_19_DROP }
+
+  - place: { inst: T_E, at: [0, 5200], rot: 0, as: TAPER_IN_20 }
+  - place: { inst: Cornor, at: [4000, 5100], rot: 0, as: CORNOR_20_1 }
+  - place: { inst: Cornor, at: [4200, 4700], rot: 180, as: CORNOR_20_2 }
+  - place: { inst: PR4_1, at: [4400, 4600], rot: 0, as: PULLEY_RING_20 }
+  - place: { inst: T_E, at: [8000, 4600], rot: 180, as: TAPER_OUT_20 }
+  - place: { inst: T_E_DROP, at: [8000, 4650], rot: 180, as: TAPER_OUT_20_DROP }
+
+  - place: { inst: T_E, at: [0, 6000], rot: 0, as: TAPER_IN_21 }
+  - place: { inst: Cornor, at: [800, 5900], rot: 0, as: CORNOR_21_1 }
+  - place: { inst: Cornor, at: [1000, 5500], rot: 180, as: CORNOR_21_2 }
+  - place: { inst: PR5_1, at: [1200, 5400], rot: 0, as: PULLEY_RING_21 }
+  - place: { inst: T_E, at: [8000, 5400], rot: 180, as: TAPER_OUT_21 }
+  - place: { inst: T_E_DROP, at: [8000, 5450], rot: 180, as: TAPER_OUT_21_DROP }
+
+  - place: { inst: T_E, at: [0, 6100], rot: 0, as: TAPER_IN_22 }
+  - place: { inst: Cornor, at: [1600, 6000], rot: 0, as: CORNOR_22_1 }
+  - place: { inst: Cornor, at: [1800, 5600], rot: 180, as: CORNOR_22_2 }
+  - place: { inst: PR5_1, at: [2000, 5500], rot: 0, as: PULLEY_RING_22 }
+  - place: { inst: T_E, at: [8000, 5500], rot: 180, as: TAPER_OUT_22 }
+  - place: { inst: T_E_DROP, at: [8000, 5550], rot: 180, as: TAPER_OUT_22_DROP }
+
+  - place: { inst: T_E, at: [0, 6200], rot: 0, as: TAPER_IN_23 }
+  - place: { inst: Cornor, at: [2400, 6100], rot: 0, as: CORNOR_23_1 }
+  - place: { inst: Cornor, at: [2600, 5700], rot: 180, as: CORNOR_23_2 }
+  - place: { inst: PR5_1, at: [2800, 5600], rot: 0, as: PULLEY_RING_23 }
+  - place: { inst: T_E, at: [8000, 5600], rot: 180, as: TAPER_OUT_23 }
+  - place: { inst: T_E_DROP, at: [8000, 5650], rot: 180, as: TAPER_OUT_23_DROP }
+
+  - place: { inst: T_E, at: [0, 6300], rot: 0, as: TAPER_IN_24 }
+  - place: { inst: Cornor, at: [3200, 6200], rot: 0, as: CORNOR_24_1 }
+  - place: { inst: Cornor, at: [3400, 5800], rot: 180, as: CORNOR_24_2 }
+  - place: { inst: PR5_1, at: [3600, 5700], rot: 0, as: PULLEY_RING_24 }
+  - place: { inst: T_E, at: [8000, 5700], rot: 180, as: TAPER_OUT_24 }
+  - place: { inst: T_E_DROP, at: [8000, 5750], rot: 180, as: TAPER_OUT_24_DROP }
+
+  - place: { inst: T_E, at: [0, 6400], rot: 0, as: TAPER_IN_25 }
+  - place: { inst: Cornor, at: [4000, 6300], rot: 0, as: CORNOR_25_1 }
+  - place: { inst: Cornor, at: [4200, 5900], rot: 180, as: CORNOR_25_2 }
+  - place: { inst: PR5_1, at: [4400, 5800], rot: 0, as: PULLEY_RING_25 }
+  - place: { inst: T_E, at: [8000, 5800], rot: 180, as: TAPER_OUT_25 }
+  - place: { inst: T_E_DROP, at: [8000, 5850], rot: 180, as: TAPER_OUT_25_DROP }
+
+
+routes:
+  - straight: { from: TAPER_IN_01.E, to: CORNOR_01_1.E }
+  - straight: { from: CORNOR_01_1.W, to: CORNOR_01_2.W }
+  - straight: { from: CORNOR_01_2.E, to: PULLEY_RING_01.W }
+  - straight: { from: PULLEY_RING_01.E, to: TAPER_OUT_01.E }
+  - straight: { from: PULLEY_RING_01.E_DROP, to: TAPER_OUT_01_DROP.E }
+
+  - straight: { from: TAPER_IN_02.E, to: CORNOR_02_1.E }
+  - straight: { from: CORNOR_02_1.W, to: CORNOR_02_2.W }
+  - straight: { from: CORNOR_02_2.E, to: PULLEY_RING_02.W }
+  - straight: { from: PULLEY_RING_02.E, to: TAPER_OUT_02.E }
+  - straight: { from: PULLEY_RING_02.E_DROP, to: TAPER_OUT_02_DROP.E }
+
+  - straight: { from: TAPER_IN_03.E, to: CORNOR_03_1.E }
+  - straight: { from: CORNOR_03_1.W, to: CORNOR_03_2.W }
+  - straight: { from: CORNOR_03_2.E, to: PULLEY_RING_03.W }
+  - straight: { from: PULLEY_RING_03.E, to: TAPER_OUT_03.E }
+  - straight: { from: PULLEY_RING_03.E_DROP, to: TAPER_OUT_03_DROP.E }
+
+  - straight: { from: TAPER_IN_04.E, to: CORNOR_04_1.E }
+  - straight: { from: CORNOR_04_1.W, to: CORNOR_04_2.W }
+  - straight: { from: CORNOR_04_2.E, to: PULLEY_RING_04.W }
+  - straight: { from: PULLEY_RING_04.E, to: TAPER_OUT_04.E }
+  - straight: { from: PULLEY_RING_04.E_DROP, to: TAPER_OUT_04_DROP.E }
+
+  - straight: { from: TAPER_IN_05.E, to: CORNOR_05_1.E }
+  - straight: { from: CORNOR_05_1.W, to: CORNOR_05_2.W }
+  - straight: { from: CORNOR_05_2.E, to: PULLEY_RING_05.W }
+  - straight: { from: PULLEY_RING_05.E, to: TAPER_OUT_05.E }
+  - straight: { from: PULLEY_RING_05.E_DROP, to: TAPER_OUT_05_DROP.E }
+
+  - straight: { from: TAPER_IN_06.E, to: CORNOR_06_1.E }
+  - straight: { from: CORNOR_06_1.W, to: CORNOR_06_2.W }
+  - straight: { from: CORNOR_06_2.E, to: PULLEY_RING_06.W }
+  - straight: { from: PULLEY_RING_06.E, to: TAPER_OUT_06.E }
+  - straight: { from: PULLEY_RING_06.E_DROP, to: TAPER_OUT_06_DROP.E }
+
+  - straight: { from: TAPER_IN_07.E, to: CORNOR_07_1.E }
+  - straight: { from: CORNOR_07_1.W, to: CORNOR_07_2.W }
+  - straight: { from: CORNOR_07_2.E, to: PULLEY_RING_07.W }
+  - straight: { from: PULLEY_RING_07.E, to: TAPER_OUT_07.E }
+  - straight: { from: PULLEY_RING_07.E_DROP, to: TAPER_OUT_07_DROP.E }
+
+  - straight: { from: TAPER_IN_08.E, to: CORNOR_08_1.E }
+  - straight: { from: CORNOR_08_1.W, to: CORNOR_08_2.W }
+  - straight: { from: CORNOR_08_2.E, to: PULLEY_RING_08.W }
+  - straight: { from: PULLEY_RING_08.E, to: TAPER_OUT_08.E }
+  - straight: { from: PULLEY_RING_08.E_DROP, to: TAPER_OUT_08_DROP.E }
+
+  - straight: { from: TAPER_IN_09.E, to: CORNOR_09_1.E }
+  - straight: { from: CORNOR_09_1.W, to: CORNOR_09_2.W }
+  - straight: { from: CORNOR_09_2.E, to: PULLEY_RING_09.W }
+  - straight: { from: PULLEY_RING_09.E, to: TAPER_OUT_09.E }
+  - straight: { from: PULLEY_RING_09.E_DROP, to: TAPER_OUT_09_DROP.E }
+
+  - straight: { from: TAPER_IN_10.E, to: CORNOR_10_1.E }
+  - straight: { from: CORNOR_10_1.W, to: CORNOR_10_2.W }
+  - straight: { from: CORNOR_10_2.E, to: PULLEY_RING_10.W }
+  - straight: { from: PULLEY_RING_10.E, to: TAPER_OUT_10.E }
+  - straight: { from: PULLEY_RING_10.E_DROP, to: TAPER_OUT_10_DROP.E }
+
+  - straight: { from: TAPER_IN_11.E, to: CORNOR_11_1.E }
+  - straight: { from: CORNOR_11_1.W, to: CORNOR_11_2.W }
+  - straight: { from: CORNOR_11_2.E, to: PULLEY_RING_11.W }
+  - straight: { from: PULLEY_RING_11.E, to: TAPER_OUT_11.E }
+  - straight: { from: PULLEY_RING_11.E_DROP, to: TAPER_OUT_11_DROP.E }
+
+  - straight: { from: TAPER_IN_12.E, to: CORNOR_12_1.E }
+  - straight: { from: CORNOR_12_1.W, to: CORNOR_12_2.W }
+  - straight: { from: CORNOR_12_2.E, to: PULLEY_RING_12.W }
+  - straight: { from: PULLEY_RING_12.E, to: TAPER_OUT_12.E }
+  - straight: { from: PULLEY_RING_12.E_DROP, to: TAPER_OUT_12_DROP.E }
+
+  - straight: { from: TAPER_IN_13.E, to: CORNOR_13_1.E }
+  - straight: { from: CORNOR_13_1.W, to: CORNOR_13_2.W }
+  - straight: { from: CORNOR_13_2.E, to: PULLEY_RING_13.W }
+  - straight: { from: PULLEY_RING_13.E, to: TAPER_OUT_13.E }
+  - straight: { from: PULLEY_RING_13.E_DROP, to: TAPER_OUT_13_DROP.E }
+
+  - straight: { from: TAPER_IN_14.E, to: CORNOR_14_1.E }
+  - straight: { from: CORNOR_14_1.W, to: CORNOR_14_2.W }
+  - straight: { from: CORNOR_14_2.E, to: PULLEY_RING_14.W }
+  - straight: { from: PULLEY_RING_14.E, to: TAPER_OUT_14.E }
+  - straight: { from: PULLEY_RING_14.E_DROP, to: TAPER_OUT_14_DROP.E }
+
+  - straight: { from: TAPER_IN_15.E, to: CORNOR_15_1.E }
+  - straight: { from: CORNOR_15_1.W, to: CORNOR_15_2.W }
+  - straight: { from: CORNOR_15_2.E, to: PULLEY_RING_15.W }
+  - straight: { from: PULLEY_RING_15.E, to: TAPER_OUT_15.E }
+  - straight: { from: PULLEY_RING_15.E_DROP, to: TAPER_OUT_15_DROP.E }
+
+  - straight: { from: TAPER_IN_16.E, to: CORNOR_16_1.E }
+  - straight: { from: CORNOR_16_1.W, to: CORNOR_16_2.W }
+  - straight: { from: CORNOR_16_2.E, to: PULLEY_RING_16.W }
+  - straight: { from: PULLEY_RING_16.E, to: TAPER_OUT_16.E }
+  - straight: { from: PULLEY_RING_16.E_DROP, to: TAPER_OUT_16_DROP.E }
+
+  - straight: { from: TAPER_IN_17.E, to: CORNOR_17_1.E }
+  - straight: { from: CORNOR_17_1.W, to: CORNOR_17_2.W }
+  - straight: { from: CORNOR_17_2.E, to: PULLEY_RING_17.W }
+  - straight: { from: PULLEY_RING_17.E, to: TAPER_OUT_17.E }
+  - straight: { from: PULLEY_RING_17.E_DROP, to: TAPER_OUT_17_DROP.E }
+
+  - straight: { from: TAPER_IN_18.E, to: CORNOR_18_1.E }
+  - straight: { from: CORNOR_18_1.W, to: CORNOR_18_2.W }
+  - straight: { from: CORNOR_18_2.E, to: PULLEY_RING_18.W }
+  - straight: { from: PULLEY_RING_18.E, to: TAPER_OUT_18.E }
+  - straight: { from: PULLEY_RING_18.E_DROP, to: TAPER_OUT_18_DROP.E }
+
+  - straight: { from: TAPER_IN_19.E, to: CORNOR_19_1.E }
+  - straight: { from: CORNOR_19_1.W, to: CORNOR_19_2.W }
+  - straight: { from: CORNOR_19_2.E, to: PULLEY_RING_19.W }
+  - straight: { from: PULLEY_RING_19.E, to: TAPER_OUT_19.E }
+  - straight: { from: PULLEY_RING_19.E_DROP, to: TAPER_OUT_19_DROP.E }
+
+  - straight: { from: TAPER_IN_20.E, to: CORNOR_20_1.E }
+  - straight: { from: CORNOR_20_1.W, to: CORNOR_20_2.W }
+  - straight: { from: CORNOR_20_2.E, to: PULLEY_RING_20.W }
+  - straight: { from: PULLEY_RING_20.E, to: TAPER_OUT_20.E }
+  - straight: { from: PULLEY_RING_20.E_DROP, to: TAPER_OUT_20_DROP.E }
+
+  - straight: { from: TAPER_IN_21.E, to: CORNOR_21_1.E }
+  - straight: { from: CORNOR_21_1.W, to: CORNOR_21_2.W }
+  - straight: { from: CORNOR_21_2.E, to: PULLEY_RING_21.W }
+  - straight: { from: PULLEY_RING_21.E, to: TAPER_OUT_21.E }
+  - straight: { from: PULLEY_RING_21.E_DROP, to: TAPER_OUT_21_DROP.E }
+
+  - straight: { from: TAPER_IN_22.E, to: CORNOR_22_1.E }
+  - straight: { from: CORNOR_22_1.W, to: CORNOR_22_2.W }
+  - straight: { from: CORNOR_22_2.E, to: PULLEY_RING_22.W }
+  - straight: { from: PULLEY_RING_22.E, to: TAPER_OUT_22.E }
+  - straight: { from: PULLEY_RING_22.E_DROP, to: TAPER_OUT_22_DROP.E }
+
+  - straight: { from: TAPER_IN_23.E, to: CORNOR_23_1.E }
+  - straight: { from: CORNOR_23_1.W, to: CORNOR_23_2.W }
+  - straight: { from: CORNOR_23_2.E, to: PULLEY_RING_23.W }
+  - straight: { from: PULLEY_RING_23.E, to: TAPER_OUT_23.E }
+  - straight: { from: PULLEY_RING_23.E_DROP, to: TAPER_OUT_23_DROP.E }
+
+  - straight: { from: TAPER_IN_24.E, to: CORNOR_24_1.E }
+  - straight: { from: CORNOR_24_1.W, to: CORNOR_24_2.W }
+  - straight: { from: CORNOR_24_2.E, to: PULLEY_RING_24.W }
+  - straight: { from: PULLEY_RING_24.E, to: TAPER_OUT_24.E }
+  - straight: { from: PULLEY_RING_24.E_DROP, to: TAPER_OUT_24_DROP.E }
+
+  - straight: { from: TAPER_IN_25.E, to: CORNOR_25_1.E }
+  - straight: { from: CORNOR_25_1.W, to: CORNOR_25_2.W }
+  - straight: { from: CORNOR_25_2.E, to: PULLEY_RING_25.W }
+  - straight: { from: PULLEY_RING_25.E, to: TAPER_OUT_25.E }
+  - straight: { from: PULLEY_RING_25.E_DROP, to: TAPER_OUT_25_DROP.E }

@@ -184,13 +184,20 @@ def PCellADDDROPPulleyRing(params, layers):
     bus_drop.turn(Rc_drop, -phi_drop)          # coupling arc
     bus_drop.turn(Rc_drop, 0.5*phi_drop)
     bus_drop.segment(Pout_drop)               # output straight
+    bus_drop.turn(100, -math.pi / 2)  # extend port in +x direction
+    dis_drop_cal = Rc * (2 * math.cos(0.5 * phi) - 1) + Rc_drop * (2 * math.cos(0.5 * phi_drop) - 1) - 200 - 50
+    bus_drop.segment((bus_drop.spine()[-1][0], bus_drop.spine()[-1][1]-dis_drop_cal))  # extend port in -y direction
+    bus_drop.turn(100, math.pi / 2)
+    dis_drop_right = 500 - math.sin(0.5 * phi) * Rc_drop - bus_drop.spine()[-1][0]
+    bus_drop.segment((bus_drop.spine()[-1][0]+dis_drop_right, bus_drop.spine()[-1][1]))  # extend port in +x direction
+    loc_end_point = bus_drop.spine()[-1]
     cell.add(bus_drop)
 
     # ---- ports (DEGREES)
     ports = {
         "W": Port("W", Pin[0], Pin[1], math.pi, wc, layer_bus),
         "E": Port("E", Pout[0], Pout[1], 0.0, wc, layer_bus),
-        "E_DROP": Port("E_DROP", Pout_drop[0], Pout_drop[1], 0.0, wc_drop, layer_bus),
+        "E_DROP": Port("E_DROP", loc_end_point[0], loc_end_point[1], 0.0, wc_drop, layer_bus),
     }
 
     dx, dy = -P0[0] + bus_ext, -P0[1]  # vector from origin to first bend start
