@@ -26,7 +26,19 @@ instances:
       coupler_width: 1.0
       coupler_drop_width: 0.104
       gap: 0.5
-      gap_drop: 0.18
+      gap_drop: 0.16
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 5.0
+
+  PR1_3:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.104
+      gap: 0.5
+      gap_drop: 0.20
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 5.0
   
@@ -59,7 +71,19 @@ instances:
       coupler_width: 1.0
       coupler_drop_width: 0.104
       gap: 0.5
-      gap_drop: 0.18
+      gap_drop: 0.16
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 10.0
+
+  PR2_3:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.104
+      gap: 0.5
+      gap_drop: 0.20
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 10.0
   
@@ -70,7 +94,7 @@ instances:
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
-      pulley_angle_deg: 0.0000001
+      pulley_angle_deg: 5
 
   PR3_1:
     type: PULLEY_ADD_DROP_RING
@@ -92,7 +116,19 @@ instances:
       coupler_width: 1.0
       coupler_drop_width: 0.104
       gap: 0.5
-      gap_drop: 0.18
+      gap_drop: 0.16
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 20.0
+
+  PR3_3:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.104
+      gap: 0.5
+      gap_drop: 0.20
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 20.0
   
@@ -103,7 +139,7 @@ instances:
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
-      pulley_angle_deg: 0.0000001
+      pulley_angle_deg: 10
 
   PR4_1:
     type: PULLEY_ADD_DROP_RING
@@ -125,7 +161,19 @@ instances:
       coupler_width: 1.0
       coupler_drop_width: 0.104
       gap: 0.5
-      gap_drop: 0.18
+      gap_drop: 0.16
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 30.0
+
+  PR4_3:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 235.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.104
+      gap: 0.5
+      gap_drop: 0.20
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 30.0
   
@@ -136,7 +184,7 @@ instances:
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
-      pulley_angle_deg: 0.0000001
+      pulley_angle_deg: 20
 
   PR5_1:
     type: PULLEY_ADD_DROP_RING
@@ -144,9 +192,9 @@ instances:
       ring_radius: 235.0
       ring_width: 1.8
       coupler_width: 1.0
-      coupler_drop_width: 0.104
+      coupler_drop_width: 0.120
       gap: 0.5
-      gap_drop: 0.12
+      gap_drop: 0.08
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 30.0
 
@@ -156,9 +204,9 @@ instances:
       ring_radius: 235.0
       ring_width: 1.8
       coupler_width: 1.0
-      coupler_drop_width: 0.104
+      coupler_drop_width: 0.120
       gap: 0.5
-      gap_drop: 0.18
+      gap_drop: 0.16
       pulley_angle_deg: 0.0000001
       pulley_drop_angle_deg: 30.0
 
@@ -168,11 +216,11 @@ instances:
       ring_radius: 235.0
       ring_width: 1.8
       coupler_width: 1.0
-      coupler_drop_width: 0.104
+      coupler_drop_width: 0.120
       gap: 0.5
-      gap_drop: 0.12
+      gap_drop: 0.24
       pulley_angle_deg: 0.0000001
-      pulley_drop_angle_deg: 90.0
+      pulley_drop_angle_deg: 55.0
   
   PRR_5:
     type: PULLEY_RING
@@ -181,7 +229,7 @@ instances:
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
-      pulley_angle_deg: 0.0000001
+      pulley_angle_deg: 30
 
   T_E:
     type: TAPER
@@ -195,9 +243,9 @@ instances:
     type: ARC
     params: { radius: 100.0, width: 1.0, angle_deg: 90.0 }
   
-  Cornor_w400nm:
-    type: ARC
-    params: { radius: 100.0, width: 0.4, angle_deg: 90.0 }
+  # Cornor_w400nm:
+  #   type: ARC
+  #   params: { radius: 100.0, width: 0.4, angle_deg: 90.0 }
   
   T_E_BROADEN:
     type: TAPER
@@ -240,7 +288,7 @@ placement:
   - place: { inst: T_E, at: [0, 1600], rot: 0, as: TAPER_IN_05 }
   - place: { inst: Cornor, at: [4000, 1500], rot: 0, as: CORNOR_05_1 }
   - place: { inst: Cornor, at: [4200, 1100], rot: 180, as: CORNOR_05_2 }
-  - place: { inst: PR1_1, at: [4400, 1000], rot: 0, as: PULLEY_RING_05 }
+  - place: { inst: PR1_3, at: [4400, 1000], rot: 0, as: PULLEY_RING_05 }
   - place: { inst: T_E, at: [8000, 1000], rot: 180, as: TAPER_OUT_05 }
   - place: { inst: T_E_DROP, at: [8000, 1050], rot: 180, as: TAPER_OUT_05_DROP }
   - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_05.E_DROP, as: BROADEN_05 }
@@ -280,7 +328,7 @@ placement:
   - place: { inst: T_E, at: [0, 2800], rot: 0, as: TAPER_IN_10 }
   - place: { inst: Cornor, at: [4000, 2700], rot: 0, as: CORNOR_10_1 }
   - place: { inst: Cornor, at: [4200, 2300], rot: 180, as: CORNOR_10_2 }
-  - place: { inst: PR2_1, at: [4400, 2200], rot: 0, as: PULLEY_RING_10 }
+  - place: { inst: PR2_3, at: [4400, 2200], rot: 0, as: PULLEY_RING_10 }
   - place: { inst: T_E, at: [8000, 2200], rot: 180, as: TAPER_OUT_10 }
   - place: { inst: T_E_DROP, at: [8000, 2250], rot: 180, as: TAPER_OUT_10_DROP }
   - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_10.E_DROP, as: BROADEN_10 }
@@ -320,7 +368,7 @@ placement:
   - place: { inst: T_E, at: [0, 4000], rot: 0, as: TAPER_IN_15 }
   - place: { inst: Cornor, at: [4000, 3900], rot: 0, as: CORNOR_15_1 }
   - place: { inst: Cornor, at: [4200, 3500], rot: 180, as: CORNOR_15_2 }
-  - place: { inst: PR3_1, at: [4400, 3400], rot: 0, as: PULLEY_RING_15 }
+  - place: { inst: PR3_3, at: [4400, 3400], rot: 0, as: PULLEY_RING_15 }
   - place: { inst: T_E, at: [8000, 3400], rot: 180, as: TAPER_OUT_15 }
   - place: { inst: T_E_DROP, at: [8000, 3450], rot: 180, as: TAPER_OUT_15_DROP }
   - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_15.E_DROP, as: BROADEN_15 }
@@ -360,7 +408,7 @@ placement:
   - place: { inst: T_E, at: [0, 5200], rot: 0, as: TAPER_IN_20 }
   - place: { inst: Cornor, at: [4000, 5100], rot: 0, as: CORNOR_20_1 }
   - place: { inst: Cornor, at: [4200, 4700], rot: 180, as: CORNOR_20_2 }
-  - place: { inst: PR4_1, at: [4400, 4600], rot: 0, as: PULLEY_RING_20 }
+  - place: { inst: PR4_3, at: [4400, 4600], rot: 0, as: PULLEY_RING_20 }
   - place: { inst: T_E, at: [8000, 4600], rot: 180, as: TAPER_OUT_20 }
   - place: { inst: T_E_DROP, at: [8000, 4650], rot: 180, as: TAPER_OUT_20_DROP }
   - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_20.E_DROP, as: BROADEN_20 }
@@ -400,7 +448,7 @@ placement:
   - place: { inst: T_E, at: [0, 6400], rot: 0, as: TAPER_IN_25 }
   - place: { inst: Cornor, at: [4000, 6300], rot: 0, as: CORNOR_25_1 }
   - place: { inst: Cornor, at: [4200, 5900], rot: 180, as: CORNOR_25_2 }
-  - place: { inst: PR5_1, at: [4400, 5800], rot: 0, as: PULLEY_RING_25 }
+  - place: { inst: PR5_3, at: [4400, 5800], rot: 0, as: PULLEY_RING_25 }
   - place: { inst: T_E, at: [8000, 5800], rot: 180, as: TAPER_OUT_25 }
   - place: { inst: T_E_DROP, at: [8000, 5850], rot: 180, as: TAPER_OUT_25_DROP }
   - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_25.E_DROP, as: BROADEN_25 }
