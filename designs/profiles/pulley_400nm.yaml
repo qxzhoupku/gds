@@ -9,7 +9,7 @@ instances:
   PR1_1:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -21,7 +21,7 @@ instances:
   PR1_2:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -33,7 +33,7 @@ instances:
   PR1_3:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -45,7 +45,7 @@ instances:
   PRR_1:
     type: PULLEY_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
@@ -54,7 +54,7 @@ instances:
   PR2_1:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -66,7 +66,7 @@ instances:
   PR2_2:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -78,7 +78,7 @@ instances:
   PR2_3:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -90,7 +90,7 @@ instances:
   PRR_2:
     type: PULLEY_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
@@ -99,7 +99,7 @@ instances:
   PR3_1:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -111,7 +111,7 @@ instances:
   PR3_2:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -123,7 +123,7 @@ instances:
   PR3_3:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -135,7 +135,7 @@ instances:
   PRR_3:
     type: PULLEY_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
@@ -144,7 +144,7 @@ instances:
   PR4_1:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -156,7 +156,7 @@ instances:
   PR4_2:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -168,7 +168,7 @@ instances:
   PR4_3:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.104
@@ -180,7 +180,7 @@ instances:
   PRR_4:
     type: PULLEY_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
@@ -189,7 +189,7 @@ instances:
   PR5_1:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.120
@@ -201,7 +201,7 @@ instances:
   PR5_2:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.120
@@ -213,7 +213,7 @@ instances:
   PR5_3:
     type: PULLEY_ADD_DROP_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       coupler_drop_width: 0.120
@@ -225,7 +225,7 @@ instances:
   PRR_5:
     type: PULLEY_RING
     params:
-      ring_radius: 235.0
+      ring_radius: 100.0
       ring_width: 1.8
       coupler_width: 1.0
       gap: 0.5
