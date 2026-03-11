@@ -379,14 +379,22 @@ instances:
   Cornor:
     type: ARC
     params: { radius: 100.0, width: 1.0, angle_deg: 90.0 }
-  
-  # Cornor_w400nm:
-  #   type: ARC
-  #   params: { radius: 100.0, width: 0.4, angle_deg: 90.0 }
-  
+
   T_E_BROADEN:
     type: TAPER
-    params: { w0: 0.104, w1: 0.4, L: 1000.0}
+    params: { w0: 0.104, w1: 0.4, L: 160.0}
+
+  T_E_BROADEN_120nm:
+    type: TAPER
+    params: { w0: 0.120, w1: 0.4, L: 160.0}
+
+  T_E_BROADEN_200nm:
+    type: TAPER
+    params: { w0: 0.200, w1: 0.4, L: 160.0}
+
+  T_E_BROADEN_400nm:
+    type: TAPER
+    params: { w0: 0.400, w1: 0.4, L: 160.0}
 
 
 placement:
@@ -592,8 +600,8 @@ placement:
   - place: { inst: PR5_1, at: [1200, 5400], rot: 0, as: PULLEY_RING_21 }
   - place: { inst: T_E, at: [8000, 5400], rot: 180, as: TAPER_OUT_21 }
   - place: { inst: T_E_DROP, at: [8000, 5450], rot: 180, as: TAPER_OUT_21_DROP }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_21.E_DROP, as: BROADEN_21 }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_21.W_DROP, as: BROADEN_21_W }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_21.E_DROP, as: BROADEN_21 }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_21.W_DROP, as: BROADEN_21_W }
 
   - place: { inst: T_E, at: [0, 5800], rot: 0, as: TAPER_IN_22 }
   - place: { inst: Cornor, at: [1600, 5700], rot: 0, as: CORNOR_22_1 }
@@ -601,8 +609,8 @@ placement:
   - place: { inst: PR5_1, at: [2000, 5500], rot: 0, as: PULLEY_RING_22 }
   - place: { inst: T_E, at: [8000, 5500], rot: 180, as: TAPER_OUT_22 }
   - place: { inst: T_E_DROP, at: [8000, 5550], rot: 180, as: TAPER_OUT_22_DROP }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_22.E_DROP, as: BROADEN_22 }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_22.W_DROP, as: BROADEN_22_W }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_22.E_DROP, as: BROADEN_22 }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_22.W_DROP, as: BROADEN_22_W }
   - place: { inst: T_E_DROP, at: [0, 5850], rot: 0, as: TAPER_OUT_22_DROP_W }
 
   - place: { inst: T_E, at: [0, 5900], rot: 0, as: TAPER_IN_23 }
@@ -611,8 +619,8 @@ placement:
   - place: { inst: PR5_2, at: [2800, 5600], rot: 0, as: PULLEY_RING_23 }
   - place: { inst: T_E, at: [8000, 5600], rot: 180, as: TAPER_OUT_23 }
   - place: { inst: T_E_DROP, at: [8000, 5650], rot: 180, as: TAPER_OUT_23_DROP }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_23.E_DROP, as: BROADEN_23 }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_23.W_DROP, as: BROADEN_23_W }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_23.E_DROP, as: BROADEN_23 }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_23.W_DROP, as: BROADEN_23_W }
   - place: { inst: T_E_DROP, at: [0, 5950], rot: 0, as: TAPER_OUT_23_DROP_W }
 
   - place: { inst: T_E, at: [0, 6000], rot: 0, as: TAPER_IN_24 }
@@ -621,8 +629,8 @@ placement:
   - place: { inst: PR5_2, at: [3600, 5700], rot: 0, as: PULLEY_RING_24 }
   - place: { inst: T_E, at: [8000, 5700], rot: 180, as: TAPER_OUT_24 }
   - place: { inst: T_E_DROP, at: [8000, 5750], rot: 180, as: TAPER_OUT_24_DROP }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_24.E_DROP, as: BROADEN_24 }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_24.W_DROP, as: BROADEN_24_W }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_24.E_DROP, as: BROADEN_24 }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_24.W_DROP, as: BROADEN_24_W }
   - place: { inst: T_E_DROP, at: [0, 6050], rot: 0, as: TAPER_OUT_24_DROP_W }
 
   - place: { inst: T_E, at: [0, 6100], rot: 0, as: TAPER_IN_25 }
@@ -631,8 +639,8 @@ placement:
   - place: { inst: PR5_3, at: [4400, 5800], rot: 0, as: PULLEY_RING_25 }
   - place: { inst: T_E, at: [8000, 5800], rot: 180, as: TAPER_OUT_25 }
   - place: { inst: T_E_DROP, at: [8000, 5850], rot: 180, as: TAPER_OUT_25_DROP }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_25.E_DROP, as: BROADEN_25 }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_25.W_DROP, as: BROADEN_25_W }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_25.E_DROP, as: BROADEN_25 }
+  - connect: { inst: T_E_BROADEN_120nm, port: W, to: PULLEY_RING_25.W_DROP, as: BROADEN_25_W }
   - place: { inst: T_E_DROP, at: [0, 6150], rot: 0, as: TAPER_OUT_25_DROP_W }
 
   - place: { inst: T_E, at: [0, 1400], rot: 0, as: TAPER_IN_26 }
@@ -711,8 +719,8 @@ placement:
   - place: { inst: PR5_4, at: [6000, 6000], rot: 0, as: PULLEY_RING_35 }
   - place: { inst: T_E, at: [8000, 6000], rot: 180, as: TAPER_OUT_35 }
   - place: { inst: T_E_DROP, at: [8000, 6050], rot: 180, as: TAPER_OUT_35_DROP }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_35.E_DROP, as: BROADEN_35 }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_35.W_DROP, as: BROADEN_35_W }
+  - connect: { inst: T_E_BROADEN_400nm, port: W, to: PULLEY_RING_35.E_DROP, as: BROADEN_35 }
+  - connect: { inst: T_E_BROADEN_400nm, port: W, to: PULLEY_RING_35.W_DROP, as: BROADEN_35_W }
   - place: { inst: T_E_DROP, at: [0, 6350], rot: 0, as: TAPER_OUT_35_DROP_W }
 
   - place: { inst: T_E, at: [0, 6900], rot: 0, as: TAPER_IN_36 }
@@ -776,8 +784,8 @@ placement:
   - place: { inst: PR6_4, at: [6000, 7200], rot: 0, as: PULLEY_RING_42 }
   - place: { inst: T_E, at: [8000, 7200], rot: 180, as: TAPER_OUT_42 }
   - place: { inst: T_E_DROP, at: [8000, 7250], rot: 180, as: TAPER_OUT_42_DROP }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_42.E_DROP, as: BROADEN_42 }
-  - connect: { inst: T_E_BROADEN, port: W, to: PULLEY_RING_42.W_DROP, as: BROADEN_42_W }
+  - connect: { inst: T_E_BROADEN_200nm, port: W, to: PULLEY_RING_42.E_DROP, as: BROADEN_42 }
+  - connect: { inst: T_E_BROADEN_200nm, port: W, to: PULLEY_RING_42.W_DROP, as: BROADEN_42_W }
   - place: { inst: T_E_DROP, at: [0, 7550], rot: 0, as: TAPER_OUT_42_DROP_W }
 
 
@@ -821,7 +829,6 @@ routes:
   - straight: { from: CORNOR_06_2.E, to: PULLEY_RING_06.W }
   - straight: { from: PULLEY_RING_06.E, to: TAPER_OUT_06.E }
   - straight: { from: BROADEN_06.E, to: TAPER_OUT_06_DROP.E }
-  # - straight: { from: PULLEY_RING_06.E_DROP, to: TAPER_OUT_06_DROP.E }
 
   - straight: { from: TAPER_IN_07.E, to: CORNOR_07_1.E }
   - straight: { from: CORNOR_07_1.W, to: CORNOR_07_2.W }
@@ -856,7 +863,6 @@ routes:
   - straight: { from: CORNOR_11_2.E, to: PULLEY_RING_11.W }
   - straight: { from: PULLEY_RING_11.E, to: TAPER_OUT_11.E }
   - straight: { from: BROADEN_11.E, to: TAPER_OUT_11_DROP.E }
-  # - straight: { from: PULLEY_RING_11.E_DROP, to: TAPER_OUT_11_DROP.E }
 
   - straight: { from: TAPER_IN_12.E, to: CORNOR_12_1.E }
   - straight: { from: CORNOR_12_1.W, to: CORNOR_12_2.W }
@@ -891,7 +897,6 @@ routes:
   - straight: { from: CORNOR_16_2.E, to: PULLEY_RING_16.W }
   - straight: { from: PULLEY_RING_16.E, to: TAPER_OUT_16.E }
   - straight: { from: BROADEN_16.E, to: TAPER_OUT_16_DROP.E }
-  # - straight: { from: PULLEY_RING_16.E_DROP, to: TAPER_OUT_16_DROP.E }
 
   - straight: { from: TAPER_IN_17.E, to: CORNOR_17_1.E }
   - straight: { from: CORNOR_17_1.W, to: CORNOR_17_2.W }
@@ -926,7 +931,6 @@ routes:
   - straight: { from: CORNOR_21_2.E, to: PULLEY_RING_21.W }
   - straight: { from: PULLEY_RING_21.E, to: TAPER_OUT_21.E }
   - straight: { from: BROADEN_21.E, to: TAPER_OUT_21_DROP.E }
-  # - straight: { from: PULLEY_RING_21.E_DROP, to: TAPER_OUT_21_DROP.E }
 
   - straight: { from: TAPER_IN_22.E, to: CORNOR_22_1.E }
   - straight: { from: CORNOR_22_1.W, to: CORNOR_22_2.W }
