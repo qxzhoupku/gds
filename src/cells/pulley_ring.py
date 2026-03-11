@@ -189,7 +189,7 @@ def PCellADDDROPPulleyRing(params, layers):
     dis_drop_cal = Rc * (2 * math.cos(0.5 * phi) - 1) + Rc_drop * (2 * math.cos(0.5 * phi_drop) - 1) - 2 * bend_drop_radius - 50
     bus_drop.segment((bus_drop.spine()[-1][0], bus_drop.spine()[-1][1]-dis_drop_cal))  # extend port in -y direction
     bus_drop.turn(bend_drop_radius, math.pi / 2)
-    dis_drop_right = 500 - math.sin(0.5 * phi) * Rc_drop - bus_drop.spine()[-1][0]
+    dis_drop_right = 20
     bus_drop.segment((bus_drop.spine()[-1][0]+dis_drop_right, bus_drop.spine()[-1][1]))  # extend port in +x direction
     loc_end_point = bus_drop.spine()[-1]
     cell.add(bus_drop)
@@ -200,7 +200,7 @@ def PCellADDDROPPulleyRing(params, layers):
     dis_drop_additional_cal = 250 - Rc * (2 * math.cos(0.5 * phi) - 1) - Rc_drop * (2 * math.cos(0.5 * phi_drop) - 1)
     bus_drop_additional.segment((bus_drop_additional.spine()[-1][0], bus_drop_additional.spine()[-1][1]+dis_drop_additional_cal))  # extend port in -y direction
     bus_drop_additional.turn(bend_drop_radius, math.pi / 2)
-    dis_drop_additional_left = 50
+    dis_drop_additional_left = 20
     bus_drop_additional.segment((bus_drop_additional.spine()[-1][0]-dis_drop_additional_left, bus_drop_additional.spine()[-1][1]))
     loc_end_point_additional = bus_drop_additional.spine()[-1]
     cell.add(bus_drop_additional)
