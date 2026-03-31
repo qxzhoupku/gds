@@ -3,6 +3,7 @@
 import math
 import gdstk
 from ..ports import Port
+from ..layer_map import resolve_wg_layer
 
 
 def PCellRacetrack(params, layers):
@@ -12,9 +13,6 @@ def PCellRacetrack(params, layers):
       - Two semicircular turns of radius R
       - Two straight sections of length L_straight
       - Bus length defaults to 2·R if not specified
-
-    The coupling gap is edge-to-edge between the bus top and the
-    racetrack bottom.
 
     params:
         R          — bend radius               (default 50.0 µm)
@@ -33,7 +31,8 @@ def PCellRacetrack(params, layers):
     L_bus      = params.get("L_bus", None)
     name       = str(params.get("name", "RACETRACK"))
 
-    WG   = layers.get("WG", 1)
+    layer_bus  = resolve_wg_layer(w_bus,  layers)
+    layer_ring = resolve_wg_layer(w_ring, layers)
     TEXT = layers.get("TEXT", 100)
 
     if L_bus is None:
@@ -44,23 +43,20 @@ def PCellRacetrack(params, layers):
 
     # ---- Bus (horizontal at y = 0) ----
     x0, x1 = -L_bus / 2.0, L_bus / 2.0
-    bus = gdstk.RobustPath((x0, 0.0), w_bus, layer=WG)
+    bus = gdstk.RobustPath((x0, 0.0), w_bus, layer=layer_bus)
     bus.segment((x1, 0.0), width=w_bus)
     cell.add(bus)
 
     # ---- Racetrack (above bus) ----
-    # Centerline y of the lower semicircle
     y_c = gap + 0.5 * (w_bus + w_ring)
-
     x_left  = -L_straight / 2.0
     x_right =  L_straight / 2.0
 
-    # Start at bottom-left of the loop, go up → top semicircle → down → bottom semicircle
-    rp = gdstk.RobustPath((x_left, y_c + R), w_ring, layer=WG)
-    rp.segment((x_left, y_c + R + L_straight), width=w_ring)  # left straight (up)
-    rp.turn(R, -math.pi)                                       # top semicircle (CW)
-    rp.segment((x_right, y_c + R), width=w_ring)               # right straight (down)
-    rp.turn(R, -math.pi)                                       # bottom semicircle (CW)
+    rp = gdstk.RobustPath((x_left, y_c + R), w_ring, layer=layer_ring)
+    rp.segment((x_left, y_c + R + L_straight), width=w_ring)
+    rp.turn(R, -math.pi)
+    rp.segment((x_right, y_c + R), width=w_ring)
+    rp.turn(R, -math.pi)
     cell.add(rp)
 
     cell.add(gdstk.Label(
@@ -69,7 +65,7 @@ def PCellRacetrack(params, layers):
     ))
 
     ports = {
-        "W": Port("W", x0, 0.0, math.pi, w_bus, WG),
-        "E": Port("E", x1, 0.0, 0.0,     w_bus, WG),
+        "W": Port("W", x0, 0.0, math.pi, w_bus, layer_bus),
+        "E": Port("E", x1, 0.0, 0.0,     w_bus, layer_bus),
     }
     return cell, ports

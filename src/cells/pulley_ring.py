@@ -7,6 +7,7 @@ the effective coupling length compared to a simple point coupler.
 import math
 import gdstk
 from ..ports import Port
+from ..layer_map import resolve_wg_layer
 
 
 def PCellPulleyRing(params, layers):
@@ -22,8 +23,6 @@ def PCellPulleyRing(params, layers):
     Optional params:
         bus_extension — straight run before/after bends (default max(50, 10·coupler_width))
         name          — cell name (default "PULLEY_RING")
-        layer_ring    — layer key for ring  (default "WG")
-        layer_bus     — layer key for bus   (default "WG")
     """
     R        = float(params["ring_radius"])
     wr       = float(params["ring_width"])
@@ -37,8 +36,9 @@ def PCellPulleyRing(params, layers):
 
     phi = math.radians(phi_deg)
 
-    layer_ring = layers.get(params.get("layer_ring", "WG"), layers.get("WG", 1))
-    layer_bus  = layers.get(params.get("layer_bus",  "WG"), layers.get("WG", 1))
+    layer_ring = resolve_wg_layer(wr, layers)
+    layer_bus  = resolve_wg_layer(wc, layers)
+    TEXT = layers.get("TEXT", 100)
 
     # Coupler centerline radius (edge-gap convention)
     Rc = R + 0.5 * wr + gap + 0.5 * wc
@@ -74,6 +74,11 @@ def PCellPulleyRing(params, layers):
     dy = -P0[1]
     ring.translate(dx, dy)
     bus.translate(dx, dy)
+
+    cell.add(gdstk.Label(
+        f"PULLEY R={R} gap={gap} θ={phi_deg}°",
+        (dx, dy - R - 10), layer=TEXT,
+    ))
 
     ports = {
         "W": Port("W", Pin[0]  + dx, Pin[1]  + dy, math.pi, wc, layer_bus),
@@ -132,8 +137,10 @@ def PCellADDDROPPulleyRing(params, layers):
     phi      = math.radians(phi_deg)
     phi_drop = math.radians(phi_drop_deg)
 
-    layer_ring = layers.get(params.get("layer_ring", "WG"), layers.get("WG", 1))
-    layer_bus  = layers.get(params.get("layer_bus",  "WG"), layers.get("WG", 1))
+    layer_ring = resolve_wg_layer(wr,      layers)
+    layer_bus  = resolve_wg_layer(wc,      layers)
+    layer_drop = resolve_wg_layer(wc_drop, layers)
+    TEXT = layers.get("TEXT", 100)
 
     Rc      = R + 0.5 * wr + gap      + 0.5 * wc
     Rc_drop = R + 0.5 * wr + gap_drop + 0.5 * wc_drop
@@ -177,7 +184,7 @@ def PCellADDDROPPulleyRing(params, layers):
     Pout_drop = (P3_drop[0] + bus_drop_ext, P3_drop[1])
 
     # East drop arm
-    bus_drop = gdstk.RobustPath(Pin_drop, width=wc_drop, layer=layer_bus)
+    bus_drop = gdstk.RobustPath(Pin_drop, width=wc_drop, layer=layer_drop)
     bus_drop.segment(P0_drop)
     bus_drop.turn(Rc_drop,  0.5 * phi_drop)
     bus_drop.turn(Rc_drop, -phi_drop)
@@ -198,7 +205,7 @@ def PCellADDDROPPulleyRing(params, layers):
     cell.add(bus_drop)
 
     # West drop arm — near-zero segment establishes heading for first turn
-    bus_drop_W = gdstk.RobustPath(Pin_drop, width=wc_drop, layer=layer_bus)
+    bus_drop_W = gdstk.RobustPath(Pin_drop, width=wc_drop, layer=layer_drop)
     bus_drop_W.segment((Pin_drop[0] - 1e-10, Pin_drop[1]))
     bus_drop_W.turn(bend_drop_r, -math.pi / 2)
     dis_drop_W = (vert_target
@@ -219,10 +226,15 @@ def PCellADDDROPPulleyRing(params, layers):
     for geom in (ring, bus, bus_drop, bus_drop_W):
         geom.translate(dx, dy)
 
+    cell.add(gdstk.Label(
+        f"ADD-DROP PULLEY R={R} gap={gap}/{gap_drop} θ={phi_deg}/{phi_drop_deg}°",
+        (dx, dy - R - 10), layer=TEXT,
+    ))
+
     ports = {
         "W":      Port("W",      Pin[0]        + dx, Pin[1]        + dy, math.pi, wc,      layer_bus),
         "E":      Port("E",      Pout[0]       + dx, Pout[1]       + dy, 0.0,     wc,      layer_bus),
-        "E_DROP": Port("E_DROP", loc_end_E[0]  + dx, loc_end_E[1]  + dy, 0.0,     wc_drop, layer_bus),
-        "W_DROP": Port("W_DROP", loc_end_W[0]  + dx, loc_end_W[1]  + dy, math.pi, wc_drop, layer_bus),
+        "E_DROP": Port("E_DROP", loc_end_E[0]  + dx, loc_end_E[1]  + dy, 0.0,     wc_drop, layer_drop),
+        "W_DROP": Port("W_DROP", loc_end_W[0]  + dx, loc_end_W[1]  + dy, math.pi, wc_drop, layer_drop),
     }
     return cell, ports

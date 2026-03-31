@@ -3,10 +3,14 @@
 import math
 import gdstk
 from ..ports import Port
+from ..layer_map import resolve_wg_layer
 
 
 def PCellTaper(params, layers):
     """Linear width taper from w0 to w1 over length L.
+
+    The taper is placed on the layer corresponding to max(w0, w1),
+    since the wider dimension determines the e-beam dose recipe.
 
     params:
         w0   — input width   (default 0.5 µm)
@@ -19,7 +23,7 @@ def PCellTaper(params, layers):
     L    = float(params.get("L", 150.0))
     name = str(params.get("name", "TAPER"))
 
-    WG   = layers.get("WG", 1)
+    WG   = resolve_wg_layer(max(w0, w1), layers)
     TEXT = layers.get("TEXT", 100)
 
     cell = gdstk.Cell(name)
@@ -30,7 +34,7 @@ def PCellTaper(params, layers):
     cell.add(gdstk.Label(f"TAPER {w0}->{w1} L={L}", (L / 2, -5), layer=TEXT))
 
     ports = {
-        "W": Port("W", 0.0, 0.0, math.pi, w0, WG),
-        "E": Port("E", L,   0.0, 0.0,     w1, WG),
+        "W": Port("W", 0.0, 0.0, math.pi, w0, resolve_wg_layer(w0, layers)),
+        "E": Port("E", L,   0.0, 0.0,     w1, resolve_wg_layer(w1, layers)),
     }
     return cell, ports

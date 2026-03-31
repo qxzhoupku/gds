@@ -1,0 +1,50 @@
+# Example design profile demonstrating width-based layer separation.
+#
+# In e-beam lithography, different waveguide widths often need different
+# dose / current / resist recipes.  The 'width_layers' config maps width
+# ranges to GDS layers so each process step is on its own layer.
+#
+# Omit 'width_layers' entirely to keep the original single-layer behaviour.
+
+defaults:
+  layers:
+    WG: 1          # fallback waveguide layer (used when no width_layers match)
+    TEXT: 100
+    PORT: 99
+    DIE: 10
+
+  width_layers:
+    # Rules are evaluated in order; the first match wins.
+    # A rule without 'max_width' is the catch-all (must be last).
+    - max_width: 0.6    # ≤ 0.6 µm  →  narrow single-mode guides
+      layer: 1
+    - max_width: 2.0    # ≤ 2.0 µm  →  tapers and multimode regions
+      layer: 2
+    - layer: 3          # > 2.0 µm   →  wide structures
+
+chip:
+  name: DEMO_MULTI_LAYER
+  out: out/demo_multi_layer.gds
+
+instances:
+  taper_in:
+    type: TAPER
+    params: { w0: 0.5, w1: 3.0, L: 100, name: TP_IN }
+
+  wx1:
+    type: WX
+    params: { WM: 1.6, LM: 8, LT: 10, w_in: 0.5, name: WX1 }
+
+  ring1:
+    type: RING
+    params: { R: 20, gap: 0.25, w_ring: 0.5, w_bus: 0.5, name: RING1 }
+
+placement:
+  - place: { inst: taper_in, at: [0, 0] }
+  - connect: { inst: wx1, port: W, to: taper_in.E }
+  - place: { inst: ring1, at: [0, 100] }
+
+# routes:
+  # - straight:
+  #     from: wx1.E
+  #     to: ring1.W

@@ -3,6 +3,7 @@
 import math
 import gdstk
 from ..ports import Port
+from ..layer_map import resolve_wg_layer
 
 
 def PCellRingCoupler(params, layers):
@@ -23,7 +24,8 @@ def PCellRingCoupler(params, layers):
     L_bus  = params.get("L_bus", None)
     name   = str(params.get("name", "RING"))
 
-    WG   = layers.get("WG", 1)
+    layer_bus  = resolve_wg_layer(w_bus,  layers)
+    layer_ring = resolve_wg_layer(w_ring, layers)
     TEXT = layers.get("TEXT", 100)
 
     if L_bus is None:
@@ -34,19 +36,20 @@ def PCellRingCoupler(params, layers):
 
     # Bus waveguide at y = 0
     x0, x1 = -L_bus / 2, L_bus / 2
-    bus = gdstk.RobustPath((x0, 0.0), w_bus, layer=WG)
+    bus = gdstk.RobustPath((x0, 0.0), w_bus, layer=layer_bus)
     bus.segment((x1, 0.0), width=w_bus)
     cell.add(bus)
 
     # Ring centred above bus
     y_c = gap + 0.5 * w_bus + R
-    ring = gdstk.ellipse((0.0, y_c), radius=R, inner_radius=R - w_ring, layer=WG)
+    ring = gdstk.ellipse((0.0, y_c), radius=R, inner_radius=R - w_ring,
+                         layer=layer_ring)
     cell.add(ring)
 
     cell.add(gdstk.Label(f"RING R={R} gap={gap}", (0, -R - 10), layer=TEXT))
 
     ports = {
-        "W": Port("W", x0, 0.0, math.pi, w_bus, WG),
-        "E": Port("E", x1, 0.0, 0.0,     w_bus, WG),
+        "W": Port("W", x0, 0.0, math.pi, w_bus, layer_bus),
+        "E": Port("E", x1, 0.0, 0.0,     w_bus, layer_bus),
     }
     return cell, ports

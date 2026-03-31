@@ -13,6 +13,7 @@ import yaml
 import gdstk
 
 from src.ports import Port
+from src.layer_map import resolve_wg_layer
 from src.place import (
     place_by_ports, route_straight, route_manhattan,
     route_euler_bend, transform_ports,
@@ -140,22 +141,29 @@ def connect_instance(top, spec, inst_cells, inst_ports, placed_ports):
 # Routing
 # ---------------------------------------------------------------------------
 
+def _route_layer(A, B, layers):
+    """Determine the GDS layer for a route connecting ports A and B."""
+    return resolve_wg_layer(min(A.width, B.width), layers)
+
+
 def apply_routes(cfg, top, placed_ports, layers):
     for r in cfg.get("routes", []):
         if "straight" in r:
             A = _resolve_port_ref(r["straight"]["from"], placed_ports)
             B = _resolve_port_ref(r["straight"]["to"],   placed_ports)
-            route_straight(top, A, B, layer=layers["WG"])
+            route_straight(top, A, B, layer=_route_layer(A, B, layers))
 
         elif "manhattan" in r:
             A = _resolve_port_ref(r["manhattan"]["from"], placed_ports)
             B = _resolve_port_ref(r["manhattan"]["to"],   placed_ports)
-            route_manhattan(top, A, B, float(r["manhattan"]["r"]), layer=layers["WG"])
+            route_manhattan(top, A, B, float(r["manhattan"]["r"]),
+                            layer=_route_layer(A, B, layers))
 
         elif "euler" in r:
             A = _resolve_port_ref(r["euler"]["from"], placed_ports)
             B = _resolve_port_ref(r["euler"]["to"],   placed_ports)
-            route_euler_bend(top, A, B, float(r["euler"]["Rmin"]), layer=layers["WG"])
+            route_euler_bend(top, A, B, float(r["euler"]["Rmin"]),
+                             layer=_route_layer(A, B, layers))
 
 
 # ---------------------------------------------------------------------------
@@ -227,16 +235,19 @@ def apply_macro_routes(top, macro, placed_ports, layers, alias_prefix):
             return placed_ports[full][port]
 
         if "straight" in r:
-            route_straight(top, resolve(r["straight"]["from"]),
-                           resolve(r["straight"]["to"]), layer=layers["WG"])
+            A = resolve(r["straight"]["from"])
+            B = resolve(r["straight"]["to"])
+            route_straight(top, A, B, layer=_route_layer(A, B, layers))
         elif "manhattan" in r:
-            route_manhattan(top, resolve(r["manhattan"]["from"]),
-                            resolve(r["manhattan"]["to"]),
-                            float(r["manhattan"]["r"]), layer=layers["WG"])
+            A = resolve(r["manhattan"]["from"])
+            B = resolve(r["manhattan"]["to"])
+            route_manhattan(top, A, B, float(r["manhattan"]["r"]),
+                            layer=_route_layer(A, B, layers))
         elif "euler" in r:
-            route_euler_bend(top, resolve(r["euler"]["from"]),
-                             resolve(r["euler"]["to"]),
-                             float(r["euler"]["Rmin"]), layer=layers["WG"])
+            A = resolve(r["euler"]["from"])
+            B = resolve(r["euler"]["to"])
+            route_euler_bend(top, A, B, float(r["euler"]["Rmin"]),
+                             layer=_route_layer(A, B, layers))
 
 
 # ---------------------------------------------------------------------------
@@ -246,7 +257,11 @@ def apply_macro_routes(top, macro, placed_ports, layers, alias_prefix):
 def main(profile="designs/profiles/demo_small.yaml"):
     cfg = resolve_design(profile)
 
-    layers   = cfg.get("defaults", {}).get("layers", {"WG": 1, "PORT": 99, "TEXT": 100})
+    defaults = cfg.get("defaults", {})
+    layers   = defaults.get("layers", {"WG": 1, "PORT": 99, "TEXT": 100})
+    # Merge width_layers into the layers dict so resolve_wg_layer can find it
+    if "width_layers" in defaults:
+        layers["width_layers"] = defaults["width_layers"]
     out_path = cfg.get("chip", {}).get("out", "out/chip_demo.gds")
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 

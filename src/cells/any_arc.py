@@ -3,6 +3,7 @@
 import math
 import gdstk
 from ..ports import Port
+from ..layer_map import resolve_wg_layer
 
 
 def PCellAnyArc(params, layers):
@@ -19,7 +20,8 @@ def PCellAnyArc(params, layers):
     angle_deg = float(params.get("angle_deg", 90.0))
     name      = str(params.get("name", "ARC"))
 
-    WG = layers.get("WG", 1)
+    WG   = resolve_wg_layer(width, layers)
+    TEXT = layers.get("TEXT", 100)
 
     cell = gdstk.Cell(name)
     theta = math.radians(angle_deg)
@@ -32,6 +34,11 @@ def PCellAnyArc(params, layers):
     # End position
     end_x = radius * math.cos(theta)
     end_y = radius * math.sin(theta)
+
+    cell.add(gdstk.Label(
+        f"ARC R={radius} w={width} θ={angle_deg}°",
+        (0, 0), layer=TEXT,
+    ))
 
     # Port tangent directions (perpendicular to radius, pointing outward)
     ports = {
