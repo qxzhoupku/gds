@@ -1,0 +1,231 @@
+# designs/profiles/pulley_400nm.yaml
+extends: designs/base.yaml
+
+defaults:
+  layers:
+    WG: 1          # fallback waveguide layer (used when no width_layers match)
+    TEXT: 100
+    PORT: 99
+    DIE: 10
+
+  width_layers:
+    # Rules are evaluated in order; the first match wins.
+    # A rule without 'max_width' is the catch-all (must be last).
+    - max_width: 0.11   # ≤ 0.2 µm  →  narrow single-mode guides
+      layer: 1
+    - max_width: 0.20   # > 0.2 µm and ≤ 0.4 µm →  medium-width structures
+      layer: 2
+    - layer: 3          # > 0.2 µm   →  wide structures
+
+chip:
+  out: out/chip_pulley_400nm_dose_test_v2.gds
+  # die: { size_um: [6500, 500], margin_um: 0, at: [0, 70] }
+
+instances:
+  PR1_1:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 100.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.104
+      gap: 0.5
+      gap_drop: 0.12
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 20.0
+      bend_drop_radius: 50.0
+
+  PR1_2:
+    type: PULLEY_ADD_DROP_RING
+    params:
+      ring_radius: 100.0
+      ring_width: 1.8
+      coupler_width: 1.0
+      coupler_drop_width: 0.150
+      gap: 0.5
+      gap_drop: 0.12
+      pulley_angle_deg: 0.0000001
+      pulley_drop_angle_deg: 20.0
+      bend_drop_radius: 50.0
+  
+  PR2_1:
+    type: PULLEY_RING
+    params:
+      ring_radius: 100.0
+      ring_width: 1.8
+      coupler_width: 0.104
+      gap: 0.12
+      pulley_angle_deg: 0.0000001
+
+  PR2_2:
+    type: PULLEY_RING
+    params:
+      ring_radius: 100.0
+      ring_width: 1.8
+      coupler_width: 0.104
+      gap: 0.16
+      pulley_angle_deg: 10.0
+
+  PR2_3:
+    type: PULLEY_RING
+    params:
+      ring_radius: 100.0
+      ring_width: 1.8
+      coupler_width: 0.104
+      gap: 0.12
+      pulley_angle_deg: 90.0
+
+  PR2_4:
+    type: PULLEY_RING
+    params:
+      ring_radius: 100.0
+      ring_width: 1.8
+      coupler_width: 0.150
+      gap: 0.12
+      pulley_angle_deg: 30.0
+
+  PR2_5:
+    type: PULLEY_RING
+    params:
+      ring_radius: 100.0
+      ring_width: 1.8
+      coupler_width: 0.150
+      gap: 0.16
+      pulley_angle_deg: 60.0
+
+  PR2_6:
+    type: PULLEY_RING
+    params:
+      ring_radius: 100.0
+      ring_width: 1.8
+      coupler_width: 0.150
+      gap: 0.12
+      pulley_angle_deg: 90.0
+
+  T_E:
+    type: TAPER
+    params: { w0: 0.15, w1: 1.0, L: 400.0 }
+  
+  T_E_DROP:
+    type: TAPER
+    params: { w0: 0.15, w1: 0.4, L: 400.0 }
+  
+  Cornor:
+    type: ARC
+    params: { radius: 100.0, width: 1.0, angle_deg: 90.0 }
+  
+  T_E_BROADEN_104nm:
+    type: TAPER
+    params: { w0: 0.104, w1: 0.4, L: 160.0}
+
+  T_E_BROADEN_150nm:
+    type: TAPER
+    params: { w0: 0.150, w1: 0.4, L: 160.0}
+  
+  STICK:
+    type: TAPER
+    params: { w0: 5, w1: 5, L: 100.0}
+
+  STICK_SMALL:
+    type: TAPER
+    params: { w0: 3, w1: 3, L: 20.0}
+
+
+placement:
+  - place: { inst: T_E, at: [0, 400], rot: 0, as: TAPER_IN_02 }
+  - place: { inst: Cornor, at: [1600, 300], rot: 0, as: CORNOR_02_1 }
+  - place: { inst: Cornor, at: [1800, 200], rot: 180, as: CORNOR_02_2 }
+  - place: { inst: PR1_1, at: [2000, 100], rot: 0, as: PULLEY_RING_02 }
+  - place: { inst: T_E, at: [6500, 100], rot: 180, as: TAPER_OUT_02 }
+  - place: { inst: T_E_DROP, at: [6500, 150], rot: 180, as: TAPER_OUT_02_DROP }
+  - connect: { inst: T_E_BROADEN_104nm, port: W, to: PULLEY_RING_02.E_DROP, as: BROADEN_02 }
+  - connect: { inst: T_E_BROADEN_104nm, port: W, to: PULLEY_RING_02.W_DROP, as: BROADEN_02_W }
+  - place: { inst: T_E_DROP, at: [0, 450], rot: 0, as: TAPER_OUT_02_DROP_W }
+
+  - place: { inst: T_E, at: [0, 500], rot: 0, as: TAPER_IN_03 }
+  - place: { inst: Cornor, at: [2400, 400], rot: 0, as: CORNOR_03_1 }
+  - place: { inst: Cornor, at: [2600, 300], rot: 180, as: CORNOR_03_2 }
+  - place: { inst: PR1_2, at: [2800, 200], rot: 0, as: PULLEY_RING_03 }
+  - place: { inst: T_E, at: [6500, 200], rot: 180, as: TAPER_OUT_03 }
+  - place: { inst: T_E_DROP, at: [6500, 250], rot: 180, as: TAPER_OUT_03_DROP }
+  - connect: { inst: T_E_BROADEN_150nm, port: W, to: PULLEY_RING_03.E_DROP, as: BROADEN_03 }
+  - connect: { inst: T_E_BROADEN_150nm, port: W, to: PULLEY_RING_03.W_DROP, as: BROADEN_03_W }
+  - place: { inst: T_E_DROP, at: [0, 550], rot: 0, as: TAPER_OUT_03_DROP_W }
+
+  - place: { inst: PR2_1, at: [3150, 320], rot: 0, as: PULLEY_RING_04 }
+
+  - place: { inst: PR2_1, at: [3600, 320], rot: 0, as: PULLEY_RING_05 }
+
+  - place: { inst: PR2_2, at: [4000, 350], rot: 0, as: PULLEY_RING_06 }
+
+  - place: { inst: PR2_2, at: [4400, 350], rot: 0, as: PULLEY_RING_07 }
+
+  - place: { inst: PR2_3, at: [4750, 350], rot: 0, as: PULLEY_RING_08 }
+
+  - place: { inst: PR2_3, at: [5200, 350], rot: 0, as: PULLEY_RING_09 }
+
+  - place: { inst: PR2_4, at: [5650, 350], rot: 0, as: PULLEY_RING_10 }
+
+  - place: { inst: PR2_4, at: [6050, 350], rot: 0, as: PULLEY_RING_11 }
+
+  - place: { inst: PR2_5, at: [100, 180], rot: 0, as: PULLEY_RING_12 }
+
+  - place: { inst: PR2_5, at: [500, 180], rot: 0, as: PULLEY_RING_13 }
+
+  - place: { inst: PR2_6, at: [850, 180], rot: 0, as: PULLEY_RING_14 }
+
+  - place: { inst: PR2_6, at: [1250, 180], rot: 0, as: PULLEY_RING_15 }
+
+  - place: { inst: STICK, at: [200, 210], rot: 0, as: stick_01 }
+  - place: { inst: STICK, at: [200, 210], rot: 60, as: stick_02 }
+  - place: { inst: STICK, at: [300, 210], rot: 120, as: stick_03 }
+
+  - place: { inst: STICK, at: [6100, 400], rot: 0, as: stick_04 }
+  - place: { inst: STICK, at: [6100, 400], rot: 60, as: stick_05 }
+  - place: { inst: STICK, at: [6200, 400], rot: 120, as: stick_06 }
+
+  - place: { inst: STICK_SMALL, at: [590, 280], rot: 0 }
+  - place: { inst: STICK_SMALL, at: [590, 280], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [590, 260], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [610, 280], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [590, 260], rot: 0 }
+
+  - place: { inst: STICK_SMALL, at: [630, 280], rot: -30 }
+  - place: { inst: STICK_SMALL, at: [630, 280], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [630, 260], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [650, 270], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [630, 240], rot: 30 }
+
+  - place: { inst: STICK_SMALL, at: [670, 280], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [670, 260], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [690, 280], rot: -90 }
+  - place: { inst: STICK_SMALL, at: [670, 260], rot: 0 }
+  - place: { inst: STICK_SMALL, at: [690, 260], rot: -90 }
+
+
+routes:
+  - straight: { from: TAPER_IN_02.E, to: CORNOR_02_1.E }
+  - straight: { from: CORNOR_02_1.W, to: CORNOR_02_2.W }
+  - straight: { from: CORNOR_02_2.E, to: PULLEY_RING_02.W }
+  - straight: { from: PULLEY_RING_02.E, to: TAPER_OUT_02.E }
+  - straight: { from: BROADEN_02.E, to: TAPER_OUT_02_DROP.E }
+  - straight: { from: BROADEN_02_W.E, to: TAPER_OUT_02_DROP_W.E }
+
+  - straight: { from: TAPER_IN_03.E, to: CORNOR_03_1.E }
+  - straight: { from: CORNOR_03_1.W, to: CORNOR_03_2.W }
+  - straight: { from: CORNOR_03_2.E, to: PULLEY_RING_03.W }
+  - straight: { from: PULLEY_RING_03.E, to: TAPER_OUT_03.E }
+  - straight: { from: BROADEN_03.E, to: TAPER_OUT_03_DROP.E }
+  - straight: { from: BROADEN_03_W.E, to: TAPER_OUT_03_DROP_W.E }
+
+  - straight: {from: PULLEY_RING_04.E, to: PULLEY_RING_05.W }
+
+  - straight: {from: PULLEY_RING_06.E, to: PULLEY_RING_07.W }
+  - straight: {from: PULLEY_RING_07.E, to: PULLEY_RING_08.W }
+
+  # - straight: {from: PULLEY_RING_09.E, to: PULLEY_RING_10.W }
+  - straight: {from: PULLEY_RING_10.E, to: PULLEY_RING_11.W }
+
+  - straight: {from: PULLEY_RING_12.E, to: PULLEY_RING_13.W }
+  - straight: {from: PULLEY_RING_13.E, to: PULLEY_RING_14.W }
+  - straight: {from: PULLEY_RING_14.E, to: PULLEY_RING_15.W }
