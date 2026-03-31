@@ -1,78 +1,41 @@
+"""Circular arc waveguide of arbitrary angle."""
 
-import gdstk
 import math
+import gdstk
 from ..ports import Port
 
-# def PCellAnyArc(radius=10.0, width=0.5, angle_deg=90, layer=1, name="QUARTER_ARC"):
-#     """
-#     Returns (cell, ports) of a circle arc waveguide, turning counter-clockwise.
-#     - radius: centerline radius
-#     - width: waveguide width
-#     - angle_deg: arc angle in degrees (e.g., 90 for quarter turn, 180 for U-bend)
-#     - layer: GDS layer (int or (layer, datatype))
-#     """
-#     cell = gdstk.Cell(name)
-#     theta0 = 0.0
-#     theta1 = math.radians(angle_deg)
-#     npts = max(2**14, int(0.5 * abs(angle_deg)))  # sample density
 
-#     # Define centerline points
-#     pts = []
-#     for i in range(npts + 1):
-#         t = theta0 + (theta1 - theta0) * i / npts
-#         pts.append((radius * math.cos(t), radius * math.sin(t)))
+def PCellAnyArc(params, layers):
+    """Circular arc waveguide, counter-clockwise from (radius, 0).
 
-#     # Create path
-#     path = gdstk.FlexPath(pts, width, layer=layer)
-    
-#     cell.add(path)
+    params:
+        radius    — centerline radius  (default 10.0 µm)
+        width     — waveguide width    (default 0.5 µm)
+        angle_deg — arc sweep in degrees (default 90)
+        name      — cell name          (default "ARC")
+    """
+    radius    = float(params.get("radius", 10.0))
+    width     = float(params.get("width", 0.5))
+    angle_deg = float(params.get("angle_deg", 90.0))
+    name      = str(params.get("name", "ARC"))
 
-#     # Ports: input at start, output at end
-#     p0 = Port("W", x=pts[0][0], y=pts[0][1], angle=theta0-math.pi/2, width=width, layer=layer)
-#     p1 = Port("E", x=pts[-1][0], y=pts[-1][1], angle=theta1+math.pi/2, width=width, layer=layer)
-#     return cell, {"W": p0, "E": p1}
+    WG = layers.get("WG", 1)
 
-# del PCellAnyArc  # avoid name clash
-
-# def PCellAnyArc(radius=10.0, width=0.5, angle_deg=90, layer=1, name="QUARTER_ARC"):
-#     cell = gdstk.Cell(name)
-#     theta = math.radians(angle_deg)
-
-#     # Create a FlexPath arc (circular, counterclockwise from 0)
-#     path = gdstk.FlexPath([(radius, 0)], width, layer=layer)
-#     # path.tolerance = 1e-7
-#     path.arc(radius, 0, theta, width=width)
-#     cell.add(path)
-
-#     # Compute end position
-#     end_x = radius * math.cos(theta)
-#     end_y = radius * math.sin(theta)
-
-#     ports = {
-#         "W": Port("W", x=radius, y=0, angle=-math.radians(90), width=width, layer=layer),
-#         "E": Port("E", x=end_x, y=end_y, angle=theta+math.radians(90), width=width, layer=layer)
-#     }
-
-#     return cell, ports
-
-# del PCellAnyArc  # avoid name clash
-
-def PCellAnyArc(radius=10.0, width=0.5, angle_deg=90, layer=1, name="QUARTER_ARC"):
     cell = gdstk.Cell(name)
     theta = math.radians(angle_deg)
 
-    # Create RobustPath arc centered at (0, 0), starting at (radius, 0)
-    path = gdstk.RobustPath((radius, 0), width=width, layer=layer)
+    # Arc centred at origin, starting at (radius, 0)
+    path = gdstk.RobustPath((radius, 0), width=width, layer=WG)
     path.arc(radius, 0, theta)
     cell.add(path)
 
-    # Calculate end position
+    # End position
     end_x = radius * math.cos(theta)
     end_y = radius * math.sin(theta)
 
+    # Port tangent directions (perpendicular to radius, pointing outward)
     ports = {
-        "W": Port("W", x=radius, y=0, angle=-math.radians(90), width=width, layer=layer),
-        "E": Port("E", x=end_x, y=end_y, angle=theta+math.radians(90), width=width, layer=layer)
+        "W": Port("W", radius, 0.0,   -math.pi / 2,        width, WG),
+        "E": Port("E", end_x,  end_y,  theta + math.pi / 2, width, WG),
     }
-
     return cell, ports

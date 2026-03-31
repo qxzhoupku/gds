@@ -1,11 +1,22 @@
+"""YAML-driven photonic layout builder.
+
+Usage:
+    python build.py [profile.yaml]
+
+Reads a design profile, instantiates parametric cells, places and connects
+them via ports, applies routing, and writes a GDS-II file.
+"""
+
 import os
-import uuid
+import math
 import yaml
 import gdstk
-import math
 
 from src.ports import Port
-from src.place import place_by_ports, route_straight, route_manhattan, route_euler_bend, transform_ports
+from src.place import (
+    place_by_ports, route_straight, route_manhattan,
+    route_euler_bend, transform_ports,
+)
 from src.cells.wx import PCellWx
 from src.cells.taper import PCellTaper
 from src.cells.ring import PCellRingCoupler
@@ -13,11 +24,33 @@ from src.cells.racetrack import PCellRacetrack
 from src.cells.any_arc import PCellAnyArc
 from src.cells.pulley_ring import PCellPulleyRing, PCellADDDROPPulleyRing
 
+
+# ---------------------------------------------------------------------------
+# PCell registry — every entry has the same signature: (params, layers) → (cell, ports)
+# ---------------------------------------------------------------------------
+
+REGISTRY = {
+    "WX":                  PCellWx,
+    "TAPER":               PCellTaper,
+    "RING":                PCellRingCoupler,
+    "RACETRACK":           PCellRacetrack,
+    "ARC":                 PCellAnyArc,
+    "PULLEY_RING":         PCellPulleyRing,
+    "PULLEY_ADD_DROP_RING": PCellADDDROPPulleyRing,
+}
+
+
+# ---------------------------------------------------------------------------
+# YAML helpers
+# ---------------------------------------------------------------------------
+
 def load_yaml(path: str):
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
+
 def deep_update(base: dict, upd: dict) -> dict:
+    """Recursively merge *upd* into *base* (mutates *base*)."""
     for k, v in upd.items():
         if isinstance(v, dict) and isinstance(base.get(k), dict):
             deep_update(base[k], v)
@@ -25,239 +58,274 @@ def deep_update(base: dict, upd: dict) -> dict:
             base[k] = v
     return base
 
+
 def resolve_design(profile_path: str) -> dict:
+    """Load a design profile, resolving single-level ``extends`` inheritance."""
     cfg = load_yaml(profile_path)
     if "extends" in cfg:
         base = load_yaml(cfg["extends"])
         cfg = deep_update(base, {k: v for k, v in cfg.items() if k != "extends"})
     return cfg
 
+
+# ---------------------------------------------------------------------------
+# Validation helpers
+# ---------------------------------------------------------------------------
+
+class DesignError(Exception):
+    """Raised when a design profile references missing instances or ports."""
+
+
+def _require_instance(name, inst_cells):
+    if name not in inst_cells:
+        raise DesignError(f"Instance '{name}' not found. Available: {sorted(inst_cells)}")
+
+
+def _require_port(port_name, alias, placed_ports):
+    if alias not in placed_ports:
+        raise DesignError(f"Alias '{alias}' has not been placed yet.")
+    if port_name not in placed_ports[alias]:
+        available = sorted(placed_ports[alias])
+        raise DesignError(f"Port '{port_name}' not found on '{alias}'. Available: {available}")
+
+
+def _resolve_port_ref(ref_str, placed_ports):
+    """Split 'inst.port' and return the Port, with validation."""
+    inst, port = ref_str.split(".")
+    _require_port(port, inst, placed_ports)
+    return placed_ports[inst][port]
+
+
+# ---------------------------------------------------------------------------
+# Placement
+# ---------------------------------------------------------------------------
+
 def place_instance(top, spec, inst_cells, inst_ports, placed_ports):
-    n = spec["inst"]
-    alias = spec.get("as", n)
-    at = spec.get("at", [0, 0])
-    rot = float(spec.get("rot", 0.0))
-    ref = gdstk.Reference(inst_cells[n], origin=(at[0], at[1]), rotation=math.radians(rot))
+    """Absolute placement: put *inst* at (at, rot)."""
+    name  = spec["inst"]
+    alias = spec.get("as", name)
+    at    = spec.get("at", [0, 0])
+    rot   = math.radians(float(spec.get("rot", 0.0)))
+
+    _require_instance(name, inst_cells)
+
+    ref = gdstk.Reference(inst_cells[name], origin=(at[0], at[1]), rotation=rot)
     top.add(ref)
-    ports = transform_ports(inst_ports[n], origin=(at[0], at[1]), rotation=math.radians(rot))
-    placed_ports[alias] = ports
+    placed_ports[alias] = transform_ports(inst_ports[name], origin=(at[0], at[1]), rotation=rot)
+
 
 def connect_instance(top, spec, inst_cells, inst_ports, placed_ports):
-    inst = spec["inst"]
-    port = spec["port"]
+    """Port-connected placement: snap *inst.port* to *target_inst.target_port*."""
+    inst  = spec["inst"]
+    port  = spec["port"]
     alias = spec.get("as", inst)
     target_inst, target_port = spec["to"].split(".")
 
-    if target_inst not in placed_ports:
-        ref = gdstk.Reference(inst_cells[target_inst], origin=(0, 0), rotation=0.0)
-        top.add(ref)
-        placed_ports[target_inst] = transform_ports(inst_ports[target_inst], origin=(0, 0), rotation=0.0)
+    _require_instance(inst, inst_cells)
 
-    ref = place_by_ports(top, inst_cells[inst], inst_ports[inst][port], placed_ports[target_inst][target_port])
+    if target_inst not in placed_ports:
+        raise DesignError(
+            f"Cannot connect to '{target_inst}' — it has not been placed yet. "
+            f"Placed so far: {sorted(placed_ports)}"
+        )
+
+    ref = place_by_ports(top, inst_cells[inst], inst_ports[inst][port],
+                         placed_ports[target_inst][target_port])
     rot = float(ref.rotation or 0.0)
     ox, oy = ref.origin
     placed_ports[alias] = transform_ports(inst_ports[inst], origin=(ox, oy), rotation=rot)
 
+
+# ---------------------------------------------------------------------------
+# Routing
+# ---------------------------------------------------------------------------
+
 def apply_routes(cfg, top, placed_ports, layers):
     for r in cfg.get("routes", []):
         if "straight" in r:
-            f_inst, f_port = r["straight"]["from"].split(".")
-            t_inst, t_port = r["straight"]["to"].split(".")
-            A = placed_ports[f_inst][f_port]
-            B = placed_ports[t_inst][t_port]
+            A = _resolve_port_ref(r["straight"]["from"], placed_ports)
+            B = _resolve_port_ref(r["straight"]["to"],   placed_ports)
             route_straight(top, A, B, layer=layers["WG"])
-        elif "manhattan" in r:
-            f_inst, f_port = r["manhattan"]["from"].split(".")
-            t_inst, t_port = r["manhattan"]["to"].split(".")
-            radius = float(r["manhattan"]["r"])
-            A = placed_ports[f_inst][f_port]
-            B = placed_ports[t_inst][t_port]
-            route_manhattan(top, A, B, radius, layer=layers["WG"])
-        elif "euler" in r:
-            f_inst, f_port = r["euler"]["from"].split(".")
-            t_inst, t_port = r["euler"]["to"].split(".")
-            Rmin = float(r["euler"]["Rmin"])
-            A = placed_ports[f_inst][f_port]
-            B = placed_ports[t_inst][t_port]
-            route_euler_bend(top, A, B, Rmin, layer=layers["WG"])
 
-def apply_macro_placement(top, macro, inst_cells, inst_ports, placed_ports, alias_prefix, base_offset, substitutions={}, individual_offsets={}):
+        elif "manhattan" in r:
+            A = _resolve_port_ref(r["manhattan"]["from"], placed_ports)
+            B = _resolve_port_ref(r["manhattan"]["to"],   placed_ports)
+            route_manhattan(top, A, B, float(r["manhattan"]["r"]), layer=layers["WG"])
+
+        elif "euler" in r:
+            A = _resolve_port_ref(r["euler"]["from"], placed_ports)
+            B = _resolve_port_ref(r["euler"]["to"],   placed_ports)
+            route_euler_bend(top, A, B, float(r["euler"]["Rmin"]), layer=layers["WG"])
+
+
+# ---------------------------------------------------------------------------
+# Macro (block) expansion
+# ---------------------------------------------------------------------------
+
+def _macro_alias(alias_prefix, inner_alias):
+    return f"{alias_prefix}.{inner_alias}" if alias_prefix else inner_alias
+
+
+def apply_macro_placement(top, macro, inst_cells, inst_ports, placed_ports,
+                          alias_prefix, base_offset,
+                          substitutions=None, individual_offsets=None):
     substitutions = substitutions or {}
     individual_offsets = individual_offsets or {}
+
     for step in macro.get("placement", []):
         if "place" in step:
-            spec = dict(step["place"])  # shallow copy
-            raw_inst = spec["inst"]
-            inst = substitutions.get(raw_inst, raw_inst)
-
+            spec = dict(step["place"])
+            inst = substitutions.get(spec["inst"], spec["inst"])
             inner_alias = spec.get("as", inst)
-            full_alias = f"{alias_prefix}.{inner_alias}" if alias_prefix else inner_alias
+            full_alias  = _macro_alias(alias_prefix, inner_alias)
 
-            at = spec.get("at", [0, 0])
-            rot = float(spec.get("rot", 0.0))
-
+            at  = spec.get("at", [0, 0])
+            rot = math.radians(float(spec.get("rot", 0.0)))
             offset = individual_offsets.get(inner_alias, [0, 0])
-            origin = [
-                at[0] + base_offset[0] + offset[0],
-                at[1] + base_offset[1] + offset[1]
-            ]
+            origin = [at[0] + base_offset[0] + offset[0],
+                      at[1] + base_offset[1] + offset[1]]
 
-            ref = gdstk.Reference(inst_cells[inst], origin=origin, rotation=math.radians(rot))
+            ref = gdstk.Reference(inst_cells[inst], origin=origin, rotation=rot)
             top.add(ref)
+            placed_ports[full_alias] = transform_ports(
+                inst_ports[inst], origin=origin, rotation=rot,
+            )
 
-            ports = transform_ports(inst_ports[inst], origin=origin, rotation=math.radians(rot))
-            placed_ports[full_alias] = ports
         elif "connect" in step:
-            spec = dict(step["connect"])  # shallow copy
-            inst_raw = spec["inst"]
-            inst = substitutions.get(inst_raw, inst_raw)
-
+            spec = dict(step["connect"])
+            inst = substitutions.get(spec["inst"], spec["inst"])
             inner_alias = spec.get("as", inst)
-            full_alias = f"{alias_prefix}.{inner_alias}" if alias_prefix else inner_alias
+            full_alias  = _macro_alias(alias_prefix, inner_alias)
 
-            target_full = spec["to"]
-            target_inst_raw, target_port = target_full.split(".")
-            target_inst = substitutions.get(target_inst_raw, target_inst_raw)
-            target_full_alias = f"{alias_prefix}.{target_inst}" if alias_prefix else target_inst
+            target_raw, target_port = spec["to"].split(".")
+            target_inst = substitutions.get(target_raw, target_raw)
+            target_full = _macro_alias(alias_prefix, target_inst)
 
-            if target_full_alias not in placed_ports:
-                ref = gdstk.Reference(inst_cells[target_inst], origin=(0, 0), rotation=0.0)
-                top.add(ref)
-                placed_ports[target_full_alias] = transform_ports(inst_ports[target_inst], origin=(0, 0), rotation=0.0)
+            if target_full not in placed_ports:
+                raise DesignError(
+                    f"Macro connect: target '{target_full}' not placed. "
+                    f"Placed: {sorted(placed_ports)}"
+                )
 
             ref = place_by_ports(
-                top,
-                inst_cells[inst],
+                top, inst_cells[inst],
                 inst_ports[inst][spec["port"]],
-                placed_ports[target_full_alias][target_port]
+                placed_ports[target_full][target_port],
             )
             rot = float(ref.rotation or 0.0)
             ox, oy = ref.origin
-            placed_ports[full_alias] = transform_ports(inst_ports[inst], origin=(ox, oy), rotation=math.radians(rot))
+            placed_ports[full_alias] = transform_ports(
+                inst_ports[inst], origin=(ox, oy), rotation=math.radians(rot),
+            )
+
 
 def apply_macro_routes(top, macro, placed_ports, layers, alias_prefix):
     for r in macro.get("routes", []):
         def resolve(port_ref):
             inst, port = port_ref.split(".")
-            full_inst = f"{alias_prefix}.{inst}" if alias_prefix else inst
-            return placed_ports[full_inst][port]
+            full = _macro_alias(alias_prefix, inst)
+            return placed_ports[full][port]
 
         if "straight" in r:
-            A, B = resolve(r["straight"]["from"]), resolve(r["straight"]["to"])
-            route_straight(top, A, B, layer=layers["WG"])
+            route_straight(top, resolve(r["straight"]["from"]),
+                           resolve(r["straight"]["to"]), layer=layers["WG"])
         elif "manhattan" in r:
-            A, B = resolve(r["manhattan"]["from"]), resolve(r["manhattan"]["to"])
-            radius = float(r["manhattan"]["r"])
-            route_manhattan(top, A, B, radius, layer=layers["WG"])
+            route_manhattan(top, resolve(r["manhattan"]["from"]),
+                            resolve(r["manhattan"]["to"]),
+                            float(r["manhattan"]["r"]), layer=layers["WG"])
         elif "euler" in r:
-            A, B = resolve(r["euler"]["from"]), resolve(r["euler"]["to"])
-            Rmin = float(r["euler"]["Rmin"])
-            route_euler_bend(top, A, B, Rmin, layer=layers["WG"])
+            route_euler_bend(top, resolve(r["euler"]["from"]),
+                             resolve(r["euler"]["to"]),
+                             float(r["euler"]["Rmin"]), layer=layers["WG"])
 
 
-
-REGISTRY = {
-    "WX": lambda p, L: PCellWx(
-        p.get("WM", 1.6), p.get("LM", 8.0), p.get("LT", 10.0), p.get("w_in", 0.5), L, name=p.get("name", "WX")
-    ),
-    "TAPER": lambda p, L: PCellTaper(
-        p.get("w0", 0.5), p.get("w1", 3.0), p.get("L", 150.0), L, name=p.get("name", "TP")
-    ),
-    "RING": lambda p, L: PCellRingCoupler(
-        p.get("R", 20.0), p.get("gap", 0.25), p.get("w_ring", 0.5), p.get("w_bus", 0.5), p.get("L_bus", None), L, name=p.get("name", "RING")
-    ),
-    "RACETRACK": lambda p, L: PCellRacetrack(
-        p.get("R", 50.0), p.get("L_straight", 30.0), p.get("gap", 0.2), p.get("w_ring", 0.5), p.get("w_bus", 0.5), p.get("L_bus", None), L, name=p.get("name", "RT")
-    ),
-    "ARC": lambda p, L: PCellAnyArc(
-        p.get("radius", 10.0), p.get("width", 0.5), p.get("angle_deg", 90.0), L.get("WG", 1), name=p.get("name", "ARC")
-    ),
-    "PULLEY_RING": lambda p, L: PCellPulleyRing(
-        p, L
-    ),
-    "PULLEY_ADD_DROP_RING": lambda p, L: PCellADDDROPPulleyRing(
-        p, L
-    ),
-}
-
-
-
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
 
 def main(profile="designs/profiles/demo_small.yaml"):
     cfg = resolve_design(profile)
-    layers = cfg.get("defaults", {}).get("layers", {"WG": 1, "PORT": 99, "TEXT": 100})
-    out_path = cfg.get("chip", {}).get("out", "out/chip_demo.gds")
 
+    layers   = cfg.get("defaults", {}).get("layers", {"WG": 1, "PORT": 99, "TEXT": 100})
+    out_path = cfg.get("chip", {}).get("out", "out/chip_demo.gds")
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
-    requested_top_name = cfg.get("chip", {}).get("name", "TOP")
-    top_name = str(requested_top_name) if requested_top_name else "TOP"
+    top_name = str(cfg.get("chip", {}).get("name", "TOP") or "TOP")
     top = gdstk.Cell(top_name)
 
+    # ---- Unique cell-name allocator ----
     used_names = {top_name}
+
     def unique_name(base: str) -> str:
         if base not in used_names:
-            used_names.add(base); return base
+            used_names.add(base)
+            return base
         i = 1
-        while True:
-            cand = f"{base}_{i}"
-            if cand not in used_names:
-                used_names.add(cand); return cand
+        while f"{base}_{i}" in used_names:
             i += 1
+        used_names.add(f"{base}_{i}")
+        return f"{base}_{i}"
 
-    die_size = cfg.get("chip", {}).get("die", {}).get("size_um", None)
-    die_margin = cfg.get("chip", {}).get("die", {}).get("margin_um", 0)
-    die_disp = cfg.get("chip", {}).get("die", {}).get("at", [0, 0])
+    # ---- Optional die outline ----
+    die_cfg = cfg.get("chip", {}).get("die", {})
+    die_size = die_cfg.get("size_um")
     if die_size is not None:
-        w, h = die_size
-        rect = gdstk.rectangle(
-            ( -die_margin,       -die_margin),
-            ( w + die_margin,  h + die_margin),
-            layer=layers.get("DIE", 10)
-        )
-        # offset by die_disp
-        rect.translate(die_disp[0], die_disp[1])
+        w, h   = die_size
+        margin = die_cfg.get("margin_um", 0)
+        disp   = die_cfg.get("at", [0, 0])
+        rect = gdstk.rectangle((-margin, -margin),
+                                (w + margin, h + margin),
+                                layer=layers.get("DIE", 10))
+        rect.translate(disp[0], disp[1])
         top.add(rect)
 
+    # ---- Instantiate PCells ----
     lib = gdstk.Library(unit=1e-6, precision=1e-9)
     inst_cells, inst_ports = {}, {}
+
     for inst_name, node in cfg.get("instances", {}).items():
-        maker = REGISTRY[node["type"]]
+        type_key = node["type"]
+        if type_key not in REGISTRY:
+            raise DesignError(
+                f"Unknown type '{type_key}' for instance '{inst_name}'. "
+                f"Available: {sorted(REGISTRY)}"
+            )
         params = node.get("params", {})
-        cell, ports = maker(params, layers)
-        safe_name = unique_name(inst_name)
-        cell.name = safe_name
+        cell, ports = REGISTRY[type_key](params, layers)
+        cell.name = unique_name(inst_name)
         lib.add(cell)
         inst_cells[inst_name] = cell
         inst_ports[inst_name] = ports
 
+    # ---- Placement ----
     placed_ports = {}
-    if cfg.get("placement") is None:
-        cfg["placement"] = []
-    for step in cfg.get("placement", []):
+    for step in cfg.get("placement", []) or []:
         if "place" in step:
             place_instance(top, step["place"], inst_cells, inst_ports, placed_ports)
         elif "connect" in step:
             connect_instance(top, step["connect"], inst_cells, inst_ports, placed_ports)
-    if cfg.get("routes") is None:
-        cfg["routes"] = []
+
+    # ---- Top-level routes ----
     apply_routes(cfg, top, placed_ports, layers)
 
+    # ---- Macro / block expansion ----
     macro_defs = {m["name"]: m for m in cfg.get("macros", [])}
-
     for block in cfg.get("blocks", []):
         macro = macro_defs[block["use"]]
-        alias = block.get("as")
-        offset = block.get("at", [0, 0])
-        substitutions = block.get("substitutions", {})
-        individual_offsets = block.get("offsets", {})
-        apply_macro_placement(top, macro, inst_cells, inst_ports, placed_ports, alias, offset, substitutions, individual_offsets)
-        apply_macro_routes(top, macro, placed_ports, layers, alias)
+        apply_macro_placement(
+            top, macro, inst_cells, inst_ports, placed_ports,
+            alias_prefix=block.get("as"),
+            base_offset=block.get("at", [0, 0]),
+            substitutions=block.get("substitutions", {}),
+            individual_offsets=block.get("offsets", {}),
+        )
+        apply_macro_routes(top, macro, placed_ports, layers, block.get("as"))
 
-
+    # ---- Write GDS ----
     lib.add(top)
     lib.write_gds(out_path)
     print(f"Wrote {out_path}")
+
 
 if __name__ == "__main__":
     import sys
