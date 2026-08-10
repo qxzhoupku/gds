@@ -24,6 +24,11 @@ from src.cells.ring import PCellRingCoupler
 from src.cells.racetrack import PCellRacetrack
 from src.cells.any_arc import PCellAnyArc
 from src.cells.pulley_ring import PCellPulleyRing, PCellADDDROPPulleyRing
+from src.cells.onn_butterfly_network import (
+    PCellONNButterflyNetwork,
+    PCellONNButterflyResonator,
+)
+from src.cells.onn_butterfly_device import PCellONNButterflyDevice
 
 
 # ---------------------------------------------------------------------------
@@ -38,6 +43,9 @@ REGISTRY = {
     "ARC":                 PCellAnyArc,
     "PULLEY_RING":         PCellPulleyRing,
     "PULLEY_ADD_DROP_RING": PCellADDDROPPulleyRing,
+    "ONN_BUTTERFLY_NETWORK": PCellONNButterflyNetwork,
+    "ONN_BUTTERFLY_RESONATOR": PCellONNButterflyResonator,
+    "ONN_BUTTERFLY_DEVICE": PCellONNButterflyDevice,
 }
 
 
