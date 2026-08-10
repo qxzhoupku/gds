@@ -1,0 +1,72 @@
+# Two fabrication-ready devices with parameter-only variation.
+# The 1650 um vertical pitch clears every taper and probe in both copies.
+
+defaults:
+  layers:
+    WG: 1
+    DIE: 20
+    TEXT: 100
+
+chip:
+  name: ONN_BUTTERFLY_4X4_DEVICE_FINAL_SWEEP_TOP
+  out: out/onn_butterfly_4x4_device_final_sweep.gds
+
+_templates:
+  core: &core
+    n: 4
+    waveguide_width: 1.8
+    coupling_gap: 0.5
+    coupling_length: 5.0
+    min_bend_radius: 30.0
+    crossing_offset: 150.0
+    return_arm_offset: 60.0
+    coupler_offset: 45.0
+    tile_half_span: 240.0
+    interaction_group_pitch: 490.0
+    crossing_taper_length: 5.0
+    crossing: { WM: 3.6, LM: 28.2, LT: 3.1, w_in: 1.8 }
+    closure_lead: 30.0
+
+  bus: &bus { width: 1.0, gap: 0.5, bend_radius: 30.0 }
+  drop: &drop
+    coupling_length: 5.0
+    output_lane_pitch: 70.0
+  taper: &taper { tip_width: 0.15, length: 400.0 }
+  facets: &facets { span: 6000.0, center_x: 0.0 }
+  circulation: &circulation
+    horizontal: CCW
+    vertical: CW
+    require_opposite: true
+
+instances:
+  gap_500nm:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_DEVICE_FINAL_GAP_500NM
+      core: *core
+      io:
+        bus: *bus
+        drop: *drop
+        inverse_taper: *taper
+        facets: *facets
+        circulation: *circulation
+
+  gap_600nm:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_DEVICE_FINAL_GAP_600NM
+      core:
+        <<: *core
+        coupling_gap: 0.6
+      io:
+        bus:
+          <<: *bus
+          gap: 0.6
+        drop: *drop
+        inverse_taper: *taper
+        facets: *facets
+        circulation: *circulation
+
+placement:
+  - place: { inst: gap_500nm, as: D1, at: [0.0, -825.0], rot: 0.0 }
+  - place: { inst: gap_600nm, as: D2, at: [0.0, 825.0], rot: 0.0 }

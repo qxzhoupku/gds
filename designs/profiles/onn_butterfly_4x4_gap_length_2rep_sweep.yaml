@@ -1,0 +1,193 @@
+# Fabrication sweep for the frozen 4x4 butterfly ONN Python implementation.
+#
+# Full factorial sweep of the 16 internal resonator-resonator couplers:
+#   coupling gap:    0.4, 0.5, 0.6 um
+#   coupling length: 3.0, 5.0, 7.0 um
+#
+# Every gap-length combination is fabricated twice.  Replica B is placed at
+# the centrosymmetric position of replica A, so the pair average suppresses
+# first-order horizontal and vertical fabrication gradients.
+#
+# The direct pump and all eight drop probes remain fixed at a 0.5 um edge gap.
+# Units are micrometres.
+
+defaults:
+  layers:
+    WG: 1
+    DIE: 20
+    TEXT: 100
+
+chip:
+  name: ONN_4X4_GAP_LENGTH_2REP_TOP
+  out: out/onn_butterfly_4x4_gap_length_2rep_sweep.gds
+
+_templates:
+  core: &core
+    n: 4
+    waveguide_width: 1.8
+    coupling_gap: 0.5
+    coupling_length: 5.0
+    min_bend_radius: 30.0
+    crossing_offset: 150.0
+    return_arm_offset: 60.0
+    coupler_offset: 45.0
+    tile_half_span: 240.0
+    interaction_group_pitch: 490.0
+    crossing_taper_length: 5.0
+    crossing: { WM: 3.6, LM: 28.2, LT: 3.1, w_in: 1.8 }
+    closure_lead: 30.0
+
+  # Frozen I/O: these values are shared by all 18 devices.
+  bus: &bus
+    width: 1.0
+    gap: 0.5
+    bend_radius: 30.0
+
+  drop: &drop
+    coupling_length: 5.0
+    output_lane_pitch: 70.0
+
+  inverse_taper: &inverse_taper
+    tip_width: 0.15
+    length: 400.0
+
+  facets: &facets
+    span: 6000.0
+    center_x: 0.0
+
+  circulation: &circulation
+    horizontal: CCW
+    vertical: CW
+    require_opposite: true
+
+  io: &io
+    bus: *bus
+    drop: *drop
+    inverse_taper: *inverse_taper
+    facets: *facets
+    circulation: *circulation
+
+instances:
+  g400_l3:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G400_L3
+      core:
+        <<: *core
+        coupling_gap: 0.4
+        coupling_length: 3.0
+      io: *io
+      flatten: true
+
+  g400_l5:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G400_L5
+      core:
+        <<: *core
+        coupling_gap: 0.4
+        coupling_length: 5.0
+      io: *io
+      flatten: true
+
+  g400_l7:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G400_L7
+      core:
+        <<: *core
+        coupling_gap: 0.4
+        coupling_length: 7.0
+      io: *io
+      flatten: true
+
+  g500_l3:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G500_L3
+      core:
+        <<: *core
+        coupling_gap: 0.5
+        coupling_length: 3.0
+      io: *io
+      flatten: true
+
+  g500_l5:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G500_L5_REFERENCE
+      core: *core
+      io: *io
+      flatten: true
+
+  g500_l7:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G500_L7
+      core:
+        <<: *core
+        coupling_gap: 0.5
+        coupling_length: 7.0
+      io: *io
+      flatten: true
+
+  g600_l3:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G600_L3
+      core:
+        <<: *core
+        coupling_gap: 0.6
+        coupling_length: 3.0
+      io: *io
+      flatten: true
+
+  g600_l5:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G600_L5
+      core:
+        <<: *core
+        coupling_gap: 0.6
+        coupling_length: 5.0
+      io: *io
+      flatten: true
+
+  g600_l7:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_G600_L7
+      core:
+        <<: *core
+        coupling_gap: 0.6
+        coupling_length: 7.0
+      io: *io
+      flatten: true
+
+# Two columns keep the array compact.  Each A/B pair is centered about the
+# chip origin: A = (-3250, +y), B = (+3250, -y).  The 6500 um column pitch
+# leaves 500 um between neighboring 6000 um facet spans.  The 1700 um row
+# pitch leaves at least the same conservative clearance used by the verified
+# three-device sweep.
+placement:
+  # Replica A: balanced, non-monotonic parameter order in the left column.
+  - place: { inst: g400_l3, as: G400_L3_A, at: [-3250.0,  6800.0], rot: 0.0 }
+  - place: { inst: g500_l7, as: G500_L7_A, at: [-3250.0,  5100.0], rot: 0.0 }
+  - place: { inst: g600_l5, as: G600_L5_A, at: [-3250.0,  3400.0], rot: 0.0 }
+  - place: { inst: g400_l7, as: G400_L7_A, at: [-3250.0,  1700.0], rot: 0.0 }
+  - place: { inst: g500_l5, as: G500_L5_A, at: [-3250.0,     0.0], rot: 0.0 }
+  - place: { inst: g600_l3, as: G600_L3_A, at: [-3250.0, -1700.0], rot: 0.0 }
+  - place: { inst: g400_l5, as: G400_L5_A, at: [-3250.0, -3400.0], rot: 0.0 }
+  - place: { inst: g500_l3, as: G500_L3_A, at: [-3250.0, -5100.0], rot: 0.0 }
+  - place: { inst: g600_l7, as: G600_L7_A, at: [-3250.0, -6800.0], rot: 0.0 }
+
+  # Replica B: exact centrosymmetric partner of its A copy.
+  - place: { inst: g400_l3, as: G400_L3_B, at: [ 3250.0, -6800.0], rot: 0.0 }
+  - place: { inst: g500_l7, as: G500_L7_B, at: [ 3250.0, -5100.0], rot: 0.0 }
+  - place: { inst: g600_l5, as: G600_L5_B, at: [ 3250.0, -3400.0], rot: 0.0 }
+  - place: { inst: g400_l7, as: G400_L7_B, at: [ 3250.0, -1700.0], rot: 0.0 }
+  - place: { inst: g500_l5, as: G500_L5_B, at: [ 3250.0,     0.0], rot: 0.0 }
+  - place: { inst: g600_l3, as: G600_L3_B, at: [ 3250.0,  1700.0], rot: 0.0 }
+  - place: { inst: g400_l5, as: G400_L5_B, at: [ 3250.0,  3400.0], rot: 0.0 }
+  - place: { inst: g500_l3, as: G500_L3_B, at: [ 3250.0,  5100.0], rot: 0.0 }
+  - place: { inst: g600_l7, as: G600_L7_B, at: [ 3250.0,  6800.0], rot: 0.0 }
