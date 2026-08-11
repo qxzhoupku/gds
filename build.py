@@ -24,6 +24,10 @@ from src.cells.ring import PCellRingCoupler
 from src.cells.racetrack import PCellRacetrack
 from src.cells.any_arc import PCellAnyArc
 from src.cells.pulley_ring import PCellPulleyRing, PCellADDDROPPulleyRing
+from src.cells.width_varying_ring import (
+    PCellConstantWidthRing,
+    PCellWidthVaryingRing,
+)
 from src.cells.onn_butterfly_network import (
     PCellONNButterflyNetwork,
     PCellONNButterflyResonator,
@@ -43,6 +47,8 @@ REGISTRY = {
     "ARC":                 PCellAnyArc,
     "PULLEY_RING":         PCellPulleyRing,
     "PULLEY_ADD_DROP_RING": PCellADDDROPPulleyRing,
+    "WIDTH_VARYING_RING":  PCellWidthVaryingRing,
+    "CONSTANT_WIDTH_RING": PCellConstantWidthRing,
     "ONN_BUTTERFLY_NETWORK": PCellONNButterflyNetwork,
     "ONN_BUTTERFLY_RESONATOR": PCellONNButterflyResonator,
     "ONN_BUTTERFLY_DEVICE": PCellONNButterflyDevice,
@@ -289,18 +295,8 @@ def main(profile="designs/profiles/demo_small.yaml"):
         used_names.add(f"{base}_{i}")
         return f"{base}_{i}"
 
-    # ---- Optional die outline ----
-    die_cfg = cfg.get("chip", {}).get("die", {})
-    die_size = die_cfg.get("size_um")
-    if die_size is not None:
-        w, h   = die_size
-        margin = die_cfg.get("margin_um", 0)
-        disp   = die_cfg.get("at", [0, 0])
-        rect = gdstk.rectangle((-margin, -margin),
-                                (w + margin, h + margin),
-                                layer=layers.get("DIE", 10))
-        rect.translate(disp[0], disp[1])
-        top.add(rect)
+    # Chip boundaries are intentionally not emitted.  BEAMER must receive
+    # only device geometry; chip dimensions remain documentation in YAML.
 
     # ---- Instantiate PCells ----
     lib = gdstk.Library(unit=1e-6, precision=1e-9)
