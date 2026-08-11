@@ -1,0 +1,143 @@
+# Width-varying ring sweep: 12 modulated devices and 4 constant-width
+# references.  All dimensions are in micrometres.
+
+defaults:
+  layers:
+    WG: 1
+    TEXT: 100
+
+chip:
+  name: WIDTH_VARYING_RING_SWEEP_16DEV
+  out: out/width_varying_ring_sweep_16dev.gds
+  # Logical chip dimensions only.  No chip-boundary polygon is generated.
+  size_um: [6000, 6000]
+
+instances:
+  # The bus length is 6000 - 2 * 400 = 5200 um.  With the ring centered at
+  # x=3000, its bus endpoints are x=400 and x=5600.
+  var_w1_1p8_w2_0p8_n1:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.8, w_2: 0.8, period_num: 1, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  var_w1_1p8_w2_0p8_n2:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.8, w_2: 0.8, period_num: 2, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  var_w1_1p8_w2_0p8_n3:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.8, w_2: 0.8, period_num: 3, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+
+  var_w1_1p8_w2_0p9_n1:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.8, w_2: 0.9, period_num: 1, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  var_w1_1p8_w2_0p9_n2:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.8, w_2: 0.9, period_num: 2, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  var_w1_1p8_w2_0p9_n3:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.8, w_2: 0.9, period_num: 3, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+
+  var_w1_1p9_w2_0p8_n1:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.9, w_2: 0.8, period_num: 1, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  var_w1_1p9_w2_0p8_n2:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.9, w_2: 0.8, period_num: 2, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  var_w1_1p9_w2_0p8_n3:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.9, w_2: 0.8, period_num: 3, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+
+  var_w1_1p9_w2_0p9_n1:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.9, w_2: 0.9, period_num: 1, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  var_w1_1p9_w2_0p9_n2:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.9, w_2: 0.9, period_num: 2, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  var_w1_1p9_w2_0p9_n3:
+    type: WIDTH_VARYING_RING
+    params: {ring_radius: 100.0, w_1: 1.9, w_2: 0.9, period_num: 3, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+
+  const_w_1p8:
+    type: CONSTANT_WIDTH_RING
+    params: {ring_radius: 100.0, width: 1.8, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  const_w_1p9:
+    type: CONSTANT_WIDTH_RING
+    params: {ring_radius: 100.0, width: 1.9, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  const_w_0p8:
+    type: CONSTANT_WIDTH_RING
+    params: {ring_radius: 100.0, width: 0.8, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+  const_w_0p9:
+    type: CONSTANT_WIDTH_RING
+    params: {ring_radius: 100.0, width: 0.9, gap: 0.5, w_bus: 1.0, L_bus: 5200.0, tolerance: 0.001}
+
+  facet_taper:
+    type: TAPER
+    params: {w0: 0.15, w1: 1.0, L: 400.0}
+
+placement:
+  # Devices are arranged from bottom to top with a 350 um pitch.
+  # For each bus, the left and right 0.15 um taper tips terminate exactly at
+  # the x=0 and x=6000 chip facets.
+  - place: {inst: var_w1_1p8_w2_0p8_n1, at: [3000, 300], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p8_n1.W, as: left_01}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p8_n1.E, as: right_01}
+
+  - place: {inst: var_w1_1p8_w2_0p8_n2, at: [3000, 650], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p8_n2.W, as: left_02}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p8_n2.E, as: right_02}
+
+  - place: {inst: var_w1_1p8_w2_0p8_n3, at: [3000, 1000], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p8_n3.W, as: left_03}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p8_n3.E, as: right_03}
+
+  - place: {inst: var_w1_1p8_w2_0p9_n1, at: [3000, 1350], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p9_n1.W, as: left_04}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p9_n1.E, as: right_04}
+
+  - place: {inst: var_w1_1p8_w2_0p9_n2, at: [3000, 1700], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p9_n2.W, as: left_05}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p9_n2.E, as: right_05}
+
+  - place: {inst: var_w1_1p8_w2_0p9_n3, at: [3000, 2050], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p9_n3.W, as: left_06}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p8_w2_0p9_n3.E, as: right_06}
+
+  - place: {inst: var_w1_1p9_w2_0p8_n1, at: [3000, 2400], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p8_n1.W, as: left_07}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p8_n1.E, as: right_07}
+
+  - place: {inst: var_w1_1p9_w2_0p8_n2, at: [3000, 2750], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p8_n2.W, as: left_08}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p8_n2.E, as: right_08}
+
+  - place: {inst: var_w1_1p9_w2_0p8_n3, at: [3000, 3100], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p8_n3.W, as: left_09}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p8_n3.E, as: right_09}
+
+  - place: {inst: var_w1_1p9_w2_0p9_n1, at: [3000, 3450], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p9_n1.W, as: left_10}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p9_n1.E, as: right_10}
+
+  - place: {inst: var_w1_1p9_w2_0p9_n2, at: [3000, 3800], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p9_n2.W, as: left_11}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p9_n2.E, as: right_11}
+
+  - place: {inst: var_w1_1p9_w2_0p9_n3, at: [3000, 4150], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p9_n3.W, as: left_12}
+  - connect: {inst: facet_taper, port: E, to: var_w1_1p9_w2_0p9_n3.E, as: right_12}
+
+  - place: {inst: const_w_1p8, at: [3000, 4500], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: const_w_1p8.W, as: left_13}
+  - connect: {inst: facet_taper, port: E, to: const_w_1p8.E, as: right_13}
+
+  - place: {inst: const_w_1p9, at: [3000, 4850], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: const_w_1p9.W, as: left_14}
+  - connect: {inst: facet_taper, port: E, to: const_w_1p9.E, as: right_14}
+
+  - place: {inst: const_w_0p8, at: [3000, 5200], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: const_w_0p8.W, as: left_15}
+  - connect: {inst: facet_taper, port: E, to: const_w_0p8.E, as: right_15}
+
+  - place: {inst: const_w_0p9, at: [3000, 5550], rot: 0}
+  - connect: {inst: facet_taper, port: E, to: const_w_0p9.W, as: left_16}
+  - connect: {inst: facet_taper, port: E, to: const_w_0p9.E, as: right_16}
+
+routes: []
