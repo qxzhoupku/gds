@@ -5,6 +5,7 @@ Provides:
   - route_straight                    — point-to-point waveguide
   - route_manhattan                   — L-bend with quarter-circle arc
   - route_euler_bend                  — approximate Euler-style bend (circular / cycloid)
+  - route_clothoid                 — true clothoid bend, curvature-continuous
 """
 
 import math
@@ -12,6 +13,8 @@ import warnings
 
 import gdstk
 
+from . import clothoid
+from .design import DesignError
 from .ports import Port
 
 
@@ -225,5 +228,76 @@ def route_euler_bend(parent, A, B, Rmin, layer, n=100):
 
     width = w1 if abs(w1 - w2) < 1e-3 else min(w1, w2)
     path = gdstk.FlexPath(world_pts, width, layer=layer)
+    parent.add(path)
+    return path
+
+
+# Widths this close are the same number: 1e-6 um is a thousandth of the 1 nm
+# database grid, so a difference below it cannot have been meant, while a
+# tighter test would false-fail on float noise from a computed width.
+_WIDTH_TOL = 1e-6
+
+
+def route_clothoid(parent, A, B, Rmin, layer, p=clothoid.DEFAULT_P,
+                   tolerance=clothoid.DEFAULT_TOLERANCE, Rmax=None, ref=None):
+    """True Euler-spiral route between two same-width ports.
+
+    Unlike :func:`route_euler_bend`, which approximates the shape with
+    circular and raised-cosine pieces and only *warns* when the endpoints
+    force a tighter bend than asked for, this router treats *Rmin* as a hard
+    floor: every bend it draws ramps curvature linearly with arc length and
+    never goes tighter than ``1/Rmin``, and because bend loss falls with radius
+    the bends are grown to the largest radius the two ports admit rather than
+    pinned to the tightest allowed.  *Rmax* optionally caps that, for when a
+    bend sweeping the whole space between the ports would collide with what is
+    placed there.  Read the achieved radius back from the plan.  Curvature is
+    continuous from end to end — zero where the path meets each port, zero at
+    every internal junction — so no interface has to absorb a curvature step
+    and convert power into higher-order modes.
+
+    The route leaves *A* along ``A.angle`` and arrives at *B* along
+    ``B.angle + pi``, both outward-facing per :class:`~src.ports.Port`.
+    :func:`src.clothoid.plan_route` picks the segment plan; *p* is the fraction
+    of each turn spent ramping curvature (1.0 = pure clothoid) and *tolerance*
+    is the chord-sagitta budget for the emitted polyline, in um.
+
+    The two port widths must match — an Euler bend has one width — and a
+    mismatch is a profile error rather than something to silently paper over
+    by picking the narrower.  *ref* is the ``"A.E -> B.W"`` label used in error
+    messages: :class:`~src.ports.Port` carries only the component-local port
+    name, so two ports both called ``"E"`` are indistinguishable without it.
+
+    Returns the ``gdstk.FlexPath`` that was added, or raises
+    :class:`~src.design.DesignError` if no plan fits.
+    """
+    where = f" (route {ref})" if ref else ""
+    if ref and " -> " in ref:
+        label_a, label_b = ref.split(" -> ", 1)
+    else:
+        label_a, label_b = A.name, B.name
+    if abs(A.width - B.width) > _WIDTH_TOL:
+        raise DesignError(
+            f"Euler curve{where} needs both ports at the same width, but "
+            f"{label_a!r} is {A.width:g} um and {label_b!r} is "
+            f"{B.width:g} um. Taper one side first, or use the "
+            f"'manhattan'/'straight' route kinds, which draw at the narrower "
+            f"width."
+        )
+
+    x_rel, y_rel = _to_local(A, B.x, B.y)
+    delta = B.angle + math.pi - A.angle
+
+    try:
+        plan = clothoid.plan_route(x_rel, y_rel, delta, float(Rmin), float(p),
+                                None if Rmax is None else float(Rmax))
+    except DesignError as exc:
+        raise DesignError(f"{exc}{where}") from None
+
+    pts = [_to_world(A, x, y) for x, y in clothoid.plan_points(plan, tolerance)]
+    # The plan closes on B analytically; pin the last vertex so accumulated
+    # float error can never leave a gap at the port.
+    pts[-1] = (B.x, B.y)
+
+    path = gdstk.FlexPath(pts, A.width, layer=layer)
     parent.add(path)
     return path

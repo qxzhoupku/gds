@@ -1003,6 +1003,30 @@
     },
     "returncode": 0
   },
+  "designs/profiles/clothoid_demo.yaml": {
+    "bytes": 54328,
+    "digest": {
+      "cell_count": 2,
+      "cell_names": [
+        "STUB",
+        "CLOTHOID_DEMO"
+      ],
+      "precision": 1e-09,
+      "sha256": "8adf716926021e7d9764e368bfdeb467ef291a8011080a59d3fbb1a06313d098",
+      "sha256_ordered": "6904366c9858113b6b8f4135901d27cd2dadaaf0092c8350e9ee2bbd1055b3a0",
+      "top_cells": [
+        {
+          "labels": 14,
+          "name": "CLOTHOID_DEMO",
+          "polygons": 55,
+          "sha256": "4265589c7a7ee470c0d3164b06db7b99aa082713452816b194587898ef5ef011",
+          "sha256_ordered": "0c52f62bbe20d045e57e64900a8dead338bc79af8b53413b8262720caa780337"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
   "designs/profiles/demo_multi_layer.yaml": {
     "bytes": 3526,
     "digest": {

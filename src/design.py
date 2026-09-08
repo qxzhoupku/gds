@@ -12,7 +12,7 @@ Recognised top-level keys::
     chip        name (top cell) and out (GDS path)
     instances   name -> {type, params}
     placement   ordered list of {place: ...} / {connect: ...} steps
-    routes      ordered list of {straight|manhattan|euler: ...}
+    routes      ordered list of {straight|manhattan|euler|clothoid: ...}
     macros      reusable named placement+route groups
     blocks      instantiations of macros at an offset
 

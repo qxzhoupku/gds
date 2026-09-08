@@ -21,7 +21,7 @@ python build.py <profile> --dry-run                # assemble + validate, write 
 python build.py --list-types                       # registered instance 'type' keys
 ```
 
-There is no unit-test suite. The 35 committed profiles *are* the test suite, and
+There is no unit-test suite. The 36 committed profiles *are* the test suite, and
 `tools/gdscheck.py` is the harness:
 
 ```bash
@@ -65,7 +65,13 @@ Supporting modules:
   `resolve_wg_layer` looks for it. `steps()` exists because a section whose every
   entry is commented out parses as `None`, not `[]`.
 - [src/place.py](src/place.py) — geometry primitives: port transforms,
-  `place_by_ports`, and the three routers.
+  `place_by_ports`, and the four routers.
+- [src/clothoid.py](src/clothoid.py) — Euler-spiral geometry, no `gdstk`: the
+  bend primitive, and `plan_route()`, which decides which segments join two
+  ports *and at what radius*. `route_clothoid` in `place.py` is a thin wrapper
+  that emits the plan. Note the split: `src/clothoid.py` has nothing to do
+  with `route_euler_bend`, which is the older approximation and lives entirely
+  in `place.py`.
 - [src/layer_map.py](src/layer_map.py) — `resolve_wg_layer(width, layers)`, the
   single source of truth for which GDS layer a given width lands on.
 - [src/catalog.py](src/catalog.py) — the one place a new component gets wired up.
@@ -131,10 +137,61 @@ something placed at the top level.
   `warn_unknown_keys` skips any top-level key starting with `_` for exactly
   that reason — use that prefix for a deliberate non-section rather than
   widening `KNOWN_TOP_LEVEL`.
-- `route_euler_bend` draws circular and raised-cosine curves, not true clothoids.
-  `Rmin` is a *constraint that warns* when the endpoint geometry forces a tighter
-  bend, not a shape parameter — between two fixed ports the curve is determined by
-  the endpoints.
+- There are **two** Euler-ish route kinds and they behave nothing alike.
+  `euler` (`route_euler_bend`) draws circular and raised-cosine curves, not true
+  clothoids, and its `Rmin` is a *constraint that warns* when the endpoint
+  geometry forces a tighter bend, not a shape parameter — between two fixed
+  ports that curve is determined by the endpoints. `clothoid`
+  (`route_clothoid`) is the real thing: a true Euler spiral whose curvature
+  ramps linearly with arc length. `euler` is kept only because it is the
+  documented, published behaviour; prefer `clothoid` for anything new. No
+  committed profile uses `euler` — the single reference to it is a
+  commented-out line in `Archive/demo_small.yaml`.
+- `clothoid` requires both ports at the *same width* and raises rather than
+  quietly drawing at the narrower, unlike every other route kind. An Euler bend
+  has one width; a taper is a different component.
+- **`clothoid`'s `Rmin` is a floor, not the radius you get.** Both drivers of
+  mode conversion fall with radius, so `plan_route()` grows every bend to the
+  largest radius the two ports admit — median 1.2–3.9× `Rmin` depending on how
+  much room the ports have, up to 26×.
+  Read `plan.radius` for what was actually drawn. Two things follow and have
+  bitten before: the bend sweeps the *middle* of the rectangle its ports span
+  rather than hugging the edges, and two identical-looking connections at
+  different spacings get different radii and lengths, so arms do not
+  path-length match by construction. `Rmax` caps the sweep; setting
+  `Rmax: <same as Rmin>` pins a bend for matched arms — that path root-finds
+  `R(α) = Rmax` rather than filtering on it, because a search can never *hit*
+  an exact radius by scanning.
+- Growing the radius is also what tames the near-antiparallel `corner`, whose
+  `1/sin(Δ)` solve used to run to kilometres while reporting a zero endpoint
+  residual. Don't "simplify" `_corner` back to a fixed radius.
+- A pure clothoid is exactly twice as long as the circular arc of the same
+  radius and turn, and a 90° one spans the corner box of a 1.87·R circular
+  bend. That is inherent, not a bug — lower `p` to trade gradualness back for
+  footprint.
+- `plan_route()` maximises the radius over the turn split by enumerating exact
+  candidates — where the straight reaches zero, where the radius hits a bound,
+  and the ends of the split bracket — *not* by assuming the straight goes to
+  zero. Around 40% of two-bend optima sit at a bracket end, with one bend
+  saturating a half turn and a strictly positive straight, so that shortcut is
+  wrong. The candidates are found on the smooth quantities `den`, `N` and `M`
+  rather than on `R = N/den`, which has poles where the radius and the straight
+  blow up together; a search on `R` itself gets dragged onto one every time.
+- Every shape is offered at a **ladder** of radii, gentlest down to `Rmin`, and
+  the screens in `plan_route()` take the gentlest that survives. Returning only
+  the gentlest candidate made a screen cost *reachability* instead of
+  footprint, which pinning at `Rmin` never did.
+- `_C1_TOL` in `src/clothoid.py` looks unused-ish and is not. At `|Δ| = π`
+  exactly, IEEE gives `c1 = (0.0, 1.22e-16)` — `1+cos(π)` is exactly zero but
+  `sin(π)` is not — so the S-bend denominator lands near `1e-17`, a
+  `den == 0.0` test never fires, and a radius gets built out of pure round-off.
+  I removed this guard once as an orphan; an audit caught it. Don't.
+- The `_bulge` screen is load-bearing, not belt-and-braces. A free radius makes
+  pairs of near-half-turn bends reachable that close on the ports exactly and
+  pass every other check while sweeping millimetres — 15 mm of waveguide
+  between ports 224 µm apart was a measured case, and poses that used to raise
+  `DesignError` came back as wafer geometry. Corners and S-bends measure 0
+  bulge and real U-turns about 0.9, so the 1.5 threshold has wide margin.
 - `config/crossing_default.json` is not read by anything.
 - `gdscheck` digests geometry rather than hashing bytes because `gdstk` stamps
   wall-clock time into every file it writes.
@@ -153,6 +210,7 @@ author knows the intent.
 - `Archive/WX_demo_01.yaml` and `Archive/demo_small.yaml` set no `chip.out`, so
   they inherit `designs/base.yaml`'s `out: out/demo_small` and write a file with
   **no `.gds` extension**. `gdscheck` redirects output, so it does not care.
-- `defaults.width_layers` is declared in only 3 of 35 profiles, all `dose_test`
-  designs. Every other profile puts all its geometry on layer 1 — the
-  width-based layer split is a dose-calibration tool, not the normal path.
+- `defaults.width_layers` is declared in only 3 of 36 profiles: the two
+  `dose_test` designs plus `demo_multi_layer`. Every other profile puts all its
+  geometry on layer 1 — the width-based layer split is a dose-calibration tool,
+  not the normal path.

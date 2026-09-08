@@ -1,0 +1,63 @@
+# designs/profiles/clothoid_demo.yaml
+#
+# Exercises the `clothoid` route kind — a true Euler-spiral connection whose
+# curvature ramps linearly with arc length, so it is continuous end to end and
+# never tighter than Rmin.  Each pair of stubs below picks out one of the
+# shapes the solver can produce; see the "Clothoid (Euler spiral) routes"
+# section of README.md.
+#
+# Rmin is a floor, not the radius you get: the solver grows every bend to the
+# largest radius the two ports admit, because bend loss falls with radius.  The
+# last route caps that with Rmax to keep the bend out of the space beside it.
+#
+# The stubs are constant-width taper cells used purely as port holders: a
+# `clothoid` route requires both ports at the same width, so every stub is
+# 0.5 um at both ends.
+extends: designs/base.yaml
+
+chip:
+  name: CLOTHOID_DEMO
+  out: out/clothoid_demo.gds
+
+instances:
+  STUB:
+    type: TAPER
+    params: { w0: 0.5, w1: 0.5, L: 20.0, name: STUB }
+
+placement:
+  # straight: collinear, facing each other
+  - place: { inst: STUB, at: [0, 0],       rot: 0,   as: L1_A }
+  - place: { inst: STUB, at: [500, 0],     rot: 0,   as: L1_B }
+
+  # corner: 90 deg turn, grown until one straight vanishes
+  - place: { inst: STUB, at: [0, 200],     rot: 0,   as: L2_A }
+  - place: { inst: STUB, at: [620, 620],   rot: 90,  as: L2_B }
+
+  # corner at a lower p: same turn, tighter corner box for the same Rmin
+  - place: { inst: STUB, at: [1000, 200],  rot: 0,   as: L3_A }
+  - place: { inst: STUB, at: [1500, 560],  rot: 90,  as: L3_B }
+
+  # sbend: parallel ports with a lateral offset
+  - place: { inst: STUB, at: [0, 800],     rot: 0,   as: L4_A }
+  - place: { inst: STUB, at: [900, 950],   rot: 0,   as: L4_B }
+
+  # uturn: both ports facing the same way
+  - place: { inst: STUB, at: [0, 1200],    rot: 0,   as: L5_A }
+  - place: { inst: STUB, at: [0, 1600],    rot: 0,   as: L5_B }
+
+  # corner at an arbitrary angle
+  - place: { inst: STUB, at: [1000, 1200], rot: 0,   as: L6_A }
+  - place: { inst: STUB, at: [1900, 1560], rot: 150, as: L6_B }
+
+  # the same geometry as L2, but with the sweep capped by Rmax
+  - place: { inst: STUB, at: [0, 2000],    rot: 0,   as: L7_A }
+  - place: { inst: STUB, at: [620, 2420],  rot: 90,  as: L7_B }
+
+routes:
+  - clothoid: { from: L1_A.E, to: L1_B.W, Rmin: 80 }
+  - clothoid: { from: L2_A.E, to: L2_B.W, Rmin: 80 }
+  - clothoid: { from: L3_A.E, to: L3_B.W, Rmin: 80, p: 0.4 }
+  - clothoid: { from: L4_A.E, to: L4_B.W, Rmin: 80 }
+  - clothoid: { from: L5_A.E, to: L5_B.E, Rmin: 80 }
+  - clothoid: { from: L6_A.E, to: L6_B.W, Rmin: 60 }
+  - clothoid: { from: L7_A.E, to: L7_B.W, Rmin: 80, Rmax: 120 }

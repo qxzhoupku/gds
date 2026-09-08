@@ -73,14 +73,125 @@ placement:                        # ordered
   - connect: { inst: T1, port: E, to: R1_1.W, as: T1_1 }
 
 routes:                           # ordered
-  - straight:  { from: R1_1.E, to: T1_1.W }
-  - manhattan: { from: A.E, to: B.W, r: 50 }
-  - euler:     { from: A.E, to: B.W, Rmin: 80 }
+  - straight:    { from: R1_1.E, to: T1_1.W }
+  - manhattan:   { from: A.E, to: B.W, r: 50 }
+  - euler:       { from: A.E, to: B.W, Rmin: 80 }   # legacy approximation
+  - clothoid:    { from: A.E, to: B.W, Rmin: 80 }   # true Euler spiral
 ```
 
 `place` positions a cell absolutely (`rot` in degrees). `connect` mates
 `inst.port` face-to-face against an already-placed `to` port. Routes are drawn
 on the layer implied by the narrower of the two port widths.
+
+### Clothoid (Euler spiral) routes
+
+`clothoid` connects two ports with a **true Euler spiral**: curvature ramps
+linearly with arc length, so it is continuous along the whole route and is zero
+where the path meets each port. A circular bend instead steps curvature from 0
+to 1/R at the straight-to-arc junction, and that step has to be absorbed by an
+abrupt field mismatch, which converts power into higher-order modes. Ramping
+the curvature lets the mode deform continuously instead.
+
+```yaml
+routes:
+  - clothoid: { from: A.E, to: B.W, Rmin: 80 }
+  - clothoid: { from: C.E, to: D.W, Rmin: 80, Rmax: 250, p: 0.4 }
+```
+
+| key | default | meaning |
+| --- | --- | --- |
+| `Rmin` | required | minimum tolerable bend radius, um. A hard floor: no point on the route is tighter |
+| `Rmax` | none | cap on how gentle a bend may become. Use it when a sweeping bend would collide with what sits between the ports, or set it equal to `Rmin` to pin the radius exactly |
+| `p` | `1.0` | fraction of each turn spent ramping curvature. `1.0` is the pure clothoid |
+| `tolerance` | `0.001` | chord-sagitta budget for the emitted polyline, um (the database grid) |
+
+**Both ports must have the same width** — an Euler bend has one width — and a
+mismatch is a profile error rather than something silently drawn at the
+narrower. Taper one side first.
+
+#### Rmin is a floor, not the radius you get
+
+Both drivers of mode conversion fall with radius: peak curvature as `1/Rmin`,
+and the curvature ramp rate as `1/(p * t * Rmin^2)`. So the solver grows every
+bend to the **largest radius the two ports admit**, and the straight sections
+absorb whatever is left. On random port pairs at `Rmin: 80` the median bend
+comes out 1.2x that floor where the ports are crowded and 3.9x where they have
+room, reaching 26x — a 1.5x to 15x gentler curvature ramp than bending at
+`Rmin` would give, and up to 680x at the extreme.
+
+Two consequences worth planning around:
+
+- the bend sweeps the middle of the rectangle the two ports span instead of
+  hugging its edges, so anything placed there will collide — that is what
+  `Rmax` is for
+- two identical-looking connections at different spacings get different radii
+  and different lengths, so interferometer arms no longer path-length match by
+  construction. Setting `Rmax: <the same value as Rmin>` on both arms pins the
+  radius exactly and restores that.
+
+Read the achieved radius back from Python when it matters:
+
+```python
+plan = plan_route(x_rel, y_rel, delta, r_min=80)
+print(plan.shape, plan.radius, plan.length)
+```
+
+#### Shapes
+
+The solver works out every shape that reaches the ports and prefers them in
+this order — fewest bends first, then the form that keeps straights parallel to
+the ports. Within a shape the gentlest bend wins:
+
+| shape | segments | when |
+| --- | --- | --- |
+| `straight` | one straight | ports collinear and facing each other |
+| `corner` | straight, bend, straight | one bend of the whole turn fits — any turn angle except 0 and 180 degrees |
+| `sbend` | straight, bend, bend, straight | a lateral offset a single bend cannot absorb, including the 0-turn S-bend |
+| `uturn` | bend, straight, bend | the general fallback; the only one that works when the ports face the same way |
+
+At the maximum radius a `corner` usually loses one of its two straights — that
+is precisely where growing the radius stops. The two-bend shapes often keep
+theirs: an interior optimum with both straights positive is common, so the
+segment list is worth reading rather than assuming.
+
+`p` trades footprint against gradualness. A pure clothoid (`p = 1`) is exactly
+twice as long as the circular arc of the same radius and turn, and a 90 degree
+one spans the corner box of a *1.87 R* circular bend. Lowering `p` spends part
+of the turn at constant curvature `1/R` and buys that footprint back; curvature
+stays continuous for any `p > 0`. `p = 0` would be a plain arc and is rejected.
+
+#### Limits
+
+A shape that reaches the ports is not automatically used. `corner` solves
+through `1/sin(Delta)`, so as two ports approach antiparallel its straights run
+away. Growing the radius removes most of that on its own — a pinned-radius
+corner a microradian short of 180 degrees solved to 359 *metres* of waveguide
+between ports 500 um apart; the same pose now comes back as a 138 um bend.
+Candidates whose straights still double back for more than three times the port
+separation are discarded, as are any that cross themselves, and so is anything
+sweeping more than 1.5x the port separation outside the rectangle the two ports
+span. That last screen matters most: a free radius makes pairs of near-half-turn
+bends reachable, which close on the ports exactly and pass every other check
+while running millimetres across the die — 15 mm of waveguide between ports
+224 um apart, in one measured case. Each shape is therefore offered at a ladder
+of radii from the gentlest down to `Rmin`, and the screens take the gentlest
+that survives, so a screen costs footprint rather than reachability.
+
+Two bends do not reach every pose:
+
+- each bend turns at most 180 degrees, which keeps it a simple curve
+- a pose needing three bends — arriving at a port from behind, so the route has
+  to overshoot and come back — is not routable
+- ports crowded close together often have no solution: of random poses at
+  `Rmin: 80`, 92% route inside a 2 mm box, 62% inside 600 um and only 9%
+  inside 200 um
+
+Each of these is a `DesignError` listing what every shape would have needed,
+rather than a badly routed waveguide. Split the connection with an intermediate
+port, or lower `Rmin`.
+
+[clothoid_demo.yaml](designs/profiles/clothoid_demo.yaml) draws one of each
+shape, plus an `Rmax`-capped corner.
 
 ### Macros and blocks
 
@@ -131,6 +242,7 @@ src/catalog.py       the standard component catalog
 src/builder.py      the build engine (build_library returns a gdstk.Library)
 src/router.py       route dispatch table
 src/place.py        placement and routing primitives
+src/clothoid.py     Euler-spiral geometry and the port-to-port solver
 src/layer_map.py    width -> GDS layer mapping
 src/ports.py        the Port dataclass
 src/cells/          the parametric cells
@@ -184,4 +296,8 @@ the current time into every file it writes.
   `dose_test` profiles.
 - Ports live only in memory; they are never drawn. `TEXT` labels (layer 100)
   *are* written into the GDS.
+- Bends want continuous curvature. A straight-to-arc junction steps curvature
+  from 0 to 1/R and converts power into higher-order modes; `clothoid` ramps it
+  linearly with arc length instead, and grows the radius as far above `Rmin` as
+  the ports allow, since both peak curvature and curvature rate fall with it.
 - The database unit is 1 um with 1 nm precision, matching `grid_um: 0.001`.
