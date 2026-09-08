@@ -125,11 +125,21 @@ def _resolve_extends_path(parent: str, child_path: str) -> str:
 
 
 def warn_unknown_keys(cfg: dict) -> None:
-    """Warn about top-level and ``chip`` keys the builder does not read."""
+    """Warn about top-level and ``chip`` keys the builder does not read.
+
+    A key whose name starts with ``_`` is skipped: the sweep profiles park
+    YAML anchors under ``_templates`` so they can be referenced with ``*``
+    aliases further down, and that holder is deliberately not a builder
+    section.  Anything else is more likely a typo than a convention, and a
+    silently dropped section means silently missing geometry.
+    """
     for key in sorted(set(cfg) - KNOWN_TOP_LEVEL):
+        if str(key).startswith("_"):
+            continue
         warnings.warn(
             f"Unknown top-level key {key!r} in design profile — ignored. "
-            f"Known keys: {sorted(KNOWN_TOP_LEVEL)}",
+            f"Known keys: {sorted(KNOWN_TOP_LEVEL)}. "
+            f"Prefix a key with '_' to mark it as intentionally unused.",
             stacklevel=2,
         )
     chip = cfg.get("chip") or {}
