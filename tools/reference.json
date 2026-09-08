@@ -1,0 +1,1350 @@
+{
+  "designs/profiles/Archive/WX_demo_01.yaml": {
+    "bytes": 4226,
+    "digest": {
+      "cell_count": 4,
+      "cell_names": [
+        "X_1800",
+        "T_E",
+        "ARC1",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "a350471e4339502624f9f97d41e4cbcdf173e941a2ae1f60e62336bae5f6deae",
+      "sha256_ordered": "906d54f2d75acc4802af97d2e5d79bde8cd0924b8f1156a9d7293daa2492253d",
+      "top_cells": [
+        {
+          "labels": 12,
+          "name": "CHIP_1",
+          "polygons": 57,
+          "sha256": "7143d6a07d7d91a8c147274f00d77599dcb724bd2536ef833adf2df9f8b0ae16",
+          "sha256_ordered": "80db02353fabc04f0c69a212c4de6a4a1735a42f57585d271adc781e19491a25"
+        },
+        {
+          "labels": 1,
+          "name": "T_E",
+          "polygons": 1,
+          "sha256": "99dbc0c5b5fae8bf9417ba03b0985e2e6324a8b01bdaa412fc779f23d72fc124",
+          "sha256_ordered": "99dbc0c5b5fae8bf9417ba03b0985e2e6324a8b01bdaa412fc779f23d72fc124"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Archive/WX_demo_02.yaml": {
+    "bytes": 13618,
+    "digest": {
+      "cell_count": 7,
+      "cell_names": [
+        "X_1800",
+        "T_E",
+        "SemiArc01",
+        "SemiArc02",
+        "SemiArc03",
+        "Cornor",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "73c39dc626ae783a5abeb265cfeabe643c4bd4679d7b42e7450fd9891c4136aa",
+      "sha256_ordered": "9b6868d3a8e82f4d69e040a39cf63bc91523b6578552ac361ecdc3cc3d52eb05",
+      "top_cells": [
+        {
+          "labels": 24,
+          "name": "CHIP_1",
+          "polygons": 116,
+          "sha256": "2b1277cd78490a7dec47398b73f4dace3af8f0eaa288f34fb01804e83ca5b409",
+          "sha256_ordered": "dfa86eee199e1195a91029b33173edd09e0cf3c6a56d59994748012076586311"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Archive/WX_demo_04.yaml": {
+    "bytes": 1388,
+    "digest": {
+      "cell_count": 2,
+      "cell_names": [
+        "X_1800_03",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "2bc8a254f1dedcc85c0bcaefd08b2eca136965591584aee214fab1025e4e6bbb",
+      "sha256_ordered": "20ca28ad43333bd235d8d008866b5b31889311cb8bc260b95b192ea0defae3e7",
+      "top_cells": [
+        {
+          "labels": 1,
+          "name": "CHIP_1",
+          "polygons": 10,
+          "sha256": "b9744628dcc025123d6424bba5d4359fd5575661fe53f9fe6a6b898178b22ed7",
+          "sha256_ordered": "4ef796b9c4d26102ac88586d7522062ea6c357ef5b5e172da4911ab7bbec6285"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Archive/demo_small.yaml": {
+    "bytes": 9002,
+    "digest": {
+      "cell_count": 7,
+      "cell_names": [
+        "X1",
+        "T_E",
+        "RING1",
+        "RING2",
+        "RT1",
+        "ARC1",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "bb6b5cf9c1e2063a63534d009890c8e1d50d0ae414d41503952bee4a961e7600",
+      "sha256_ordered": "488df8011876c3e70c771b1976b9083f62d725387af1f8a7c735bb22928bc4dc",
+      "top_cells": [
+        {
+          "labels": 5,
+          "name": "CHIP_1",
+          "polygons": 17,
+          "sha256": "4f9488185e8bf2515823736ed625762e468b3b03bf9c13f450846359fb133010",
+          "sha256_ordered": "393e4f0a12e48e3bb7986cfcabdbeabbb7048320d3b28315a42ee173174da446"
+        },
+        {
+          "labels": 1,
+          "name": "RING2",
+          "polygons": 3,
+          "sha256": "c24f861e42294103fd2abd2df61051692c66e595c49337a23438d2f72c46f8a7",
+          "sha256_ordered": "848e892cbf5c733a985fbe2d71e00f4ce946fd431233d8d952dcfb85625b9028"
+        },
+        {
+          "labels": 1,
+          "name": "T_E",
+          "polygons": 1,
+          "sha256": "99dbc0c5b5fae8bf9417ba03b0985e2e6324a8b01bdaa412fc779f23d72fc124",
+          "sha256_ordered": "99dbc0c5b5fae8bf9417ba03b0985e2e6324a8b01bdaa412fc779f23d72fc124"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Archive/pulley_400nm_dose_test.yaml": {
+    "bytes": 64838,
+    "digest": {
+      "cell_count": 16,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PR2_5",
+        "PR2_6",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN_104nm",
+        "T_E_BROADEN_150nm",
+        "STICK",
+        "STICK_SMALL",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "94d7c1a8591af3f3514e61ac7c9a4dd6abbcc2878bdc793d1f2d318858b73ed1",
+      "sha256_ordered": "b76a406534ed23f6ff6d36a34925f72c3f99ae6929298ff6c1a8f73c373c278e",
+      "top_cells": [
+        {
+          "labels": 51,
+          "name": "CHIP_1",
+          "polygons": 150,
+          "sha256": "526826752102ccbe124055bbd14d7b5642a55241ba32efcfd7bd4c297dba913c",
+          "sha256_ordered": "809d4c2a762cfd1d3ff89dea1c8568a20b2f5768f95d1313a00bb343878baecd"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Fabricated/Pulley_Coupler_AlN_27_01_2026.yaml": {
+    "bytes": 216702,
+    "digest": {
+      "cell_count": 24,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PR1_5",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PR2_5",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PR3_5",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PR4_5",
+        "T_E",
+        "Cornor",
+        "EDGE_BUFFER",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "eab599be1bdcc5aa7a8283979833e146d0c67d3cac26787c573ae5c514dd6bbe",
+      "sha256_ordered": "bd46bc3dd1e9b297294844e2665577b56a5c339bc55e37c06d7c8d17fcbc83a3",
+      "top_cells": [
+        {
+          "labels": 140,
+          "name": "CHIP_1",
+          "polygons": 424,
+          "sha256": "5e059cc5726394d4fe002dae9ef1dae8d8eff6d582943bfbf3d5cce20982d247",
+          "sha256_ordered": "95ce441a98e7e5f34d1c3a399c415e32d72c317ca418f488bd948583993602d8"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Fabricated/RT_Lattice_4x4_v1.yaml": {
+    "bytes": 176046,
+    "digest": {
+      "cell_count": 12,
+      "cell_names": [
+        "RT_Semi",
+        "WX_1800",
+        "L_Turn",
+        "L_Arm",
+        "L_Arm_02",
+        "L_Arm_03",
+        "L_Arm_04",
+        "Bus_Corner",
+        "Drop_Corner",
+        "Drop_Turn",
+        "T_E",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "191214d44e3dbbd2ca3c3a7783ebe40eae6439b95383ebff03ff0cdff0cee28d",
+      "sha256_ordered": "80f5f79fb412d6b4e78340d278bcd0fdecc694dca3f1561ad37b58885a60266d",
+      "top_cells": [
+        {
+          "labels": 1064,
+          "name": "CHIP_1",
+          "polygons": 6209,
+          "sha256": "bcbe54091d1660b25b93fee6a741248935c6bf54237d9d727cc74cfa2561b7b2",
+          "sha256_ordered": "7fd56a74245a1aea061c084a21e64ad14d4d08dd3457eb5bbe637da5e5280b20"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Fabricated/WX_Taper_300_SiN.yaml": {
+    "bytes": 60868,
+    "digest": {
+      "cell_count": 11,
+      "cell_names": [
+        "X_1800_01",
+        "X_1800_02",
+        "X_1800_03",
+        "X_1800_04",
+        "X_1800_05",
+        "T_E",
+        "SemiArc01",
+        "Cornor",
+        "Cornor_1800",
+        "Taper_01",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "9320a673fd72e8630f44ea71b7f78fa8525a170c3923e56f99981db2d389a5af",
+      "sha256_ordered": "0da9af5b8d89242e98437730944d04ca7b71291bd6f1c2f2bd8effea908328c8",
+      "top_cells": [
+        {
+          "labels": 328,
+          "name": "CHIP_1",
+          "polygons": 1744,
+          "sha256": "6ef87ee23406c66434387f33d36067a7d27c56fbcb98a1d7c8a7f63d3cf38a7d",
+          "sha256_ordered": "4439e0440dd561c6476120c8bc36a8ef4abff0203f296ff649f3ad28648c8113"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Fabricated/WX_Taper_400_SiN.yaml": {
+    "bytes": 60868,
+    "digest": {
+      "cell_count": 11,
+      "cell_names": [
+        "X_1800_01",
+        "X_1800_02",
+        "X_1800_03",
+        "X_1800_04",
+        "X_1800_05",
+        "T_E",
+        "SemiArc01",
+        "Cornor",
+        "Cornor_1800",
+        "Taper_01",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "7ec9ed9022a84fb87e123d9831b40c73178861a69ffe16011491f60c3cbf0a80",
+      "sha256_ordered": "537d11968069bb5a681077fab3bd2f2e39e0517fed7232646f0ba3d219125c27",
+      "top_cells": [
+        {
+          "labels": 328,
+          "name": "CHIP_1",
+          "polygons": 1744,
+          "sha256": "3388f24f04c058753fac19822dc2abfd4868e132a7157d730f1d6e5655885230",
+          "sha256_ordered": "7dca85bf43b70c95ba170f57faa25c93c833957e5722d6ce3e2bb89531f3441b"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Fabricated/WX_Taper_500_SiN.yaml": {
+    "bytes": 60868,
+    "digest": {
+      "cell_count": 11,
+      "cell_names": [
+        "X_1800_01",
+        "X_1800_02",
+        "X_1800_03",
+        "X_1800_04",
+        "X_1800_05",
+        "T_E",
+        "SemiArc01",
+        "Cornor",
+        "Cornor_1800",
+        "Taper_01",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "1f85bd4dbd2722225a143f2307616e866fadc2b61a7ffc78e585fa65f5d1f887",
+      "sha256_ordered": "31297b595dbc6ce14ed1ccd208188937f1331b6e0bf15456cbfdc91c4851c680",
+      "top_cells": [
+        {
+          "labels": 328,
+          "name": "CHIP_1",
+          "polygons": 1744,
+          "sha256": "2d529768894bf720fee067b41c0adc13a111514805e7866a5f4505dcdb72ba3e",
+          "sha256_ordered": "3d75c0fdc9c0475f0ed481f08d263c882814021ff44ea69aed7307ae4a80bf6f"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Fabricated/pulley_400nm_dose_test_v1.yaml": {
+    "bytes": 64838,
+    "digest": {
+      "cell_count": 16,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PR2_5",
+        "PR2_6",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN_104nm",
+        "T_E_BROADEN_150nm",
+        "STICK",
+        "STICK_SMALL",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "94d7c1a8591af3f3514e61ac7c9a4dd6abbcc2878bdc793d1f2d318858b73ed1",
+      "sha256_ordered": "b76a406534ed23f6ff6d36a34925f72c3f99ae6929298ff6c1a8f73c373c278e",
+      "top_cells": [
+        {
+          "labels": 51,
+          "name": "CHIP_1",
+          "polygons": 150,
+          "sha256": "526826752102ccbe124055bbd14d7b5642a55241ba32efcfd7bd4c297dba913c",
+          "sha256_ordered": "809d4c2a762cfd1d3ff89dea1c8568a20b2f5768f95d1313a00bb343878baecd"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Fabricated/pulley_400nm_v2.yaml": {
+    "bytes": 304628,
+    "digest": {
+      "cell_count": 34,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PRR_1",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PRR_2",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PRR_3",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PRR_4",
+        "PR5_1",
+        "PR5_2",
+        "PR5_3",
+        "PR5_4",
+        "PRR_5",
+        "PR6_1",
+        "PR6_2",
+        "PR6_3",
+        "PR6_4",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "69c7e3d0fb618fc94661b24df49955695b94772cb6b160b6ddd38c13615a7c5a",
+      "sha256_ordered": "2b98a03f9cf666ccc3a6d6b2340de98fd15032202514287486bb85141e7f3f02",
+      "top_cells": [
+        {
+          "labels": 348,
+          "name": "CHIP_1",
+          "polygons": 923,
+          "sha256": "455dd3088c30d2cd25faf65b3e93f9d6da610975d101f41f71edf3bd0805f0a6",
+          "sha256_ordered": "ef1c163d53b0d2abf23c4a81dfcb8f7b188d165a72b434f5e58e9c17ec36651a"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Fabricated/pulley_400nm_wide_drop_v1.yaml": {
+    "bytes": 303824,
+    "digest": {
+      "cell_count": 35,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PRR_1",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PRR_2",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PRR_3",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PRR_4",
+        "PR5_1",
+        "PR5_2",
+        "PR5_3",
+        "PR5_4",
+        "PRR_5",
+        "PR6_1",
+        "PR6_2",
+        "PR6_3",
+        "PR6_4",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN_200nm",
+        "T_E_BROADEN_400nm",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "a5305e4fd800f61a1ac007e776cc350d162528fe360dc7ba2f3565a90dada1e6",
+      "sha256_ordered": "5c03c8b022010c28050c24bad2eae99865d1fbc63f7d5bf6be2c0a04d2aeb9c5",
+      "top_cells": [
+        {
+          "labels": 354,
+          "name": "CHIP_1",
+          "polygons": 942,
+          "sha256": "a36d2d597ef3984a37b9ea06fb352926a5ce16df41aa01bcf20ea5dff67aec3d",
+          "sha256_ordered": "ef109aa9241ebed8e69131a4998236e9bfba4828bb5dec21b290dcd733d95e1a"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/RT_Lattice_4x4_v1.yaml": {
+    "bytes": 176046,
+    "digest": {
+      "cell_count": 12,
+      "cell_names": [
+        "RT_Semi",
+        "WX_1800",
+        "L_Turn",
+        "L_Arm",
+        "L_Arm_02",
+        "L_Arm_03",
+        "L_Arm_04",
+        "Bus_Corner",
+        "Drop_Corner",
+        "Drop_Turn",
+        "T_E",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "191214d44e3dbbd2ca3c3a7783ebe40eae6439b95383ebff03ff0cdff0cee28d",
+      "sha256_ordered": "80f5f79fb412d6b4e78340d278bcd0fdecc694dca3f1561ad37b58885a60266d",
+      "top_cells": [
+        {
+          "labels": 1064,
+          "name": "CHIP_1",
+          "polygons": 6209,
+          "sha256": "bcbe54091d1660b25b93fee6a741248935c6bf54237d9d727cc74cfa2561b7b2",
+          "sha256_ordered": "7fd56a74245a1aea061c084a21e64ad14d4d08dd3457eb5bbe637da5e5280b20"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/StWG_Ring_Coupler.yaml": {
+    "bytes": 1634,
+    "digest": {
+      "cell_count": 4,
+      "cell_names": [
+        "Arc1",
+        "Arc2",
+        "ST_WG_2",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "d85ff578ca0c6479c3c80dd7bfa6b86bd13555dd523a18a6e22bd8bdc8d89e79",
+      "sha256_ordered": "2beb5d62a82cbeda6651a0bb155477ee0fde3e99c023f27aa2edf523403bea0f",
+      "top_cells": [
+        {
+          "labels": 5,
+          "name": "CHIP_1",
+          "polygons": 5,
+          "sha256": "e770119bb9c5bac20518f13b3eebdbfc33738185db0cf4911ef5947fbaeb6323",
+          "sha256_ordered": "1bd0d7808253fc24738978057a0635785417bdbe07252caae8a4c940fdc0d281"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/onn_butterfly_4x4_gap_length_sweep.yaml": {
+    "bytes": 2418746,
+    "digest": {
+      "cell_count": 10,
+      "cell_names": [
+        "g400_l3",
+        "g400_l5",
+        "g400_l7",
+        "g500_l3",
+        "g500_l5",
+        "g500_l7",
+        "g600_l3",
+        "g600_l5",
+        "g600_l7",
+        "ONN_4X4_GAP_LENGTH_2REP_TOP"
+      ],
+      "precision": 1e-09,
+      "sha256": "6b88388ab7bfc372062de8d4f9453512de4dafc80d23e88bbafae375fbe4b740",
+      "sha256_ordered": "2444825b5a646769c69b017fe7b3e794af124d1cc3864e1739d297ccf01fa247",
+      "top_cells": [
+        {
+          "labels": 594,
+          "name": "ONN_4X4_GAP_LENGTH_2REP_TOP",
+          "polygons": 10179,
+          "sha256": "c54f3a1e8a7015b142e29b18f72c52c6f08967eece89fbe69a76a578c985cf5d",
+          "sha256_ordered": "b90553ee82880d6ea50e39f634380daf69b2fe3aab004d4d86b2922023be9ead"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/pulley_400nm_dose_test_v1.yaml": {
+    "bytes": 64838,
+    "digest": {
+      "cell_count": 16,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PR2_5",
+        "PR2_6",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN_104nm",
+        "T_E_BROADEN_150nm",
+        "STICK",
+        "STICK_SMALL",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "94d7c1a8591af3f3514e61ac7c9a4dd6abbcc2878bdc793d1f2d318858b73ed1",
+      "sha256_ordered": "b76a406534ed23f6ff6d36a34925f72c3f99ae6929298ff6c1a8f73c373c278e",
+      "top_cells": [
+        {
+          "labels": 51,
+          "name": "CHIP_1",
+          "polygons": 150,
+          "sha256": "526826752102ccbe124055bbd14d7b5642a55241ba32efcfd7bd4c297dba913c",
+          "sha256_ordered": "809d4c2a762cfd1d3ff89dea1c8568a20b2f5768f95d1313a00bb343878baecd"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/pulley_400nm_dose_test_v2.yaml": {
+    "bytes": 62150,
+    "digest": {
+      "cell_count": 16,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PR2_5",
+        "PR2_6",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN_104nm",
+        "T_E_BROADEN_150nm",
+        "STICK",
+        "STICK_SMALL",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "ac2d3dbeafccf9ced31b970fd05b260ca3d862b22d621aeaea07b656f319870d",
+      "sha256_ordered": "a2bd926cfcb70bee320df8e0589452bb70380a4dbaf75947e5b0e234c11d7303",
+      "top_cells": [
+        {
+          "labels": 51,
+          "name": "CHIP_1",
+          "polygons": 147,
+          "sha256": "27bca65e10f61118e2c6525db01f31e1ad110930b7235374b092a302780788ba",
+          "sha256_ordered": "49d3adfda4cfdcd3ef93e361b9103defb83615bc852f518f52085aabffd2d91e"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/pulley_400nm_v1.yaml": {
+    "bytes": 292636,
+    "digest": {
+      "cell_count": 25,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PRR_1",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PRR_2",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PRR_3",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PRR_4",
+        "PR5_1",
+        "PR5_2",
+        "PR5_3",
+        "PRR_5",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "163faf644f676aba6f46cab57272d7f304a73745be3105c9c3c677691af408ab",
+      "sha256_ordered": "3710edb2c47431508e064e9a23f7d9bb074dfba1e9884df5a707656e8c66eaa0",
+      "top_cells": [
+        {
+          "labels": 200,
+          "name": "CHIP_1",
+          "polygons": 760,
+          "sha256": "691294c51f25e62f247769ad2a917a3ac74e1034264c475eb7a3921fb41cb109",
+          "sha256_ordered": "df8ac2a410005b28384a9d9933a84d9dc010d9899ffbfbf2d35cf4749bb9f3ad"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/pulley_400nm_v2.yaml": {
+    "bytes": 304628,
+    "digest": {
+      "cell_count": 34,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PRR_1",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PRR_2",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PRR_3",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PRR_4",
+        "PR5_1",
+        "PR5_2",
+        "PR5_3",
+        "PR5_4",
+        "PRR_5",
+        "PR6_1",
+        "PR6_2",
+        "PR6_3",
+        "PR6_4",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "69c7e3d0fb618fc94661b24df49955695b94772cb6b160b6ddd38c13615a7c5a",
+      "sha256_ordered": "2b98a03f9cf666ccc3a6d6b2340de98fd15032202514287486bb85141e7f3f02",
+      "top_cells": [
+        {
+          "labels": 348,
+          "name": "CHIP_1",
+          "polygons": 923,
+          "sha256": "455dd3088c30d2cd25faf65b3e93f9d6da610975d101f41f71edf3bd0805f0a6",
+          "sha256_ordered": "ef1c163d53b0d2abf23c4a81dfcb8f7b188d165a72b434f5e58e9c17ec36651a"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/pulley_400nm_v3.yaml": {
+    "bytes": 305402,
+    "digest": {
+      "cell_count": 37,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PRR_1",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PRR_2",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PRR_3",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PRR_4",
+        "PR5_1",
+        "PR5_2",
+        "PR5_3",
+        "PR5_4",
+        "PRR_5",
+        "PR6_1",
+        "PR6_2",
+        "PR6_3",
+        "PR6_4",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN",
+        "T_E_BROADEN_120nm",
+        "T_E_BROADEN_200nm",
+        "T_E_BROADEN_400nm",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "41313e921f3cd9f6af83be5a744bb7a7c5683d9d86f59ef2880529515034ccd5",
+      "sha256_ordered": "cb43324961c9e3cefce7d87def021f97e0c2dac19bad02ab27b7e53f2d664d4b",
+      "top_cells": [
+        {
+          "labels": 348,
+          "name": "CHIP_1",
+          "polygons": 923,
+          "sha256": "33265b67d348c4bc1118777efcba98a5ece0d093d65163393fb0ef6bddc4decb",
+          "sha256_ordered": "a5a1d8bdc974e40c1029bcd3f960d5d69e688a8586782963b00e67dc7d93ccad"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/pulley_400nm_wide_drop_v1.yaml": {
+    "bytes": 303824,
+    "digest": {
+      "cell_count": 35,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PRR_1",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PRR_2",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PRR_3",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PRR_4",
+        "PR5_1",
+        "PR5_2",
+        "PR5_3",
+        "PR5_4",
+        "PRR_5",
+        "PR6_1",
+        "PR6_2",
+        "PR6_3",
+        "PR6_4",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN_200nm",
+        "T_E_BROADEN_400nm",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "a5305e4fd800f61a1ac007e776cc350d162528fe360dc7ba2f3565a90dada1e6",
+      "sha256_ordered": "5c03c8b022010c28050c24bad2eae99865d1fbc63f7d5bf6be2c0a04d2aeb9c5",
+      "top_cells": [
+        {
+          "labels": 354,
+          "name": "CHIP_1",
+          "polygons": 942,
+          "sha256": "a36d2d597ef3984a37b9ea06fb352926a5ce16df41aa01bcf20ea5dff67aec3d",
+          "sha256_ordered": "ef109aa9241ebed8e69131a4998236e9bfba4828bb5dec21b290dcd733d95e1a"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/pulley_AlN_v1.yaml": {
+    "bytes": 216700,
+    "digest": {
+      "cell_count": 24,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PR1_5",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PR2_5",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PR3_5",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PR4_5",
+        "T_E",
+        "Cornor",
+        "EDGE_BUFFER",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "6daf8b7cfee041bf3bf80f47a1723364d2c1b679607af535fbcd03fad5ac5eb2",
+      "sha256_ordered": "92d466e0deecde37bdba9e535e3d5d208390d610c5be8e88a500042b30166aa4",
+      "top_cells": [
+        {
+          "labels": 140,
+          "name": "CHIP_1",
+          "polygons": 424,
+          "sha256": "6dde7178496d737a370f144830cad57eac7c8f5e90da044dbec1a8bce438434d",
+          "sha256_ordered": "53a97f757c1abf8732869e994e549029941c57314ad18f75f1e7ad03620fabe7"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/Final/width_varying_ring_sweep_16dev.yaml": {
+    "bytes": 269738,
+    "digest": {
+      "cell_count": 18,
+      "cell_names": [
+        "var_w1_1p8_w2_0p8_n1",
+        "var_w1_1p8_w2_0p8_n2",
+        "var_w1_1p8_w2_0p8_n3",
+        "var_w1_1p8_w2_0p9_n1",
+        "var_w1_1p8_w2_0p9_n2",
+        "var_w1_1p8_w2_0p9_n3",
+        "var_w1_1p9_w2_0p8_n1",
+        "var_w1_1p9_w2_0p8_n2",
+        "var_w1_1p9_w2_0p8_n3",
+        "var_w1_1p9_w2_0p9_n1",
+        "var_w1_1p9_w2_0p9_n2",
+        "var_w1_1p9_w2_0p9_n3",
+        "const_w_1p8",
+        "const_w_1p9",
+        "const_w_0p8",
+        "const_w_0p9",
+        "facet_taper",
+        "WIDTH_VARYING_RING_SWEEP_16DEV"
+      ],
+      "precision": 1e-09,
+      "sha256": "6e5cda561376cda3d67874077fe8810cfbb0e8c63dd203d03805d0304db20881",
+      "sha256_ordered": "cd45397b2257ae69bb30242c9f39db280958e109bcf421cb126e1967e0060f5a",
+      "top_cells": [
+        {
+          "labels": 48,
+          "name": "WIDTH_VARYING_RING_SWEEP_16DEV",
+          "polygons": 344,
+          "sha256": "0b08589e8fbadeac721bdb813b6a72f88b7ac4bb98c14362de8d76926e1c92ff",
+          "sha256_ordered": "840bba4cbac70c3ffa205261f90e4c4a1e6460be68d5a8911f9e9217db8d6866"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/RT_Lattice_4x4.yaml": {
+    "bytes": 176046,
+    "digest": {
+      "cell_count": 12,
+      "cell_names": [
+        "RT_Semi",
+        "WX_1800",
+        "L_Turn",
+        "L_Arm",
+        "L_Arm_02",
+        "L_Arm_03",
+        "L_Arm_04",
+        "Bus_Corner",
+        "Drop_Corner",
+        "Drop_Turn",
+        "T_E",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "191214d44e3dbbd2ca3c3a7783ebe40eae6439b95383ebff03ff0cdff0cee28d",
+      "sha256_ordered": "80f5f79fb412d6b4e78340d278bcd0fdecc694dca3f1561ad37b58885a60266d",
+      "top_cells": [
+        {
+          "labels": 1064,
+          "name": "CHIP_1",
+          "polygons": 6209,
+          "sha256": "bcbe54091d1660b25b93fee6a741248935c6bf54237d9d727cc74cfa2561b7b2",
+          "sha256_ordered": "7fd56a74245a1aea061c084a21e64ad14d4d08dd3457eb5bbe637da5e5280b20"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/demo_multi_layer.yaml": {
+    "bytes": 3526,
+    "digest": {
+      "cell_count": 4,
+      "cell_names": [
+        "taper_in",
+        "wx1",
+        "ring1",
+        "DEMO_MULTI_LAYER"
+      ],
+      "precision": 1e-09,
+      "sha256": "4437c295f9df16f79d26789477fab7cd5881a24829218e11cb29ac83d3ecce39",
+      "sha256_ordered": "4bfb7c5631ebe6f77cb0a33501f0547d6c5ab00f01bd757c8b4a8d030b4739c9",
+      "top_cells": [
+        {
+          "labels": 3,
+          "name": "DEMO_MULTI_LAYER",
+          "polygons": 13,
+          "sha256": "8c8b37f1488b9fbc31a1c4a8898893af981757c7e8ce87d3f540c4b00f9721f8",
+          "sha256_ordered": "64e7e12d1466909ff65e15004d541993f2552c7b83974b78c786b30145912f18"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/onn_butterfly_4x4_device.yaml": {
+    "bytes": 268700,
+    "digest": {
+      "cell_count": 2,
+      "cell_names": [
+        "device",
+        "ONN_BUTTERFLY_4X4_DEVICE_FINAL_TOP"
+      ],
+      "precision": 1e-09,
+      "sha256": "d553519b9e544569c6fe0ae83d6a923503fb446fc1475e5b95f4298dd71786ce",
+      "sha256_ordered": "b63750724ab1c8f2fe8e8a6e0b8191af4f1d640de7653b9318e75ea739cf9a54",
+      "top_cells": [
+        {
+          "labels": 66,
+          "name": "ONN_BUTTERFLY_4X4_DEVICE_FINAL_TOP",
+          "polygons": 1131,
+          "sha256": "860129287371a407a8a4f5d75a7e77a8cfade130a19fe50d500122b19664fd43",
+          "sha256_ordered": "6bc5d27359a452f146a79b0204aaf6402f82f25c3aa7c854d6ca1b4e1cc5ff56"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/onn_butterfly_4x4_device_sweep.yaml": {
+    "bytes": 537282,
+    "digest": {
+      "cell_count": 3,
+      "cell_names": [
+        "gap_500nm",
+        "gap_600nm",
+        "ONN_BUTTERFLY_4X4_DEVICE_FINAL_SWEEP_TOP"
+      ],
+      "precision": 1e-09,
+      "sha256": "2e6ab0719e916bd11f59b485ded1d57d96b53c1cd0ec2619a20c8de0dbd10f6e",
+      "sha256_ordered": "57e0697168931092d36dc448ea6102f46174c1bd2c98a25f9fa082019bbd25c4",
+      "top_cells": [
+        {
+          "labels": 132,
+          "name": "ONN_BUTTERFLY_4X4_DEVICE_FINAL_SWEEP_TOP",
+          "polygons": 2262,
+          "sha256": "e45659f17ef46b838d88ecdbd65a27f872f73f9742e523695004d128f277990a",
+          "sha256_ordered": "379af350fe24aebcf0c59ae1c3a8b880e9143d77a47dc09008b9b24a482fe91d"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/onn_butterfly_4x4_gap_length_2rep_sweep.yaml": {
+    "bytes": 2419034,
+    "digest": {
+      "cell_count": 10,
+      "cell_names": [
+        "g400_l3",
+        "g400_l5",
+        "g400_l7",
+        "g500_l3",
+        "g500_l5",
+        "g500_l7",
+        "g600_l3",
+        "g600_l5",
+        "g600_l7",
+        "ONN_4X4_GAP_LENGTH_2REP_TOP"
+      ],
+      "precision": 1e-09,
+      "sha256": "40553229cd2060e1e98bb6bdc8950c8217825e3284139d80ec050e950be312cc",
+      "sha256_ordered": "e31d2c91e4d6081abf76d8d7d8435482dca3dc5b8400b3deab56d2dadfe18870",
+      "top_cells": [
+        {
+          "labels": 1188,
+          "name": "ONN_4X4_GAP_LENGTH_2REP_TOP",
+          "polygons": 20358,
+          "sha256": "012fab92da8a4fff5850467aae28a3ad87c0ff1fdcf945b599737a4dd3fa3629",
+          "sha256_ordered": "4ac342f7fd2ea72ed6c374a04020160e2580bf2f008f4cae20457b6e0441a1fe"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/onn_butterfly_4x4_gap_length_sweep.yaml": {
+    "bytes": 2418746,
+    "digest": {
+      "cell_count": 10,
+      "cell_names": [
+        "g400_l3",
+        "g400_l5",
+        "g400_l7",
+        "g500_l3",
+        "g500_l5",
+        "g500_l7",
+        "g600_l3",
+        "g600_l5",
+        "g600_l7",
+        "ONN_4X4_GAP_LENGTH_2REP_TOP"
+      ],
+      "precision": 1e-09,
+      "sha256": "6b88388ab7bfc372062de8d4f9453512de4dafc80d23e88bbafae375fbe4b740",
+      "sha256_ordered": "2444825b5a646769c69b017fe7b3e794af124d1cc3864e1739d297ccf01fa247",
+      "top_cells": [
+        {
+          "labels": 594,
+          "name": "ONN_4X4_GAP_LENGTH_2REP_TOP",
+          "polygons": 10179,
+          "sha256": "c54f3a1e8a7015b142e29b18f72c52c6f08967eece89fbe69a76a578c985cf5d",
+          "sha256_ordered": "b90553ee82880d6ea50e39f634380daf69b2fe3aab004d4d86b2922023be9ead"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/playground.yaml": {
+    "bytes": 16780,
+    "digest": {
+      "cell_count": 2,
+      "cell_names": [
+        "PR1_1",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "ff5f5d3d2b6820fc46b5f0da529c2e1bd35a39630fd8d5b663fb889828b0ebea",
+      "sha256_ordered": "3305b9afe3a16fdee1644aa87571fe94c0a032a34b3addf8924d2a18482b123d",
+      "top_cells": [
+        {
+          "labels": 1,
+          "name": "CHIP_1",
+          "polygons": 18,
+          "sha256": "2b37ceb10b3e1a6577ed52f5fd20e6a05b9c99fcddf244f6db792afdd1e96513",
+          "sha256_ordered": "a1991b30427a7b0559ad65849166d39dd7204171d8df70d75956aa064fb2f4bf"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/pulley_400nm.yaml": {
+    "bytes": 303824,
+    "digest": {
+      "cell_count": 35,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PRR_1",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PRR_2",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PRR_3",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PRR_4",
+        "PR5_1",
+        "PR5_2",
+        "PR5_3",
+        "PR5_4",
+        "PRR_5",
+        "PR6_1",
+        "PR6_2",
+        "PR6_3",
+        "PR6_4",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN_200nm",
+        "T_E_BROADEN_400nm",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "a5305e4fd800f61a1ac007e776cc350d162528fe360dc7ba2f3565a90dada1e6",
+      "sha256_ordered": "5c03c8b022010c28050c24bad2eae99865d1fbc63f7d5bf6be2c0a04d2aeb9c5",
+      "top_cells": [
+        {
+          "labels": 354,
+          "name": "CHIP_1",
+          "polygons": 942,
+          "sha256": "a36d2d597ef3984a37b9ea06fb352926a5ce16df41aa01bcf20ea5dff67aec3d",
+          "sha256_ordered": "ef109aa9241ebed8e69131a4998236e9bfba4828bb5dec21b290dcd733d95e1a"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/pulley_400nm_dose_test.yaml": {
+    "bytes": 62150,
+    "digest": {
+      "cell_count": 16,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PR2_5",
+        "PR2_6",
+        "T_E",
+        "T_E_DROP",
+        "Cornor",
+        "T_E_BROADEN_104nm",
+        "T_E_BROADEN_150nm",
+        "STICK",
+        "STICK_SMALL",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "ac2d3dbeafccf9ced31b970fd05b260ca3d862b22d621aeaea07b656f319870d",
+      "sha256_ordered": "a2bd926cfcb70bee320df8e0589452bb70380a4dbaf75947e5b0e234c11d7303",
+      "top_cells": [
+        {
+          "labels": 51,
+          "name": "CHIP_1",
+          "polygons": 147,
+          "sha256": "27bca65e10f61118e2c6525db01f31e1ad110930b7235374b092a302780788ba",
+          "sha256_ordered": "49d3adfda4cfdcd3ef93e361b9103defb83615bc852f518f52085aabffd2d91e"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/pulley_AlN.yaml": {
+    "bytes": 216700,
+    "digest": {
+      "cell_count": 24,
+      "cell_names": [
+        "PR1_1",
+        "PR1_2",
+        "PR1_3",
+        "PR1_4",
+        "PR1_5",
+        "PR2_1",
+        "PR2_2",
+        "PR2_3",
+        "PR2_4",
+        "PR2_5",
+        "PR3_1",
+        "PR3_2",
+        "PR3_3",
+        "PR3_4",
+        "PR3_5",
+        "PR4_1",
+        "PR4_2",
+        "PR4_3",
+        "PR4_4",
+        "PR4_5",
+        "T_E",
+        "Cornor",
+        "EDGE_BUFFER",
+        "CHIP_1"
+      ],
+      "precision": 1e-09,
+      "sha256": "6daf8b7cfee041bf3bf80f47a1723364d2c1b679607af535fbcd03fad5ac5eb2",
+      "sha256_ordered": "92d466e0deecde37bdba9e535e3d5d208390d610c5be8e88a500042b30166aa4",
+      "top_cells": [
+        {
+          "labels": 140,
+          "name": "CHIP_1",
+          "polygons": 424,
+          "sha256": "6dde7178496d737a370f144830cad57eac7c8f5e90da044dbec1a8bce438434d",
+          "sha256_ordered": "53a97f757c1abf8732869e994e549029941c57314ad18f75f1e7ad03620fabe7"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
+  "designs/profiles/width_varying_ring_sweep_16dev.yaml": {
+    "bytes": 269738,
+    "digest": {
+      "cell_count": 18,
+      "cell_names": [
+        "var_w1_1p8_w2_0p8_n1",
+        "var_w1_1p8_w2_0p8_n2",
+        "var_w1_1p8_w2_0p8_n3",
+        "var_w1_1p8_w2_0p9_n1",
+        "var_w1_1p8_w2_0p9_n2",
+        "var_w1_1p8_w2_0p9_n3",
+        "var_w1_1p9_w2_0p8_n1",
+        "var_w1_1p9_w2_0p8_n2",
+        "var_w1_1p9_w2_0p8_n3",
+        "var_w1_1p9_w2_0p9_n1",
+        "var_w1_1p9_w2_0p9_n2",
+        "var_w1_1p9_w2_0p9_n3",
+        "const_w_1p8",
+        "const_w_1p9",
+        "const_w_0p8",
+        "const_w_0p9",
+        "facet_taper",
+        "WIDTH_VARYING_RING_SWEEP_16DEV"
+      ],
+      "precision": 1e-09,
+      "sha256": "6e5cda561376cda3d67874077fe8810cfbb0e8c63dd203d03805d0304db20881",
+      "sha256_ordered": "cd45397b2257ae69bb30242c9f39db280958e109bcf421cb126e1967e0060f5a",
+      "top_cells": [
+        {
+          "labels": 48,
+          "name": "WIDTH_VARYING_RING_SWEEP_16DEV",
+          "polygons": 344,
+          "sha256": "0b08589e8fbadeac721bdb813b6a72f88b7ac4bb98c14362de8d76926e1c92ff",
+          "sha256_ordered": "840bba4cbac70c3ffa205261f90e4c4a1e6460be68d5a8911f9e9217db8d6866"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  }
+}

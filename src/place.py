@@ -139,65 +139,83 @@ def route_manhattan(parent, A, B, r, layer=1, samples=24):
     parent.add(rp)
 
 
-def route_euler_bend(parent, A, B, Rmin, layer, n=100):
-    """Approximate Euler-style bend from port *A* to port *B*.
+def _euler_local_points(x_rel, y_rel, Rmin, n):
+    """Sample a smooth A→B curve in A's local frame (A at origin, heading +x).
 
-    Handles four geometry cases (in A's local frame):
-      1. Collinear horizontal → straight segment
-      2. Collinear vertical   → straight segment
-      3. L-bend (room in both axes) → circular quarter-arc, scaled if needed
-      4. S-bend (tight in one axis)  → cycloid-based smooth curve
+    Every branch starts exactly at ``(0, 0)`` and ends exactly at
+    ``(x_rel, y_rel)``, so the emitted path is attached to both ports.
+
+    *Rmin* is treated as a constraint to check rather than a shape parameter:
+    between two fixed ports the curve is determined by the endpoints, so where
+    the geometry forces a tighter bend than *Rmin* this warns instead of
+    silently drawing a lossy corner.
+    """
+    straight_tol = 1e-9
+
+    # Collinear along either local axis — a straight segment reaches B exactly.
+    if abs(y_rel) < straight_tol or abs(x_rel) < straight_tol:
+        return [(0.0, 0.0), (x_rel, y_rel)]
+
+    sgn = 1.0 if y_rel >= 0 else -1.0
+
+    # L-bend: room for a quarter turn ahead of B, and B is off to one side.
+    # Path is straight along +x, a quarter arc, then straight along ±y.
+    if x_rel > 0 and abs(x_rel) >= Rmin and abs(y_rel) >= Rmin:
+        r = Rmin
+        pts = [(0.0, 0.0), (x_rel - r, 0.0)]
+        cx, cy = x_rel - r, sgn * r
+        for k in range(1, n + 1):
+            # From -sgn·π/2 (heading +x) to 0 (heading ±y).
+            theta = -sgn * (math.pi / 2.0) * (1.0 - k / n)
+            pts.append((cx + r * math.cos(theta), cy + r * math.sin(theta)))
+        pts.append((x_rel, y_rel))
+        return pts
+
+    # S-bend: raised cosine. Zero slope at both ends, so it leaves A and
+    # arrives at B tangentially, and it lands on B by construction.
+    #   x(t) = x_rel·t,  y(t) = (y_rel/2)·(1 − cos πt),  t ∈ [0, 1]
+    # Curvature peaks at the ends, where the radius is
+    #   R = 2·x_rel² / (π²·|y_rel|)
+    if abs(x_rel) > straight_tol:
+        implied_r = 2.0 * x_rel * x_rel / (math.pi ** 2 * abs(y_rel))
+        if implied_r < Rmin:
+            warnings.warn(
+                f"Euler S-bend between these ports implies a "
+                f"{implied_r:.3f} um radius, tighter than the requested "
+                f"Rmin={Rmin:.3f} um. Increase the along-axis separation "
+                f"to {math.pi * math.sqrt(Rmin * abs(y_rel) / 2.0):.1f} um "
+                f"to satisfy it.",
+                stacklevel=3,
+            )
+    return [
+        (x_rel * (i / n), 0.5 * y_rel * (1.0 - math.cos(math.pi * i / n)))
+        for i in range(n + 1)
+    ]
+
+
+def route_euler_bend(parent, A, B, Rmin, layer, n=100):
+    """Smooth bend from port *A* to port *B*, honouring a minimum radius.
+
+    In A's local frame the shape is chosen from the relative position of B:
+    a straight segment when the ports are collinear, a straight/quarter-arc/
+    straight L when there is room for a full turn, and a raised-cosine S-bend
+    otherwise.  All three terminate on B.
 
     .. note::
-       This is a circular/cycloid *approximation*, not a true clothoid.
-       A proper Euler spiral implementation would provide smoother curvature
-       transitions and lower optical loss at the junctions.
+       These are circular and raised-cosine curves, not true clothoids.  A
+       real Euler spiral would ramp curvature linearly along the arc and so
+       cut the junction loss further; ``Rmin`` here bounds the *peak*
+       curvature only.
     """
     x1, y1, a1, w1 = A.x, A.y, A.angle, A.width
-    x2, y2, a2, w2 = B.x, B.y, B.angle, B.width
+    w2 = B.width
 
-    dx, dy = x2 - x1, y2 - y1
+    dx, dy = B.x - x1, B.y - y1
     cos1, sin1 = math.cos(a1), math.sin(a1)
     x_rel = dx * cos1 + dy * sin1
     y_rel = -dx * sin1 + dy * cos1
 
-    # Characteristic footprint of a 90° bend at Rmin
-    L = 1.65 * Rmin
-    x_req, y_req = abs(x_rel), abs(y_rel)
-
-    if x_req > L and y_req < 1e-3:
-        # Case 1 — collinear horizontal
-        pts = [(0, 0), (x_rel, 0)]
-
-    elif y_req > L and x_req < 1e-3:
-        # Case 2 — collinear vertical
-        pts = [(0, 0), (0, y_rel)]
-
-    elif x_req > L and y_req > L:
-        # Case 3 — L-bend
-        L_max = min(x_req, y_req)
-        if L > L_max:
-            scale = L_max / L
-            Rmin = Rmin * scale
-            warnings.warn(f"Euler bend Rmin scaled to {Rmin:.3f} to fit geometry.")
-        sgn = 1.0 if y_rel >= 0 else -1.0
-        t_vals = [i / (n - 1) for i in range(n)]
-        pts = [
-            (Rmin * math.sin(math.pi * 0.5 * t),
-             sgn * Rmin * (1 - math.cos(math.pi * 0.5 * t)))
-            for t in t_vals
-        ]
-
-    else:
-        # Case 4 — S-bend (cycloid approximation)
-        mid_y = y_rel / 2
-        Rmin_s = max(1.0, min(abs(mid_y) / 1.1, Rmin))
-        pts = []
-        for i in range(n):
-            phi = math.pi * i / (n - 1)
-            x = Rmin_s * (phi - math.sin(phi))
-            y = mid_y - Rmin_s * (math.cos(phi) - 1)
-            pts.append((x, y))
+    pts = _euler_local_points(x_rel, y_rel, float(Rmin), int(n))
 
     # Local → world
     world_pts = [
