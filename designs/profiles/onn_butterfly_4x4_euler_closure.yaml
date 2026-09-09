@@ -1,0 +1,150 @@
+# Euler-closure variant of the fabrication-ready 4x4 butterfly ONN device.
+# Units are micrometres.  Geometry invariants stay in Python; fabrication
+# values and sweep parameters stay here.
+#
+# WHAT IS DIFFERENT FROM onn_butterfly_4x4_device.yaml
+#
+# The canonical resonator's two 180 deg closures were plain semicircles butted
+# straight onto the active and return arms, so curvature stepped 0 -> 1/30 um^-1
+# four times per round trip.  Those four junctions are the only curvature steps
+# in this repo that sit inside a recirculating loop, so unlike every other bend
+# in the library they are paid on every pass and cap the loaded Q.  A 1-D
+# lateral effective-index solve puts them at roughly 0.27 dB and ~6% TE0 -> TE1
+# per junction at R = 30 um on a 1.8 um core.
+#
+# `closure_style: euler` ramps curvature linearly with arc length instead, so
+# curvature is zero where the closure meets each straight.  Everything else --
+# the couplers, the 64 crossings, the butterfly topology, the I/O -- is
+# untouched.
+#
+# WHY THE THREE LAYOUT NUMBERS MOVED
+#
+# The closure's entry-to-exit displacement is purely lateral and equals
+# unit_chord(pi, p) * R, which is 2*R for a semicircle but 2.753663*R for a
+# pure clothoid.  `return_arm_offset` is that displacement, fixed by the
+# layout, so holding it at 60 um would have driven the radius DOWN to 21.79 um
+# -- below the design's own min_bend_radius, and a worse bend than the one being
+# fixed.  Widening the offset instead keeps R >= 30 um, and the two guards in
+# the cell then require the tile and the group pitch to follow:
+#
+#   return_arm_offset  60.0 -> 84.0    (R = 30.505 um; the floor is 82.610)
+#   tile_half_span    240.0 -> 265.0   (must exceed return_offset + 23.2)
+#   interaction_group_pitch
+#                     490.0 -> 545.0   (must strictly exceed 2 * tile_half_span)
+#
+# COST, STATED PLAINLY
+#
+# The closure is exactly (1 + p) times the arc length, so at p = 1 it is 191.67
+# um against 94.25, and it reaches 74.74 um past the arm it leaves rather than
+# 30.00.  With the widened offset the round trip goes 2500.32 -> 2905.16 um,
+# +16.19%, so the FSR drops ~13.9% and every existing wavelength calibration
+# is void.  That is a recalibration, not a redesign, but it is not free.
+#
+# TRADING GRADUALNESS FOR FOOTPRINT
+#
+# `closure_p` is the fraction of the turn spent ramping.  Lower p is cheaper
+# but less adiabatic -- the ramp has to be long against the TE0/TE1 beat length
+# to help at all.  Each row is a valid substitution; the offset is the floor for
+# R = 30 um, rounded up:
+#
+#   p     return_arm_offset  tile_half_span  pitch   ramp     round trip
+#   1.0   84.0               265.0           545.0   94.2 um  +16.19%   <- used
+#   0.4   64.0               245.0           495.0   37.7 um   +4.23%
+#   0.2   61.0               241.0           490.0   18.9 um   +1.67%
+#
+# p = 0.2 is close to a drop-in, but an 18.9 um ramp is only about one beat
+# length, so it removes the discontinuity without buying much adiabaticity.
+# p = 1.0 is shipped here because the point of the change is gradualness.
+#
+# Build the arc version alongside this one for an on-chip A/B: 16 WX crossings
+# sit in every round trip and their 16 deg taper flares dominate the loss
+# budget, so the closure improvement is not separable from a single spectrum.
+#
+# IF YOU STACK THIS INTO A SWEEP, RAISE THE PITCH.
+#
+# This device is 1592.78 um tall against the arc version's 1412.40 um.  The
+# existing sweeps stack devices on a 1450.0 um y pitch
+# (onn_butterfly_4x4_gap_length_sweep.yaml) which is SMALLER than that, and
+# nothing validates device-to-device spacing -- adjacent copies would silently
+# merge into each other rather than raising.  Use >= 1700 um for an
+# Euler-closure sweep.  onn_butterfly_4x4_device_sweep.yaml's 1650 um pitch
+# happens to clear it, by 57 um.
+
+extends: designs/platforms/SiN400_SiO2.yaml
+
+defaults:
+  layers:
+    WG: 1
+    DIE: 20
+    TEXT: 100
+
+chip:
+  name: ONN_BUTTERFLY_4X4_EULER_CLOSURE_TOP
+  out: out/onn_butterfly_4x4_euler_closure.gds
+
+_templates:
+  core: &core
+    n: 4
+    waveguide_width: 1.8
+    coupling_gap: 0.5
+    coupling_length: 5.0
+    min_bend_radius: 30.0
+    crossing_offset: 150.0
+    # Widened from 60.0: this is the closure's lateral span, not its diameter,
+    # once the closure is a clothoid.  See the header.
+    return_arm_offset: 84.0
+    coupler_offset: 45.0
+    tile_half_span: 265.0
+    interaction_group_pitch: 545.0
+    crossing_taper_length: 5.0
+    crossing: { WM: 3.6, LM: 28.2, LT: 3.1, w_in: 1.8 }
+    closure_lead: 30.0
+    # The change this profile exists for.
+    closure_style: euler
+    closure_p: 1.0
+
+  # Shared by the direct pump and all eight standardized drop probes.
+  bus: &bus
+    width: 1.0
+    gap: 0.5
+    bend_radius: 30.0
+
+  drop: &drop
+    coupling_length: 5.0
+    # Must be at least 2 * bus.bend_radius.  Used only where collinear
+    # bottom-apex outputs need distinct right-facet lanes.
+    output_lane_pitch: 70.0
+
+  inverse_taper: &inverse_taper
+    tip_width: 0.15
+    length: 400.0
+
+  facets: &facets
+    # Exposed taper tips are exactly at x=-3000 and x=+3000.
+    span: 6000.0
+    center_x: 0.0
+
+  circulation: &circulation
+    # Uniform within each orientation and opposite between orientations.
+    # Circulation fixes the local propagation direction at each apex; every
+    # DROP output is routed to the right facet regardless of these values.
+    horizontal: CCW
+    vertical: CW
+    require_opposite: true
+
+instances:
+  device:
+    type: ONN_BUTTERFLY_DEVICE
+    params:
+      name: ONN_BUTTERFLY_4X4_EULER_CLOSURE
+      core: *core
+      io:
+        bus: *bus
+        drop: *drop
+        inverse_taper: *inverse_taper
+        facets: *facets
+        circulation: *circulation
+      flatten: true
+
+placement:
+  - place: { inst: device, as: D1, at: [0.0, 0.0], rot: 0.0 }

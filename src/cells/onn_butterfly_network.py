@@ -22,6 +22,7 @@ from typing import Dict, Iterable, List, Sequence, Tuple
 import gdstk
 import numpy as np
 
+from .. import clothoid
 from ..layer_map import resolve_wg_layer
 from .wx import PCellWx
 
@@ -154,6 +155,35 @@ def _arc(
     phi = np.linspace(radial0, radial0 + angle, samples)
     points = center + radius * np.column_stack((np.cos(phi), np.sin(phi)))
     return points, heading + angle
+
+
+def _euler_turn(
+    start: Sequence[float],
+    heading: float,
+    radius: float,
+    angle: float,
+    p: float = clothoid.DEFAULT_P,
+    tolerance: float = clothoid.DEFAULT_TOLERANCE,
+) -> Tuple[np.ndarray, float]:
+    """Clothoid counterpart of :func:`_arc`, with the same contract.
+
+    Enters *start* on *heading* and leaves having turned by *angle*, so the two
+    are interchangeable inside a centerline.  *radius* is the **peak** curvature
+    radius, reached only at the apex: curvature ramps linearly with arc length
+    from zero at each end, which is the whole point of using this instead of
+    ``_arc``.
+
+    The bend is therefore longer than the circular arc of the same radius and
+    turn -- exactly ``(1 + p)`` times -- and reaches further past the entry
+    line.  Both costs are reported as diagnostics by the caller rather than
+    being hidden here.
+    """
+    point = np.asarray(start, dtype=float)
+    samples = clothoid.bend_samples(angle, radius, p, tolerance)
+    local = np.asarray(clothoid.bend_points(angle, radius, p, samples), dtype=float)
+    cos_h, sin_h = math.cos(heading), math.sin(heading)
+    rotation = np.array(((cos_h, -sin_h), (sin_h, cos_h)))
+    return point + local @ rotation.T, heading + angle
 
 
 def _add_constant_path(
@@ -298,10 +328,27 @@ def _canonical_resonator(
 
     if group_pitch <= 2.0 * tile_half_span:
         raise ValueError("interaction_group_pitch must exceed 2 * tile_half_span")
-    if 0.5 * return_arm_offset < float(params["min_bend_radius"]):
+
+    closure_style = str(params.get("closure_style", "arc")).lower()
+    closure_p = float(params.get("closure_p", clothoid.DEFAULT_P))
+    # The 180 deg closure's entry-to-exit displacement is purely lateral and
+    # equals ``unit_chord(pi, p) * R``, so with the arm offset fixed by the
+    # layout the radius is *derived*, never chosen.  A semicircle is the p -> 0
+    # limit of the same expression (unit_chord -> 2), which is why the arc
+    # branch reads as the special case it is.
+    if closure_style == "euler":
+        closure_span = clothoid.unit_chord(math.pi, closure_p)
+    else:
+        closure_span = 2.0
+    closure_radius = return_arm_offset / closure_span
+    if closure_radius < float(params["min_bend_radius"]) - 1e-9:
         raise ValueError(
-            "return_arm_offset / 2 is the closure bend radius and must be at "
-            "least min_bend_radius"
+            f"return_arm_offset / {closure_span:.6f} is the closure bend radius "
+            f"for closure_style {closure_style!r} (p={closure_p:g}), giving "
+            f"{closure_radius:.4f} um, which is below min_bend_radius "
+            f"{float(params['min_bend_radius']):g} um. Widen return_arm_offset "
+            f"to at least {closure_span * float(params['min_bend_radius']):.4f} "
+            f"um, or lower closure_p."
         )
 
     left_center, right_center = butterfly_x
@@ -320,13 +367,24 @@ def _canonical_resonator(
     active_right = float(right_center + tile_half_span)
     x_left = active_left - closure_lead
     x_right = active_right + closure_lead
-    closure_radius = 0.5 * return_arm_offset
-    right_turn, _ = _arc(
-        (x_right, crossing_offset), 0.0, closure_radius, math.pi
-    )
-    left_turn, _ = _arc(
-        (x_left, return_offset), math.pi, closure_radius, math.pi
-    )
+    if closure_style == "euler":
+        right_turn, _ = _euler_turn(
+            (x_right, crossing_offset), 0.0, closure_radius, math.pi, closure_p
+        )
+        left_turn, _ = _euler_turn(
+            (x_left, return_offset), math.pi, closure_radius, math.pi, closure_p
+        )
+    else:
+        right_turn, _ = _arc(
+            (x_right, crossing_offset), 0.0, closure_radius, math.pi
+        )
+        left_turn, _ = _arc(
+            (x_left, return_offset), math.pi, closure_radius, math.pi
+        )
+    # How far the closure reaches past the straight it leaves: exactly R for a
+    # semicircle, 2.45 * R for a pure clothoid.  The I/O wrapper needs this to
+    # place its drop probes, which is why it is a diagnostic and not a local.
+    closure_apex_extent = float(np.max(right_turn[:, 0]) - x_right)
 
     loop_trace = _join(
         (
@@ -368,6 +426,11 @@ def _canonical_resonator(
         "active_arm_y_um": crossing_offset,
         "return_arm_y_um": return_offset,
         "return_arm_offset_um": return_arm_offset,
+        "closure_style": closure_style,
+        "closure_p": closure_p if closure_style == "euler" else None,
+        "closure_radius_um": float(closure_radius),
+        "closure_apex_extent_um": closure_apex_extent,
+        "closure_length_um": float(_polyline_length(right_turn)),
         "relative_crossing_centers_um": relative_crossings,
         "crossings_on_single_resonator": len(relative_crossings),
         "local_coupling_edge_gaps_um": template["measured_edge_gaps"],
@@ -398,6 +461,14 @@ def _defaults(params: dict | None) -> dict:
         "interaction_group_pitch": 1300.0,
         "crossing_taper_length": 30.0,
         "closure_lead": 100.0,
+        # "arc" keeps the published semicircular closure. "euler" ramps the
+        # curvature linearly with arc length instead, which removes the four
+        # 0 -> 1/R steps per round trip at the cost of footprint: the closure
+        # grows to (1 + closure_p) times its length and reaches further past
+        # the arm it leaves, and because the arm offset is fixed by the layout
+        # the radius shrinks unless return_arm_offset is widened with it.
+        "closure_style": "arc",
+        "closure_p": clothoid.DEFAULT_P,
         "flatten": True,
         "crossing": {"WM": 1.6, "LM": 8.0, "LT": 10.0, "w_in": 0.5},
     }
@@ -426,6 +497,21 @@ def _validate_positive(params: dict) -> None:
     ):
         if float(params[key]) <= 0.0:
             raise ValueError(f"{key} must be positive")
+
+    style = str(params.get("closure_style", "arc")).lower()
+    if style not in ("arc", "euler"):
+        raise ValueError(
+            f"closure_style must be 'arc' or 'euler', got "
+            f"{params.get('closure_style')!r}"
+        )
+    if style == "euler":
+        closure_p = float(params.get("closure_p", clothoid.DEFAULT_P))
+        if not 0.0 < closure_p <= 1.0:
+            raise ValueError(
+                f"closure_p must be in (0, 1] for closure_style 'euler', got "
+                f"{closure_p:g}. p is the fraction of the turn spent ramping "
+                f"curvature; p=1 is a pure clothoid."
+            )
 
 
 def _crossing_geometry(

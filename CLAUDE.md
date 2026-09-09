@@ -132,6 +132,23 @@ something placed at the top level.
   `build_onn_butterfly_*()` functions return `(cell, ports, diagnostics)` — the
   `PCell*` wrappers exist only to drop the diagnostics for the registry. Call the
   `build_*` function directly when you want the diagnostics.
+- The ONN resonator closure is the one curvature step in this repo that sits
+  *inside* a recirculating loop, so it is the only one that caps a Q.
+  `core.closure_style` picks the shape: `arc` (default, the published
+  semicircle) or `euler`, a clothoid whose curvature ramps over `core.closure_p`
+  of the turn. **`return_arm_offset` is the closure's lateral span, not its
+  diameter** — it equals `unit_chord(pi, p) * R`, which is `2*R` only for a
+  semicircle, so switching to `euler` at a fixed offset drives the radius *down*
+  (60 um gives 21.79 um at p=1, below `min_bend_radius`, and the cell raises
+  saying so). Widen the offset to keep the radius, and `tile_half_span` and
+  `interaction_group_pitch` must then follow their own two guards. Note the
+  guard on the pitch is strict (`pitch <= 2 * tile_half_span` raises), so
+  `2 * tile_half_span` exactly is not a legal pitch. The apex also moves:
+  it sits `closure_apex_extent_um` past the arm, which is `R` for the
+  semicircle but `2.4501 * R` at p=1 — `onn_butterfly_device.py` places its
+  pump and drop probes off that diagnostic, and off `closure_radius_um` only
+  for the curvature *at* the apex, which is what sets the coupling. Conflating
+  the two is what made the device's own overlap guard fire.
 - The sweep profiles keep YAML anchors under a `_templates:` key so they can be
   reused via `*` aliases further down. It is not a builder section, and
   `warn_unknown_keys` skips any top-level key starting with `_` for exactly

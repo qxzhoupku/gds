@@ -183,7 +183,22 @@ def _resonator_records(core_diagnostics: dict, circulation: Dict[str, str]) -> L
     y_center = 0.5 * (
         float(canonical["y_active_um"]) + float(canonical["y_return_um"])
     )
-    radius = 0.5 * float(canonical["return_arm_offset_um"])
+    # Read the closure radius the core actually drew.  Halving the arm offset
+    # only gives the right answer for a semicircle; an Euler closure spans
+    # unit_chord(pi, p) * R laterally, so the derived value would be wrong by
+    # up to 38% at p=1.
+    radius = float(
+        canonical.get(
+            "closure_radius_um", 0.5 * float(canonical["return_arm_offset_um"])
+        )
+    )
+    # How far the closure's apex sits beyond the arm it leaves.  For a
+    # semicircle this is the radius, which is why the two were the same number
+    # for as long as the closure was one; a clothoid closure reaches
+    # 2.4501 * R at p=1, so the probes have to be placed off this and not off
+    # the radius.  The radius still sets the curvature *at* the apex, and so
+    # still governs the coupling.
+    apex_extent = float(canonical.get("closure_apex_extent_um", radius))
     local_left = np.asarray((x_left, y_center), dtype=float)
     local_right = np.asarray((x_right, y_center), dtype=float)
 
@@ -201,6 +216,7 @@ def _resonator_records(core_diagnostics: dict, circulation: Dict[str, str]) -> L
             "circulation": circulation[placement["id"]],
             "center_um": (float(center[0]), float(center[1])),
             "closure_radius_um": radius,
+            "closure_apex_extent_um": apex_extent,
         }
         if placement["set"] == "horizontal":
             closures.sort(key=lambda point: point[0])
@@ -280,7 +296,7 @@ def _add_straight_pump(
     # circulation therefore swaps IN and THRU instead of moving the pump onto
     # the drop waveguides.
     tangent = [
-        float(record["top_closure_um"][1]) + float(record["closure_radius_um"])
+        float(record["top_closure_um"][1]) + float(record["closure_apex_extent_um"])
         for record in vertical
     ]
     pump_y = max(tangent) + separation
@@ -333,6 +349,7 @@ def _add_horizontal_drop(
     separation = 0.5 * (core_width + bus_width) + gap
     bend_radius = float(bus["bend_radius"])
     ring_radius = float(record["closure_radius_um"])
+    apex_extent = float(record["closure_apex_extent_um"])
     right_closure_x, center_y = record["right_closure_um"]
 
     # The probe is tangent to the rightmost apex.  At that point a CW ring
@@ -340,7 +357,7 @@ def _add_horizontal_drop(
     # direction, then makes the single required turn toward the right facet.
     direction_y = -1.0 if record["circulation"] == "CW" else 1.0
     direction_name = "down" if direction_y < 0.0 else "up"
-    apex_x = float(right_closure_x) + ring_radius
+    apex_x = float(right_closure_x) + apex_extent
     probe_x = apex_x + separation
     coupling_start_y = float(center_y) - direction_y * 0.5 * coupling_length
     coupling_end_y = float(center_y) + direction_y * 0.5 * coupling_length
@@ -415,6 +432,7 @@ def _add_vertical_drop(
     separation = 0.5 * (core_width + bus_width) + gap
 
     ring_radius = float(record["closure_radius_um"])
+    apex_extent = float(record["closure_apex_extent_um"])
     center_x = float(record["center_um"][0])
     bottom_closure_y = float(record["bottom_closure_um"][1])
 
@@ -428,7 +446,7 @@ def _add_vertical_drop(
     # to probes farther left, which prevents route crossings.
     direction_x = -1.0 if record["circulation"] == "CW" else 1.0
     direction_name = "left" if direction_x < 0.0 else "right"
-    apex_y = bottom_closure_y - ring_radius
+    apex_y = bottom_closure_y - apex_extent
     probe_y = apex_y - separation
     coupling_start_x = center_x - direction_x * 0.5 * coupling_length
     coupling_end_x = center_x + direction_x * 0.5 * coupling_length

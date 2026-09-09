@@ -1102,6 +1102,30 @@
     },
     "returncode": 0
   },
+  "designs/profiles/onn_butterfly_4x4_euler_closure.yaml": {
+    "bytes": 325534,
+    "digest": {
+      "cell_count": 2,
+      "cell_names": [
+        "device",
+        "ONN_BUTTERFLY_4X4_EULER_CLOSURE_TOP"
+      ],
+      "precision": 1e-09,
+      "sha256": "4441486cb08e393a13d543b5d39931d471ab9546be416334a44ddc421867d2d9",
+      "sha256_ordered": "cbb7a76ff10de019f4b66581b38c2da140cfdb0c4918779a9b1e68e52e2facf1",
+      "top_cells": [
+        {
+          "labels": 66,
+          "name": "ONN_BUTTERFLY_4X4_EULER_CLOSURE_TOP",
+          "polygons": 1195,
+          "sha256": "5b92ffd862587dfb514de14be73f359fb1145bdb1ee3b6d954b27556880584af",
+          "sha256_ordered": "ab925321aa093f803514b8fc6dc71e83f4d900765e75c841706b9dfbd3283dce"
+        }
+      ],
+      "unit": 1e-06
+    },
+    "returncode": 0
+  },
   "designs/profiles/onn_butterfly_4x4_gap_length_2rep_sweep.yaml": {
     "bytes": 2419034,
     "digest": {
