@@ -212,9 +212,13 @@ uses `as:`.
   `designs/profiles/onn_butterfly_4x4_euler_closure.yaml` is the worked example
   and the only committed user of `closure_style: euler`; its header carries the
   widened offset, span and pitch. Watch the footprint when you copy it: the euler
-  device stands ~1593 um tall against the arc version's ~1412, so the 1450 um
-  y-pitch the gap-length sweep stacks devices on is too small — nothing validates
-  device-to-device spacing, so copies merge silently instead of raising.
+  device stands 1569 um tall against the arc version's 1375 (flattened
+  polygons; `bounding_box()` says 1592.78 and 1412.40 because a layer-100
+  label sits above the topmost waveguide, and those inflated figures are what
+  an earlier version of this file and the profile header both quoted). The
+  1450 um y-pitch the gap-length sweep stacks devices on is smaller than the
+  euler device either way — nothing validates device-to-device spacing, so
+  copies merge silently instead of raising.
 - The ONN profiles keep YAML anchors under a `_templates:` key so they can be
   reused via `*` aliases further down. It is not a builder section, and
   `warn_unknown_keys` skips any top-level key starting with `_` for exactly
@@ -258,11 +262,15 @@ uses `as:`.
   has one width; a taper is a different component.
 - **`clothoid`'s `Rmin` is a floor, not the radius you get.** Both drivers of
   mode conversion fall with radius, so `plan_route()` grows every bend to the
-  largest radius the two ports admit — median 1.2–3.9× `Rmin` depending on how
-  much room the ports have, and 26x in the sampled poses: an observation, not a
-  bound. Nothing caps the radius as a multiple of `Rmin` — the only ceiling is
-  `_MAX_RADIUS_FACTOR = 10.0` times the *port separation* (floored at `Rmin`)
-  plus whatever `Rmax` asks, so a widely-spaced pair can grow further still.
+  largest radius the two ports admit. How far above the floor is set almost
+  entirely by how much room the ports have: median 1.0–1.7× `Rmin` while the
+  separation is under 10× `Rmin`, rising to 4.5× at 25× separation and 10.9× at
+  62.5×, with the largest sampled bend 75× `Rmin`. README.md carries the
+  measured table. Nothing caps the radius as a multiple of `Rmin` — the only
+  ceiling is `_MAX_RADIUS_FACTOR = 10.0` times the *port separation* (floored
+  at `Rmin`), which `Rmax` can only tighten, never raise. So a widely-spaced
+  pair grows further still, and the sampled maxima track 10× the separation
+  rather than any multiple of `Rmin`.
   Read `plan.radius` for what was actually drawn. Two things follow and have
   bitten before: the bend sweeps the *middle* of the rectangle its ports span
   rather than hugging the edges, and two identical-looking connections at
@@ -285,9 +293,9 @@ uses `as:`.
 - `plan_route()` maximises the radius over the turn split by enumerating exact
   candidates — where the straight reaches zero, where the radius hits a bound,
   and the ends of the split bracket — *not* by assuming the straight goes to
-  zero. Around 40% of two-bend optima sit at a bracket end, with one bend
-  saturating a half turn and a strictly positive straight, so that shortcut is
-  wrong. The candidates are found on the smooth quantities `den`, `N` and `M`
+  zero. 59% of sampled two-bend optima sit at a bracket end (67% at wide
+  separations), every one of them with one bend saturating a half turn *and* a
+  strictly positive straight, so that shortcut is wrong. The candidates are found on the smooth quantities `den`, `N` and `M`
   rather than on `R = N/den`, which has poles where the radius and the straight
   blow up together; a search on `R` itself gets dragged onto one every time.
 - Every shape is offered at a **ladder** of radii, gentlest down to `Rmin`, and
@@ -302,9 +310,18 @@ uses `as:`.
 - The `_bulge` screen is load-bearing, not belt-and-braces. A free radius makes
   pairs of near-half-turn bends reachable that close on the ports exactly and
   pass every other check while sweeping millimetres — 15 mm of waveguide
-  between ports 224 µm apart was a measured case, and poses that used to raise
-  `DesignError` came back as wafer geometry. Corners and S-bends measure 0
-  bulge and real U-turns about 0.9, so the 1.5 threshold has wide margin.
+  between ports 224 µm apart was a measured case — 24.5 mm with the screen
+  disabled — and poses that used to raise `DesignError` came back as wafer
+  geometry. Don't read the threshold as slack, though: measured over the
+  sampled poses, accepted corners bulge a median 0.14 of the port separation
+  and reach 0.855, and both two-bend shapes run right up to 1.499, because the
+  cap is what selected them. A corner or S-bend measures exactly 0 only when
+  the target is ahead of the start port; `_bulge` is an axis-aligned box, so
+  reaching backwards leaves it immediately. The screen does turn 12.8% of
+  sampled poses into a `DesignError`, but it costs no *usable* route: those
+  poses would have drawn a bulge of at least 2.53× the separation (median
+  6.9×) at 9.5–70× the separation in length, and none of them route with
+  `Rmax = Rmin` either.
 - `src/cells/racetrack.py` closes its loop **only when `L_straight == 2*R`**.
   The return leg is a `segment()` to an absolute point, so any other pair leaves
   the ring open — 92.39 um apart at the factory's own defaults (`R: 50.0`,

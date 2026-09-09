@@ -128,9 +128,9 @@ _SIN_TOL = 1e-9
 _C1_TOL = 1e-12
 # Guarding the *equations* against these degeneracies is not enough: the
 # ill-conditioned solve stays feasible (both straights non-negative, endpoint
-# residual exactly zero) while the answer runs away.  A ``corner`` at
-# a microradian short of 180 degrees, between ports 500 um apart at Rmin = 80,
-# it solves to 359 metres of waveguide.  So candidate plans are also judged on
+# residual exactly zero) while the answer runs away.  A ``corner`` a microradian
+# short of 180 degrees, between ports 500 um apart at Rmin = 80 with the target
+# abeam, solves to 559 metres of waveguide (a nanoradian short, 559 km).  So candidate plans are also judged on
 # shape, not just on whether the equations closed.
 #
 # The symptom is always the same: the straight sections double back, growing
@@ -160,10 +160,13 @@ _CROSS_SAMPLES = 32
 # Radius ceiling, as a multiple of the port separation — see _radius_ceiling.
 _MAX_RADIUS_FACTOR = 10.0
 # How far a route may sweep outside the rectangle its two ports span, as a
-# multiple of their separation — see _bulge.  Corners and S-bends measure 0
-# here and real U-turns up to about 0.9, so this leaves a wide margin while
-# still rejecting the millimetre-scale double-back loops that a free radius
-# makes reachable.
+# multiple of their separation — see _bulge.  This is not slack: over sampled
+# poses the accepted corners reach 0.855 and both two-bend shapes run right up
+# to the cap, which is what rejects the millimetre-scale double-back loops a
+# free radius makes reachable (24.5 mm between ports 224 um apart, with the
+# screen off).  It does turn 12.8% of sampled poses into a DesignError, but not
+# one of those is a near miss: they would have bulged 2.53x the separation at
+# the very least, and none of them route at a pinned radius either.
 _MAX_BULGE = 1.5
 
 # Machine epsilon, for tolerances that have to track a solve's conditioning.
@@ -581,10 +584,12 @@ def _radius_ladder(r_min: float, top: float) -> List[float]:
 def _bulge(pts, x_rel, y_rel) -> float:
     """How far *pts* strays outside the rectangle the two ports span.
 
-    A corner or an S-bend stays inside that rectangle entirely; a genuine
-    U-turn has to bulge past it, but only by a fraction of the port
-    separation.  What this catches is the other thing a free radius can
-    produce: a pair of near-half-turn bends at a radius many times ``Rmin``,
+    A corner or an S-bend stays inside that rectangle only while the target is
+    ahead of the start port: the route leaves the origin heading +x, so a
+    target behind it puts the first straight outside an axis-aligned box
+    immediately.  Over sampled poses the accepted corners bulge a median 0.14
+    of the separation and reach 0.855.  What this catches is the other thing a
+    free radius can produce: a pair of near-half-turn bends at a radius many times ``Rmin``,
     which closes on the ports exactly and passes every other screen while
     sweeping millimetres across the die.  Left unscreened, poses that used to
     raise a `DesignError` came back as geometry instead.

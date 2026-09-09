@@ -34,9 +34,11 @@
 #
 # COST, STATED PLAINLY
 #
-# The closure is exactly (1 + p) times the arc length, so at p = 1 it is 191.67
-# um against 94.25, and it reaches 74.74 um past the arm it leaves rather than
-# 30.00.  With the widened offset the round trip goes 2500.32 -> 2905.16 um,
+# The closure is exactly (1 + p) times the arc of the SAME radius, so at p = 1
+# it is 191.67 um where a semicircle at R = 30.505 would be 95.83.  Against the
+# arc version's actual closure -- a semicircle at R = 30.000, 94.25 um -- it is
+# 2.03x, the extra 1.7% being the radius that widening the offset bought.  It
+# reaches 74.74 um past the arm it leaves rather than 30.00.  With the widened offset the round trip goes 2500.32 -> 2905.16 um,
 # +16.19%, so the FSR drops ~13.9% and every existing wavelength calibration
 # is void.  That is a recalibration, not a redesign, but it is not free.
 #
@@ -62,13 +64,15 @@
 #
 # IF YOU STACK THIS INTO A SWEEP, RAISE THE PITCH.
 #
-# This device is 1592.78 um tall against the arc version's 1412.40 um.  The
-# existing sweeps stack devices on a 1450.0 um y pitch
-# (onn_butterfly_4x4_gap_length_sweep.yaml) which is SMALLER than that, and
-# nothing validates device-to-device spacing -- adjacent copies would silently
-# merge into each other rather than raising.  Use >= 1700 um for an
-# Euler-closure sweep.  onn_butterfly_4x4_device_sweep.yaml's 1650 um pitch
-# happens to clear it, by 57 um.
+# This device is 1569.28 um tall against the arc version's 1374.80 um, measured
+# on flattened polygons.  (Do NOT measure it with gdstk's Cell.bounding_box():
+# that counts label origins and reports 1592.78 and 1412.40, which is what an
+# earlier version of this header quoted.)  The existing sweeps stack devices on
+# a 1450.0 um y pitch (onn_butterfly_4x4_gap_length_sweep.yaml) which is SMALLER
+# than that, and nothing validates device-to-device spacing -- adjacent copies
+# would silently merge into each other rather than raising.  Use >= 1700 um for
+# an Euler-closure sweep.  onn_butterfly_4x4_device_sweep.yaml's 1650 um pitch
+# happens to clear it, by 81 um.
 
 extends: designs/platforms/SiN400_SiO2.yaml
 

@@ -32,7 +32,7 @@ python build.py --list-types                     # available instance types
 | `TAPER` | [taper.py](src/cells/taper.py) | Linear width taper |
 | `ARC` | [any_arc.py](src/cells/any_arc.py) | Circular arc of arbitrary sweep |
 | `RING` | [ring.py](src/cells/ring.py) | Point-coupled ring over a straight bus |
-| `RACETRACK` | [racetrack.py](src/cells/racetrack.py) | Point-coupled racetrack |
+| `RACETRACK` | [racetrack.py](src/cells/racetrack.py) | Point-coupled racetrack — the loop closes **only** when `L_straight == 2*R` |
 | `PULLEY_RING` | [pulley_ring.py](src/cells/pulley_ring.py) | Ring with a wrapped (pulley) bus |
 | `PULLEY_ADD_DROP_RING` | [pulley_ring.py](src/cells/pulley_ring.py) | Pulley ring with add and drop buses |
 | `WIDTH_VARYING_RING` | [width_varying_ring.py](src/cells/width_varying_ring.py) | Ring with periodic triangular width modulation |
@@ -85,6 +85,13 @@ routes:                           # ordered
 `inst.port` face-to-face against an already-placed `to` port. Routes are drawn
 on the layer implied by the narrower of the two port widths.
 
+Of the two Euler-ish kinds, prefer `clothoid`. `euler` is kept only because it
+is the published behaviour of designs already written: it draws circular and
+raised-cosine curves rather than true Euler spirals, and its `Rmin` means two
+different things — the shape parameter in its L-bend branch, a
+warning-only constraint in its S-bend fallback. No committed profile routes
+with it.
+
 **Platform metadata.** Every profile names the process platform it was drawn for
 in its `extends` line. The fragments live in `designs/platforms/` — deliberately
 *not* under `designs/profiles/`, which `tools/gdscheck.py` globs for buildable
@@ -128,10 +135,28 @@ narrower. Taper one side first.
 Both drivers of mode conversion fall with radius: peak curvature as `1/Rmin`,
 and the curvature ramp rate as `1/(p * t * Rmin^2)`. So the solver grows every
 bend to the **largest radius the two ports admit**, and the straight sections
-absorb whatever is left. On random port pairs at `Rmin: 80` the median bend
-comes out 1.2x that floor where the ports are crowded and 3.9x where they have
-room, reaching 26x — a 1.5x to 15x gentler curvature ramp than bending at
-`Rmin` would give, and up to 680x at the extreme.
+absorb whatever is left.
+
+How far above the floor that lands depends almost entirely on how much room the
+ports have. Measured over 800 poses per row — port separation fixed, direction
+of the target uniform on the circle, arrival heading uniform on (-180, 180],
+`Rmin: 80`, `p: 1`:
+
+| separation / `Rmin` | poses that route | median `R`/`Rmin` | largest seen |
+| --- | --- | --- | --- |
+| 1 | 0.2% | 1.3 | 1.4 |
+| 2.5 | 9% | 1.1 | 3.0 |
+| 5 | 47% | 1.4 | 6.0 |
+| 7.5 | 73% | 1.7 | 9.0 |
+| 12.5 | 85% | 2.4 | 15 |
+| 25 | 92% | 4.5 | 30 |
+| 62.5 | 97% | 11 | 75 |
+
+The ramp rate goes as `1/R^2`, so the median 2.75x radius across that whole
+sample is a 7.6x gentler curvature ramp than bending at `Rmin` would give. The
+growth is bounded, but not as a multiple of `Rmin`: the ceiling is ten times the
+*port separation*, floored at `Rmin`, which is why the last column tracks the
+first.
 
 Two consequences worth planning around:
 
@@ -163,10 +188,14 @@ the ports. Within a shape the gentlest bend wins:
 | `sbend` | straight, bend, bend, straight | a lateral offset a single bend cannot absorb, including the 0-turn S-bend |
 | `uturn` | bend, straight, bend | the general fallback; the only one that works when the ports face the same way |
 
-At the maximum radius a `corner` usually loses one of its two straights — that
-is precisely where growing the radius stops. The two-bend shapes often keep
-theirs: an interior optimum with both straights positive is common, so the
-segment list is worth reading rather than assuming.
+Which straights survive depends on what stopped the radius from growing. A
+`corner` grows until the shorter of its two straights reaches zero, so at *that*
+radius it keeps one — but when the radius ceiling binds first, both survive, and
+across separations the split is roughly even (45-52% keep both). An `sbend` is
+the opposite of what you might expect: about three quarters of the sampled ones
+collapse both end straights to zero and are two bends and nothing else. A
+`uturn` has exactly one straight by construction, and it was positive in every
+sampled case. Read `plan.segments` rather than assuming a shape's general form.
 
 `p` trades footprint against gradualness. A pure clothoid (`p = 1`) is exactly
 twice as long as the circular arc of the same radius and turn, and a 90 degree
@@ -178,27 +207,37 @@ stays continuous for any `p > 0`. `p = 0` would be a plain arc and is rejected.
 
 A shape that reaches the ports is not automatically used. `corner` solves
 through `1/sin(Delta)`, so as two ports approach antiparallel its straights run
-away. Growing the radius removes most of that on its own — a pinned-radius
-corner a microradian short of 180 degrees solved to 359 *metres* of waveguide
-between ports 500 um apart; the same pose now comes back as a 138 um bend.
+away. Growing the radius removes most of that on its own. Take ports 500 um
+apart with the target directly abeam, a turn one microradian short of 180
+degrees, `Rmin: 80`: with the radius pinned there the corner closes on the ports
+exactly and asks for 559 *metres* of waveguide (a nanoradian short, 559 km).
+Freed, the same pose comes back as a corner at R = 181.6 um and 1141 um long.
 Candidates whose straights still double back for more than three times the port
 separation are discarded, as are any that cross themselves, and so is anything
 sweeping more than 1.5x the port separation outside the rectangle the two ports
 span. That last screen matters most: a free radius makes pairs of near-half-turn
 bends reachable, which close on the ports exactly and pass every other check
-while running millimetres across the die — 15 mm of waveguide between ports
-224 um apart, in one measured case. Each shape is therefore offered at a ladder
-of radii from the gentlest down to `Rmin`, and the screens take the gentlest
-that survives, so a screen costs footprint rather than reachability.
+while running millimetres across the die. With that screen disabled, the worst
+route found between ports 224 um apart was 24.5 mm long — an S-bend at
+R = 1996 um between two ports a fifth of a millimetre apart.
+
+Each shape is therefore offered at a ladder of radii from the gentlest down to
+`Rmin`, and the screens take the gentlest that survives, so a screen costs
+footprint rather than reachability. 12.8% of sampled poses do route only with
+the bulge screen switched off — but none of those are near misses. The routes
+they would have drawn bulge at least 2.53x the port separation (median 6.9x) and
+run 9.5x to 70x the separation in length, and not one of them routes with the
+radius pinned at `Rmin` either. Those poses have no sensible route at any
+radius, which is the answer a `DesignError` gives you.
 
 Two bends do not reach every pose:
 
 - each bend turns at most 180 degrees, which keeps it a simple curve
 - a pose needing three bends — arriving at a port from behind, so the route has
   to overshoot and come back — is not routable
-- ports crowded close together often have no solution: of random poses at
-  `Rmin: 80`, 92% route inside a 2 mm box, 62% inside 600 um and only 9%
-  inside 200 um
+- ports crowded close together often have no solution — the first two columns
+  of the table above are the same measurement: at 2.5x `Rmin` of separation only
+  9% of poses route, against 92% at 25x
 
 Each of these is a `DesignError` listing what every shape would have needed,
 rather than a badly routed waveguide. Split the connection with an intermediate
@@ -206,6 +245,37 @@ port, or lower `Rmin`.
 
 [clothoid_demo.yaml](designs/profiles/clothoid_demo.yaml) draws one of each
 shape, plus an `Rmax`-capped corner.
+
+### The ONN butterfly closure
+
+`ONN_BUTTERFLY_DEVICE` builds eight canonical resonators, and each closes its
+loop with two 180 degree turns. `core.closure_style` picks their shape:
+
+| value | closure |
+| --- | --- |
+| `arc` (default) | a semicircle, as published — curvature steps 0 to 1/R where it meets each straight |
+| `euler` | a clothoid, curvature ramping over `core.closure_p` of the turn |
+
+Those junctions sit *inside a recirculating loop*, so unlike a bend on a bus
+they are paid on every pass and cap the loaded Q. That is the whole reason
+`euler` exists here.
+
+**`return_arm_offset` is the closure's lateral span, not its diameter.** It
+equals `unit_chord(pi, p) * R`, which is `2*R` only for a semicircle and
+`2.753663*R` for a pure clothoid. So switching an existing device to `euler`
+without touching the offset drives the radius *down* — 60 um yields 21.79 um at
+`p: 1`, below the design's own `min_bend_radius`, and the cell raises saying so.
+Widen the offset instead, and `tile_half_span` and `interaction_group_pitch`
+then have to follow their own two guards.
+[onn_butterfly_4x4_euler_closure.yaml](designs/profiles/onn_butterfly_4x4_euler_closure.yaml)
+is the worked example and carries the arithmetic in its header.
+
+The apex moves further than the radius does: it sits `2.4501*R` past the arm it
+leaves at `p: 1`, against exactly `R` for the semicircle, which makes the euler
+device 1569 um tall against the arc version's 1375. Nothing validates
+device-to-device spacing, so check the pitch before stacking copies — the
+1450 um y pitch in `onn_butterfly_4x4_gap_length_sweep.yaml` is *smaller* than
+the euler device, and adjacent copies would merge silently rather than raise.
 
 ### Macros and blocks
 
@@ -238,7 +308,9 @@ A PCell is any function with this signature:
 def PCellMyThing(params: dict, layers: dict) -> tuple[gdstk.Cell, dict[str, Port]]:
 ```
 
-1. Read every parameter out of `params` with an explicit default, in microns.
+1. Read *optional* parameters out of `params` with an explicit default, in
+   microns. Index a *required* dimension directly (`params["ring_radius"]`) so
+   omitting it raises instead of silently building the wrong thing.
 2. Get the layer from `resolve_wg_layer(width, layers)` rather than hardcoding,
    so width-based dose splitting keeps working.
 3. Return ports in the cell's **local** coordinates. `Port.angle` is in
@@ -263,7 +335,7 @@ src/cells/          the parametric cells
 designs/base.yaml   builder defaults (layers, grid_um) - no platform data
 designs/platforms/  process platforms; each holds one `_platform` block
 designs/profiles/   design profiles (Final/ and Fabricated/ are promoted)
-out/                build output (only Final/ and Fabricated/ are committed)
+out/                build output (Final/, Fabricated/ and Archive/ are committed)
 tools/gdscheck.py   compatibility harness — see below
 ```
 
@@ -277,8 +349,22 @@ from src.design import resolve_design, resolve_layers, resolve_top_name
 
 cfg = resolve_design("designs/profiles/pulley_400nm.yaml")
 lib = build_library(cfg, resolve_layers(cfg), resolve_top_name(cfg))
-print(lib.top_level()[0].bounding_box())
+top = lib.top_level()[0]
+
+# Measure from flattened polygons, never from bounding_box() - see below.
+pts = [pt for poly in top.get_polygons(depth=None) for pt in poly.points]
+print(min(x for x, _ in pts), max(x for x, _ in pts),
+      min(y for _, y in pts), max(y for _, y in pts))
 ```
+
+**Do not measure this repo's geometry with `Cell.bounding_box()`.** It counts
+label origins and inflates the box of a rotated reference, and both are
+everywhere here — the builder labels every ARC on layer 100. On the ONN
+butterfly device it reports 1592.78 um of height where the waveguides really
+span 1569.28, because a label sits 23.5 um above the topmost polygon; on
+`Final/StWG_Ring_Coupler.yaml` it reports y -93.19..100.00 for geometry that
+spans y -0.90..7.72. Flattened polygons quantised to the 1 nm grid are the
+measurement of record, and that is what `tools/gdscheck.py` digests.
 
 ## Not breaking fabricated layouts
 
@@ -306,6 +392,13 @@ more than the metadata.
 The digest covers polygon layer/datatype/vertices and label
 layer/texttype/text/origin rather than the raw bytes, because `gdstk` stamps
 the current time into every file it writes.
+
+**Nine `chip.out` paths are each claimed by two profiles.** Most of those pairs
+are byte-identical YAML, but two are genuinely different designs sharing one
+output file, so building one overwrites the other's GDS. `gdscheck` cannot see
+it, because it redirects every build with `--out`. Pass `-o` explicitly when
+you build `pulley_400nm.yaml`, `Final/pulley_400nm_v1.yaml`,
+`pulley_400nm_dose_test.yaml` or `Archive/pulley_400nm_dose_test.yaml`.
 
 ## Fabrication notes
 
@@ -337,4 +430,7 @@ the current time into every file it writes.
   from 0 to 1/R and converts power into higher-order modes; `clothoid` ramps it
   linearly with arc length instead, and grows the radius as far above `Rmin` as
   the ports allow, since both peak curvature and curvature rate fall with it.
-- The database unit is 1 um with 1 nm precision, matching `grid_um: 0.001`.
+- The database unit is 1 um with 1 nm precision. Both are hardcoded as
+  `GDS_UNIT`/`GDS_PRECISION` in [src/builder.py](src/builder.py);
+  `defaults.grid_um` records the same grid for the reader but is never read
+  by anything, so changing it changes nothing.
