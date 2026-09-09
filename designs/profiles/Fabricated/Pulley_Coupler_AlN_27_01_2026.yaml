@@ -1,5 +1,5 @@
 # designs/profiles/chip_27_01_2026.yaml
-extends: designs/base.yaml
+extends: designs/platforms/AlN_SiO2.yaml
 
 chip:
   out: out/chip_27_01_2026.gds

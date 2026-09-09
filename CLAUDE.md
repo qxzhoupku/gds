@@ -136,7 +136,23 @@ something placed at the top level.
   reused via `*` aliases further down. It is not a builder section, and
   `warn_unknown_keys` skips any top-level key starting with `_` for exactly
   that reason — use that prefix for a deliberate non-section rather than
-  widening `KNOWN_TOP_LEVEL`.
+  widening `KNOWN_TOP_LEVEL`. `_platform` is the other user of it: the process
+  platform (400 nm Si3N4 core, SiO2 clad) lives in `designs/platforms/*.yaml`,
+  one fragment per platform, and **every profile names its platform in
+  `extends`** — so the chain is now `profile → platform → base`, and
+  `designs/base.yaml` is no longer what a profile extends directly. Those
+  fragments must stay out of `designs/profiles/`, which `gdscheck` globs.
+  Never override `_platform` partially in a profile: `deep_update` merges
+  key-by-key, so the omitted fields survive silently — that is why the block
+  lives in the fragment and not in `base.yaml`. The three `*AlN*` profiles
+  point at a separate fragment that asserts only the core material, and
+  `clothoid_demo.yaml` + `Archive/demo_small.yaml` point at
+  `designs/platforms/unspecified.yaml`, which is non-binding on purpose — it
+  marks a fixture as illustrative rather than as a fab record, so "no platform"
+  is distinguishable from "platform not set yet".
+  Note the `_` exemption is **top-level only**: `chip._platform` warns, and
+  `defaults._platform` is silent only because nothing nested under `defaults`
+  is ever checked.
 - There are **two** Euler-ish route kinds and they behave nothing alike.
   `euler` (`route_euler_bend`) draws circular and raised-cosine curves, not true
   clothoids, and its `Rmin` is a *constraint that warns* when the endpoint

@@ -13,7 +13,7 @@
 # The stubs are constant-width taper cells used purely as port holders: a
 # `clothoid` route requires both ports at the same width, so every stub is
 # 0.5 um at both ends.
-extends: designs/base.yaml
+extends: designs/platforms/unspecified.yaml
 
 chip:
   name: CLOTHOID_DEMO

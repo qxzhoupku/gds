@@ -2,6 +2,8 @@
 # Units are micrometres.  Geometry invariants stay in Python; fabrication
 # values and sweep parameters stay here.
 
+extends: designs/platforms/SiN400_SiO2.yaml
+
 defaults:
   layers:
     WG: 1

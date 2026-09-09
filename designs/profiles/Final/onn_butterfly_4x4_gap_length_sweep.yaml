@@ -11,6 +11,8 @@
 # The direct pump and all eight drop probes remain fixed at a 0.5 um edge gap.
 # Units are micrometres.
 
+extends: designs/platforms/SiN400_SiO2.yaml
+
 defaults:
   layers:
     WG: 1

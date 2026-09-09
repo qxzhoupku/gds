@@ -1,5 +1,5 @@
 # designs/profiles/chip_02.yaml
-extends: designs/base.yaml
+extends: designs/platforms/SiN400_SiO2.yaml
 
 chip:
   out: out/chip_02.gds

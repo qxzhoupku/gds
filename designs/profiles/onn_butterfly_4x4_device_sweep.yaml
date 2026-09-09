@@ -1,6 +1,8 @@
 # Two fabrication-ready devices with parameter-only variation.
 # The 1650 um vertical pitch clears every taper and probe in both copies.
 
+extends: designs/platforms/SiN400_SiO2.yaml
+
 defaults:
   layers:
     WG: 1

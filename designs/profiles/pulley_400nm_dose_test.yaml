@@ -1,5 +1,5 @@
 # designs/profiles/pulley_400nm.yaml
-extends: designs/base.yaml
+extends: designs/platforms/SiN400_SiO2.yaml
 
 defaults:
   layers:

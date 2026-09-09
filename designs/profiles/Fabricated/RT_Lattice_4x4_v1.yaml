@@ -18,7 +18,7 @@
 # Lattice center: (2000.0, 2000.0)
 # =============================================================================
 
-extends: designs/base.yaml
+extends: designs/platforms/SiN400_SiO2.yaml
 
 chip:
   out: out/chip_RT_lattice_4x4_v1.gds

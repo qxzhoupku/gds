@@ -6,6 +6,8 @@
 #
 # Omit 'width_layers' entirely to keep the original single-layer behaviour.
 
+extends: designs/platforms/SiN400_SiO2.yaml
+
 defaults:
   layers:
     WG: 1          # fallback waveguide layer (used when no width_layers match)

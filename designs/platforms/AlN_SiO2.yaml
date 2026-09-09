@@ -1,0 +1,37 @@
+# designs/platforms/AlN_SiO2.yaml
+#
+# UNCONFIRMED platform for the three AlN-named designs.  Almost nothing is
+# asserted here on purpose.
+#
+# The only material evidence in the repo is the filename (and `chip.out`) of
+# those three profiles: they carry no material prose of any kind.  The author
+# has confirmed AlN is a genuinely different platform from the 400 nm Si3N4 one
+# in SiN400_SiO2.yaml, but the film thickness and the cladding were never
+# recorded anywhere -- so they stay commented out below rather than guessed.
+# These profiles must NOT inherit the SiN platform: that would stamp a
+# probably-false stack onto the record of a chip physically written on
+# 2026-01-27.
+#
+# Documentation only; see SiN400_SiO2.yaml for why the key is `_`-prefixed and
+# why this file lives outside designs/profiles/.
+
+extends: designs/base.yaml
+
+_platform:
+  id: AlN_SiO2
+  core: AlN               # confirmed by the author as a separate platform;
+                          # no material prose exists in the profiles themselves
+  source: "core material confirmed by the design author, 2026-09-09; thickness and cladding unrecorded"
+
+  # TODO(author): UNRECORDED -- please fill these in.
+  # AlN-on-insulator is supplied at ~400 nm and at ~1 um and nothing in this
+  # repo picks one, so an explicit gap is the honest record.  Note these are
+  # commented out rather than set to a placeholder number precisely so that
+  # nothing downstream can read a guess.
+  # film_nm: ...
+  # cladding: ...
+
+  # UNMEASURED, as for the SiN platform.
+  # n_core: ...
+  # n_clad: ...
+  # design_wavelength_nm: ...

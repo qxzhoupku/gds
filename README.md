@@ -44,7 +44,9 @@ python build.py --list-types                     # available instance types
 ## Profile format
 
 ```yaml
-extends: designs/base.yaml        # optional, resolved transitively
+extends: designs/platforms/SiN400_SiO2.yaml   # the process platform;
+                                              # itself extends
+                                              # designs/base.yaml
 
 defaults:
   layers: { WG: 1, PORT: 99, TEXT: 100 }
@@ -82,6 +84,18 @@ routes:                           # ordered
 `place` positions a cell absolutely (`rot` in degrees). `connect` mates
 `inst.port` face-to-face against an already-placed `to` port. Routes are drawn
 on the layer implied by the narrower of the two port widths.
+
+**Platform metadata.** Every profile names the process platform it was drawn for
+in its `extends` line. The fragments live in `designs/platforms/` — deliberately
+*not* under `designs/profiles/`, which `tools/gdscheck.py` globs for buildable
+profiles — and each holds a single `_platform:` block plus
+`extends: designs/base.yaml`. Top-level keys starting with `_` are skipped by
+the loader, so `_platform` is documentation only: the builder never reads it and
+it emits no geometry (`_templates`, which parks YAML anchors in the sweep
+profiles, is the other user of that convention). A design changes platform by
+repointing `extends` at a different fragment, **never** by copying the block
+into a profile — `extends` deep-merges key by key, so a partial copy would
+silently keep the fields it omitted and quietly falsify the record.
 
 ### Clothoid (Euler spiral) routes
 
@@ -246,6 +260,8 @@ src/clothoid.py     Euler-spiral geometry and the port-to-port solver
 src/layer_map.py    width -> GDS layer mapping
 src/ports.py        the Port dataclass
 src/cells/          the parametric cells
+designs/base.yaml   builder defaults (layers, grid_um) - no platform data
+designs/platforms/  process platforms; each holds one `_platform` block
 designs/profiles/   design profiles (Final/ and Fabricated/ are promoted)
 out/                build output (only Final/ and Fabricated/ are committed)
 tools/gdscheck.py   compatibility harness — see below
@@ -282,6 +298,11 @@ After an *intentional* change, refresh the stored reference:
 python tools/gdscheck.py update-reference
 ```
 
+Metadata-only keys are the one edit class allowed on a promoted profile: a
+`_`-prefixed top-level key never reaches the builder, so `check` must still
+report every profile identical afterwards. If it does not, the edit touched
+more than the metadata.
+
 The digest covers polygon layer/datatype/vertices and label
 layer/texttype/text/origin rather than the raw bytes, because `gdstk` stamps
 the current time into every file it writes.
@@ -294,6 +315,22 @@ the current time into every file it writes.
 - `width_layers` exists because e-beam dose depends on feature width. Splitting
   widths onto separate layers lets each get its own dose recipe — used by the
   `dose_test` profiles.
+- Every design here is drawn for one platform: a 400 nm Si3N4 core clad in
+  SiO2, recorded machine-readably in `designs/platforms/SiN400_SiO2.yaml` and
+  reached through each profile's `extends`. Refractive indices, deposition
+  method and design wavelength are **not** recorded anywhere in this repo —
+  they are left commented out in that file — so any loss, Q or FSR figure
+  quoted about these designs is unanchored until they are measured. Do not fill
+  them in from a textbook; SiN's index depends strongly on deposition. The
+  three `*AlN*` profiles point at `designs/platforms/AlN_SiO2.yaml`, which
+  asserts only the core material: that stack's thickness and cladding were
+  never recorded. `clothoid_demo.yaml` and `Archive/demo_small.yaml` point at
+  `designs/platforms/unspecified.yaml`, which is non-binding by design — they
+  are builder/router fixtures whose geometry is illustrative, so no loss or Q
+  number should be quoted from them. That fragment distinguishes "never
+  dimensioned for a real stack" from "platform not set yet"; do not point a
+  real design at it to dodge an unknown value, comment the field out in a real
+  fragment instead.
 - Ports live only in memory; they are never drawn. `TEXT` labels (layer 100)
   *are* written into the GDS.
 - Bends want continuous curvature. A straight-to-arc junction steps curvature

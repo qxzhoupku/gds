@@ -1,5 +1,5 @@
 # designs/profiles/demo_small.yaml
-extends: designs/base.yaml
+extends: designs/platforms/unspecified.yaml
 
 instances:
   X1:

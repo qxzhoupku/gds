@@ -1,0 +1,55 @@
+# designs/platforms/SiN400_SiO2.yaml
+#
+# The process platform every design in this repo (bar the AlN ones) is drawn
+# for: a 400 nm Si3N4 core clad in SiO2.  Stated once, here.  A profile selects
+# its platform with `extends`; this file extends designs/base.yaml, so a profile
+# still picks up the builder defaults (layers, grid_um) through it.
+#
+# Documentation only, exactly like `chip.die` and `defaults.grid_um`: the
+# builder never reads it and it emits no geometry.  The leading underscore is
+# what keeps it quiet -- src.design.warn_unknown_keys skips top-level keys
+# starting with `_`, the same convention the sweep profiles use for
+# `_templates`.  Do NOT move this block under `chip:` (unknown chip keys warn on
+# every build) or under `defaults:` (nothing nested there is checked at all, so
+# a typo would be silent forever).
+#
+# This file must stay OUTSIDE designs/profiles/: tools/gdscheck.py builds
+# PROFILE_ROOT.rglob("*.yaml") over that tree and would treat it as a 37th
+# profile.
+#
+# A different platform gets its OWN fragment file next to this one -- never a
+# partial `_platform:` override inside a profile.  `extends` deep-merges key by
+# key, so a block listing only `core:` would silently keep `film_nm: 400` from
+# here and quietly falsify the record.
+
+extends: designs/base.yaml
+
+_platform:
+  id: SiN400_SiO2         # stable key, matches the filename
+  film_nm: 400            # STATED: core film thickness (= 0.400 um)
+  core: Si3N4             # STATED: silicon nitride
+  cladding: SiO2          # STATED: silicon dioxide cladding.  "cladded with
+                          # SiO2" does not distinguish under- from over-
+                          # cladding, so neither does this.
+  source: "stated by the design author, 2026-09-09; no measurement record in this repo"
+
+  # UNMEASURED -- left commented out rather than guessed.  Every loss, Q and
+  # FSR figure quoted about these designs depends on these three, so a value
+  # invented from a textbook would become the silent foundation of all of them.
+  # SiN's index is strongly deposition dependent (roughly 1.9-2.05 at telecom,
+  # LPCVD vs PECVD).  Uncomment with a value you can cite, and cite it in
+  # `source` above.
+  # n_core: ...
+  # n_clad: ...
+  # design_wavelength_nm: ...
+
+  # Also unrecorded; add here when known, flat and unit-suffixed so the field
+  # set stays additive:
+  # deposition: ...        # LPCVD / PECVD / sputtered
+  # etch_depth_nm: ...
+  # clad_over_nm: ...
+  # clad_under_nm: ...
+  # substrate: ...
+  #
+  # Deliberately absent: n_eff and n_g are per-waveguide-width, not platform
+  # constants, and widths in this repo run 0.104-3.6 um.

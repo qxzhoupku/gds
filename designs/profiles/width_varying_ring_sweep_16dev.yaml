@@ -1,6 +1,8 @@
 # Width-varying ring sweep: 12 modulated devices and 4 constant-width
 # references.  All dimensions are in micrometres.
 
+extends: designs/platforms/SiN400_SiO2.yaml
+
 defaults:
   layers:
     WG: 1

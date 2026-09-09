@@ -1,0 +1,24 @@
+# designs/platforms/unspecified.yaml
+#
+# The deliberately NON-BINDING platform, for profiles that exist to demonstrate
+# the builder rather than to be fabricated.  It asserts no film, no material and
+# no cladding, on purpose.
+#
+# The point is to distinguish "this fixture was never dimensioned for a real
+# stack" from "somebody forgot to set the platform".  A profile extending this
+# is making a positive statement: its geometry is illustrative, so no loss, Q or
+# FSR number should be quoted from it and it must not be read as a fab record.
+#
+# Do NOT point a real design here to avoid filling in a value -- use a platform
+# fragment with the unknown fields commented out instead, the way
+# AlN_SiO2.yaml does.
+#
+# Documentation only; see SiN400_SiO2.yaml for why the key is `_`-prefixed and
+# why this file lives outside designs/profiles/.
+
+extends: designs/base.yaml
+
+_platform:
+  id: unspecified
+  binding: false          # illustrative geometry; not dimensioned for any stack
+  source: "no platform: builder/router demonstration fixture, not a fabrication record"
