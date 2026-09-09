@@ -348,7 +348,6 @@ def _add_horizontal_drop(
     _, right_x, _, right_inner = _facet_coordinates(io)
     separation = 0.5 * (core_width + bus_width) + gap
     bend_radius = float(bus["bend_radius"])
-    ring_radius = float(record["closure_radius_um"])
     apex_extent = float(record["closure_apex_extent_um"])
     right_closure_x, center_y = record["right_closure_um"]
 
@@ -431,7 +430,6 @@ def _add_vertical_drop(
     _, right_x, _, right_inner = _facet_coordinates(io)
     separation = 0.5 * (core_width + bus_width) + gap
 
-    ring_radius = float(record["closure_radius_um"])
     apex_extent = float(record["closure_apex_extent_um"])
     center_x = float(record["center_um"][0])
     bottom_closure_y = float(record["bottom_closure_um"][1])
